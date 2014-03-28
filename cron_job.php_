@@ -1,0 +1,5 @@
+<?php
+$input_a="qqq";
+$input_b="123";
+require "./140319-1959-c.php";
+?>

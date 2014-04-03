@@ -33,8 +33,8 @@ if(1){
 			die('index檔案遺失');
 		}else{//根目錄有index檔案
 			if(!is_file($dir_mth."index.php")){//如果該月目錄沒有index檔案
-				//$chk=@copy("index.php", $dir_mth."index.php");//複製檔案到該月目錄
-				//if(!$chk){die('複製檔案失敗');}//$dir_mth="safemode/";
+				$chk=@copy("index.php", $dir_mth."index.php");//複製檔案到該月目錄
+				if(!$chk){die('複製檔案失敗');}//$dir_mth="safemode/";
 			}
 		}
 	}
@@ -76,6 +76,7 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 	//print_r($matches_db);//$matches_db[1]
 	//用迴圈叫出資料
 	$htmlbody="";
+	$htmlbody2="";
 	$imgurl_arr=array();//存圖片網址
 	foreach($matches_b[1] as $k => $v){//迴圈
 		$htmlbody.= "<b>".$matches_b[1][$k][0]."</b>\n";//名稱
@@ -94,18 +95,25 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 		//print_r($matches_db);
 		$have_img=0;
 		if($k==0 && $matches_db[1]){//首篇的圖
-			$tmp_str="http://web.archive.org/web/2014/".$matches_db[1];
+			//$tmp_str="http://web.archive.org/web/2014/".$matches_db[1];
+			$pic_url=$matches_db[1];
 			$tmp_str_w=$matches_db[2];
 			$tmp_str_h=$matches_db[3];
 			$have_img=1;
 		}
 		if($matches_dc[1]){//回應的圖
-			$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
+			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
+			$pic_url=$matches_dc[1];
 			$tmp_str_w=$matches_dc[2];
 			$tmp_str_h=$matches_dc[3];
 			$have_img=1;
 		}
 		if($have_img){//有偵測到圖
+			//$pic_url
+			$pic_url_php="./140319-1959-pic.php?".$pic_url;
+			$pic_url_2=substr($pic_url,0,strrpos($pic_url,"/")+1); //根目錄
+			$pic_url_3_a=strlen($pic_url_2)-strlen($pic_url);
+			$pic_filename=substr($pic_url,$pic_url_3_a);//圖檔檔名
 			//$imgurl_arr[]=$tmp_str;
 			//$tmp_str=$matches_dc[1];
 			//$tmp_str=trim($tmp_str);
@@ -122,8 +130,10 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 				$tmp_str_h=250;
 			}
 			*/
-			$htmlbody.= '[<a href="'.$tmp_str.'" target="_blank"><img class="zoom" src="'.$tmp_str.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
-			$htmlbody.=$tmp_str;
+			//$htmlbody.= '[<a href="'.$tmp_str.'" target="_blank"><img class="zoom" src="'.$tmp_str.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
+			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
+			$htmlbody.= '[<a href="./src/'.$pic_filename.'" target="_blank"><img class="zoom" src="./src/'.$pic_filename.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
+			//$htmlbody.=$tmp_str;
 			//$htmlbody.="\n";
 			//$htmlbody.=$tmp_str_w."x".$tmp_str_h;
 			//$htmlbody.="\n";
@@ -167,7 +177,8 @@ $output.="<a href='./$phpself'>返</a>\n";
 if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
-echo $htmlbody;
+echo $htmlbody2;
+//echo $htmlbody;//
 echo htmlend();
 
 ////

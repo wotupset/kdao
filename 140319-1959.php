@@ -88,10 +88,15 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 		//$htmlbody.= "No.".$matches_bb[2][0][0]."\n";//文章編號
 		$htmlbody.= $matches_b[2][$k][0];
 		$htmlbody.= "".$matches_a[0][$k]."\n";//內文
-		//分析內文中的圖
+		//分析內文中的圖a
 		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
 		preg_match($pattern, $matches_da[0][$k][0], $matches_dc);//從內文中找圖
+		//print_r($matches_db);
+		//分析內文中的圖b
+		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*)nothumbs.png border=1 align=left .*></a>%U';//非貪婪匹配
+		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
+		preg_match($pattern, $matches_da[0][$k][0], $matches_dd);//從內文中找圖
 		//print_r($matches_db);
 		$have_img=0;
 		if($k==0 && $matches_db[1]){//首篇的圖
@@ -102,6 +107,13 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 			$have_img=1;
 		}
 		if($matches_dc[1]){//回應的圖
+			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
+			$pic_url=$matches_dc[1];
+			$tmp_str_w=$matches_dc[2];
+			$tmp_str_h=$matches_dc[3];
+			$have_img=1;
+		}
+		if($matches_dd[1]){//回應的圖
 			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
 			$pic_url=$matches_dc[1];
 			$tmp_str_w=$matches_dc[2];

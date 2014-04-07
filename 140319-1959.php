@@ -39,16 +39,21 @@ if(1){
 		}
 	}
 }
-//
+//允許的網址格式
+$kdao_only=0;
+if(preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url))
+{$kdao_only=1;}
+if(preg_match("%komica\.org/[0-9]{2}/%U",$url))
+{$kdao_only=1;}
 
 ///////////
 $w_chk=0;
-if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網址
+if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
 }else{
 	////////////
-	$pattern="%/00/index.php\?res=([0-9]+)%";
+	$pattern="%index.php\?res=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
@@ -78,6 +83,7 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 	$htmlbody="";
 	$htmlbody2="";
 	$imgurl_arr=array();//存圖片網址
+	$cc=0;$cc2=0;
 	foreach($matches_b[1] as $k => $v){//迴圈
 		$htmlbody.= "<b>".$matches_b[1][$k][0]."</b>\n";//名稱
 		//分析ID與編號
@@ -96,7 +102,7 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 		//分析內文中的圖b
 		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*)nothumbs.png border=1 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
-		preg_match($pattern, $matches_da[0][$k][0], $matches_dd);//從內文中找圖
+		preg_match($pattern, $matches_da[0][$k][0], $matches_dd);//從內文中找圖//無縮圖
 		//print_r($matches_db);
 		$have_img=0;
 		if($k==0 && $matches_db[1]){//首篇的圖
@@ -113,11 +119,11 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 			$tmp_str_h=$matches_dc[3];
 			$have_img=1;
 		}
-		if($matches_dd[1]){//回應的圖
+		if(count($matches_dd)>0){//回應的圖//無縮圖
 			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
-			$pic_url=$matches_dc[1];
-			$tmp_str_w=$matches_dc[2];
-			$tmp_str_h=$matches_dc[3];
+			$pic_url="http://k0.dreamhosters.com/pix/nothumbs.png";
+			$tmp_str_w="125";
+			$tmp_str_h="94";
 			$have_img=1;
 		}
 		if($have_img){//有偵測到圖
@@ -152,9 +158,12 @@ if(!preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url)){//只使用於綜合網�
 			//$htmlbody.=$tmp_str_ratio;
 			//$htmlbody.="\n";
 			$htmlbody.="<br>\n";
+			$cc2=$cc2+1;
 		}
+		$cc=$cc+1;
 	}//迴圈
 	$w_chk=1;
+	$htmlbody2.= "[$cc][$cc2]";
 }//有輸入url/
 //修飾
 $htmlbody=$url."\n"."<br/>\n".$htmlbody."<br>\n<br>\n";
@@ -191,6 +200,7 @@ $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;
 //echo $htmlbody;//
+
 echo htmlend();
 
 ////

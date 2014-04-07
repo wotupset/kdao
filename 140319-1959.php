@@ -95,15 +95,18 @@ if(!$kdao_only){//只使用於綜合網址
 		$htmlbody.= $matches_b[2][$k][0];
 		$htmlbody.= "".$matches_a[0][$k]."\n";//內文
 		//分析內文中的圖a
-		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
+		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
+		//$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
 		preg_match($pattern, $matches_da[0][$k][0], $matches_dc);//從內文中找圖
 		//print_r($matches_db);
+		/*
 		//分析內文中的圖b
 		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*)nothumbs.png border=1 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
 		preg_match($pattern, $matches_da[0][$k][0], $matches_dd);//從內文中找圖//無縮圖
 		//print_r($matches_db);
+		*/
 		$have_img=0;
 		if($k==0 && $matches_db[1]){//首篇的圖
 			//$tmp_str="http://web.archive.org/web/2014/".$matches_db[1];
@@ -119,6 +122,7 @@ if(!$kdao_only){//只使用於綜合網址
 			$tmp_str_h=$matches_dc[3];
 			$have_img=1;
 		}
+		/*
 		if(count($matches_dd)>0){//回應的圖//無縮圖
 			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
 			$pic_url="http://k0.dreamhosters.com/pix/nothumbs.png";
@@ -126,6 +130,7 @@ if(!$kdao_only){//只使用於綜合網址
 			$tmp_str_h="94";
 			$have_img=1;
 		}
+		*/
 		if($have_img){//有偵測到圖
 			//$pic_url
 			$pic_url_php="./140319-1959-pic.php?".$pic_url;

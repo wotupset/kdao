@@ -290,8 +290,8 @@ $url=$GLOBALS['url'];
 $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
 綜合網址<input type="text" name="input_a" size="20" value="">
-重新讀圖<input type="checkbox" name="input_b" value="1" />
-<input type="submit" value=" send ">
+<input type="submit" value=" send "><br/>
+<label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label>
 </form>
 EOT;
 $x="\n".$x."\n";

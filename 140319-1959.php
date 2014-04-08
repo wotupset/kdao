@@ -5,7 +5,9 @@ header('Content-type: text/html; charset=utf-8');
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 $query_string=$_SERVER['QUERY_STRING'];
-$input_a=$_POST['input_a'];
+extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
+error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
+//$input_a=$_POST['input_a'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
@@ -64,21 +66,22 @@ if(!$kdao_only){//只使用於綜合網址
 	//過濾
 	$pattern="%<blockquote>.+</blockquote>%U";
 	preg_match_all($pattern, $content, $matches_a);//PREG_OFFSET_CAPTURE
-	//print_r($matches_a);//$matches_c[1][$k][0]
+	//print_r($matches_a);//
 	if(count($matches_a[0])==0){die("x");}//沒找到
 	$pattern="%<font color=#117743><b>(.+)</b></font>(.+)<a class=del%U";
 	preg_match_all($pattern, $content, $matches_b,PREG_OFFSET_CAPTURE);
-	//print_r($matches_b);//$matches_c[1][$k][0]
-	$pattern='%</small><br><a href="(.+)" target=_blank>%U';
-	preg_match_all($pattern, $content, $matches_c,PREG_OFFSET_CAPTURE);
-	//print_r($matches_c);//$matches_c[1][$k][0]
+	//print_r($matches_b);//
+
 	$pattern='%<font color=#cc1105 size.*</blockquote>%U';//非貪婪匹配
 	preg_match_all($pattern, $content, $matches_da,PREG_OFFSET_CAPTURE);
 	//print_r($matches_da);//$matches_da[0][$k][0]
-	$pattern='%<!--ad--><form action="index.php" method=POST>檔名：<a href="(.*)" target=_blank>%U';//非貪婪匹配
+	
+	//$pattern='%--><form action="index.php" method=POST>檔名：<a href="(.*)" target=_blank>%U';//非貪婪匹配
 	//$pattern='%<!--ad--><form action="index.php" method=POST>檔名：<a href="(http.*)" target=_blank>.*</a>.*<br><small>.*</small><br><a href=.*target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*</a><input type=checkbox%U';//非貪婪匹配
-	preg_match($pattern, $content, $matches_db);//首篇的圖
+	$pattern='%</small><br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
+	preg_match($pattern, $content, $matches_db);//首篇的圖 只找第一個
 	//print_r($matches_db);//$matches_db[1]
+	
 	//用迴圈叫出資料
 	$htmlbody="";
 	$htmlbody2="";
@@ -95,7 +98,7 @@ if(!$kdao_only){//只使用於綜合網址
 		$htmlbody.= $matches_b[2][$k][0];
 		$htmlbody.= "".$matches_a[0][$k]."\n";//內文
 		//分析內文中的圖a
-		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
+		$pattern='%</small><br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
 		preg_match($pattern, $matches_da[0][$k][0], $matches_dc);//從內文中找圖
@@ -133,7 +136,12 @@ if(!$kdao_only){//只使用於綜合網址
 		*/
 		if($have_img){//有偵測到圖
 			//$pic_url
-			$pic_url_php="./140319-1959-pic.php?".$pic_url;
+			if($input_b){
+				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
+			}else{
+				$pic_url_php="./140319-1959-pic.php?".$pic_url;
+			}
+			
 			$pic_url_2=substr($pic_url,0,strrpos($pic_url,"/")+1); //根目錄
 			$pic_url_3_a=strlen($pic_url_2)-strlen($pic_url);
 			$pic_filename=substr($pic_url,$pic_url_3_a);//圖檔檔名
@@ -281,7 +289,8 @@ $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
 $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
-綜合網址<input type="text" name="input_a" id="input_a" size="20" value="">
+綜合網址<input type="text" name="input_a" size="20" value="">
+重新讀圖<input type="checkbox" name="input_b" value="1" />
 <input type="submit" value=" send ">
 </form>
 EOT;

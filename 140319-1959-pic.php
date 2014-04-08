@@ -47,6 +47,7 @@ $src=$dir_mth_src.$url3;
 
 if(is_file($src)){//圖檔存在
 	if($re_get){//重新下載
+		//unlink($src);
 		$chk=copy($url,$src);// or die("[error]copy")
 		$chk="2b";//重新下載
 	}else{//跳過

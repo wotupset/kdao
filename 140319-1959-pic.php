@@ -38,10 +38,15 @@ $dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 if(!is_dir($dir_mth)){
 	mkdir($dir_mth, 0777); //建立資料夾 權限0777
 }
-$dir_mth_src=$dir_mth."src/";
+$dir_mth_src=$dir_mth."src/";//存放圖檔位置
 if(!is_dir($dir_mth_src)){
 	mkdir($dir_mth_src, 0777); //建立資料夾 權限0777
 }
+$img_count=$dir_mth_src."index.php";
+if(!is_file($img_count)){
+	$chk=@copy("img_count.php", $img_count) or die('[x]img_count.php');
+}
+
 $src=$dir_mth_src.$url3;
 //echo $re_get;
 

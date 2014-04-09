@@ -96,7 +96,8 @@ if(!$kdao_only){//只使用於綜合網址
 		//$htmlbody.= "ID:".$matches_bb[1][0][0]."\n";//ID
 		//$htmlbody.= "No.".$matches_bb[2][0][0]."\n";//文章編號
 		$htmlbody.= $matches_b[2][$k][0];
-		$htmlbody.= "".$matches_a[0][$k]."\n";//內文
+		//strip_tags($matches_a[0][$k],"<br>")
+		$htmlbody.= "<blockquote>".strip_tags($matches_a[0][$k],"<br>")."</blockquote>\n";//內文
 		//分析內文中的圖a
 		$pattern='%</small><br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
@@ -163,7 +164,8 @@ if(!$kdao_only){//只使用於綜合網址
 			*/
 			//$htmlbody.= '[<a href="'.$tmp_str.'" target="_blank"><img class="zoom" src="'.$tmp_str.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
-			$htmlbody.= '[<a href="./src/'.$pic_filename.'" target="_blank"><img class="zoom" src="./src/'.$pic_filename.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
+			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
+			$htmlbody.= '[<a href="./src/'.$pic_filename.'" target="_blank"><img class="zoom" src="./src/'.$pic_filename.'" border="1"/></a>]';// 
 			//$htmlbody.=$tmp_str;
 			//$htmlbody.="\n";
 			//$htmlbody.=$tmp_str_w."x".$tmp_str_h;

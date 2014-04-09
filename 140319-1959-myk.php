@@ -5,13 +5,51 @@ header('Content-type: text/html; charset=utf-8');
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 $query_string=$_SERVER['QUERY_STRING'];
-$input_a=$_POST['input_a'];
+extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
+error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
+//$input_a=$_POST['input_a'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
 ///////////
+
+///////////$dir_mth
+if(1){
+	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
+	if(!is_writeable(realpath("./"))){ die("根目錄沒有寫入權限，請修改權限"); }
+	@mkdir($dir_mth, 0777); //建立資料夾 權限0777
+	@chmod($dir_mth, 0777); //權限0777
+	if(!is_dir(realpath($dir_mth))){die("月份資料夾不存在");}
+	if(!is_writeable(realpath($dir_mth))){die("月份資料夾無法寫入");}
+	if(!is_readable(realpath($dir_mth))){die("月份資料夾無法讀取");}
+	if(is_file("index.php")){//確認檔案存在
+		//有存在
+	}else{
+		//沒存在
+		die("沒存在");
+	}
+	if(!is_dir($dir_mth)){//子資料夾不存在
+		//沒事
+	}else{//子資料夾存在.
+		if(!file_exists("index.php")){//如果根目錄沒有index檔案
+			die('index檔案遺失');
+		}else{//根目錄有index檔案
+			if(!is_file($dir_mth."index.php")){//如果該月目錄沒有index檔案
+				$chk=@copy("index.php", $dir_mth."index.php");//複製檔案到該月目錄
+				if(!$chk){die('複製檔案失敗');}//$dir_mth="safemode/";
+			}
+		}
+	}
+}
+///////////$dir_mth/
+	/*
+	$dir_path="./myk/";
+	if(!is_dir($dir_path)){
+		mkdir($dir_path, 0777); //建立資料夾 權限0777
+	}
+	*/
 //允許的網址格式
 $kdao_only=0;
 if(preg_match("%mykomica\.org%U",$url))
@@ -27,30 +65,104 @@ if(!$kdao_only){//只使用於綜合網址
 	////////////
 	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
 	$content = preg_replace("/\n/","",$content);
+	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);
 	//過濾
-	$pattern="%<a href=\"(http://www.komicdn.com/my/.*/nth/src/[0-9]{13}\.[a-z]{3})\" rel=\"_blank\">%U";
-	preg_match_all($pattern, $content, $matches_a);//PREG_OFFSET_CAPTURE
+	//<div class=\"rating_reply\" data-no=\"(.*)\">
+	//$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+	$pattern="%(<div class=\"threadpost\" id=\"r[0-9]+\">.*\);</script></div>)%U";//非貪婪
+	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a[1]);//$matches_c[1][$k][0]
-	if(count($matches_a[0])==0){die("x");}//沒找到
-
+	if(count($matches_a[1])==0){die("[x]沒找到內文格式");}//沒找到
+	//過濾
+	$pattern="%(<div class=\"reply\" id=\"r[0-9]+\">.*</script></div>)%U";//非貪婪
+	preg_match_all($pattern, $content, $matches_b);//內文
+	//print_r($matches_b[1]);//
+	$matches_ab=array_merge($matches_a[1],$matches_b[1]);
+	//print_r($matches_ab);//合併
+	//
 	//用迴圈叫出資料
+
 	$cc=0;
-	$dir_path="./myk/";
-	if(!is_dir($dir_path)){
-		mkdir($dir_path, 0777); //建立資料夾 權限0777
-	}
-	foreach($matches_a[1] as $k => $v){//迴圈
-		$img_fn=img_filename($v);
-		$htmlbody.=$img_fn."<br/>\n";
-		$src=$dir_path.$img_fn;
-		$chk=copy($v,$src);// or die("[error]copy")
+	foreach($matches_ab as $k => $v){//迴圈
+		//$htmlbody.=$v."<hr/>\n";
+		//過濾
+		//$pattern="%<a href=\"(http://www.komicdn.com/my/.*/src/[0-9]{13}\.[a-z]{3})\" rel=\"_blank\">%U";
+		$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">.*<div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		$chk_1=preg_match($pattern, $v, $matches_t1);//圖片
+		//print_r($matches_t1);//
+		//
+		$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		$chk_2=preg_match($pattern, $v, $matches_t2);//內文
+		//print_r($matches_t2);//
+		//
+		$pattern="%<span class=\"title\">(.*)</span>[ ]{0,2}<span class=\"name\">(.*)</span>.*<time datetime=.*>(.*)</time><span class=\"trip_id\">(.*)</span>%U";//非貪婪
+		$chk_3=preg_match($pattern, $v, $matches_t3);//名稱 ID 時間
+		//print_r($matches_t3);// 1=標題 2=名稱 3=時間 4=ID
+		//標題 名稱 ID 時間
+		if($chk_3){
+			$matches_t3[2]=strip_tags($matches_t3[2],"<br>");//去掉名稱的email
+			$htmlbody.="<b>".$matches_t3[1]." ".$matches_t3[2]."</b> ".$matches_t3[3]." ".$matches_t3[4]."<br/>\n";//去掉html標籤
+		}
+		//內文
+		if($chk_2){
+			$htmlbody.="<blockquote>".strip_tags($matches_t2[1],"<br>")."</blockquote>\n";//去掉html標籤
+		}
+		//圖片
+		if($chk_1){
+			$img_fn=img_filename($matches_t1[1]);
+			//$src=$dir_mth."src/".$img_fn;
+			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
+			$htmlbody.= '[<a href="./src/'.$img_fn.'" target="_blank"><img class="zoom" src="./src/'.$img_fn.'" border="1"/></a>]';// 
+			$htmlbody.="<br>\n";
+			//$htmlbody.="".$src."<hr/>\n";//貼圖
+			//$htmlbody2.="".$matches_t1[1]."";//
+			$pic_url=$matches_t1[1];
+			if($input_b){
+				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
+			}else{
+				$pic_url_php="./140319-1959-pic.php?".$pic_url;
+			}
+			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
+		}
+		//
+		//$img_fn=img_filename($v);
+		//$htmlbody.=$img_fn."<br/>\n";
+		//$src=$dir_path.$img_fn;
+		//$chk=copy($v,$src);// or die("[error]copy")
+		//$htmlbody.=strip_tags($v,"<br>")."<hr/>";//內文
+		//$htmlbody.=$matches_a[2][$k]."<hr/>";//編號
 		$cc=$cc+1;
 	}//迴圈
 }//有輸入url/
 //修飾
 
 //////
+$htmlbody=$url."<br/>\n".$htmlbody."<br>\n<br>\n";
+if(1){//寫入到檔案
+	$output='';
+	$output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
+	$output.=htmlhead();
+	$output.="<a href='./'>根</a>\n";
+	$output.="<a href='../$phpself'>返</a>\n";
+	$output.="<br/>\n";
+	$output.=$htmlbody;
+	$output.=htmlend();
+	//
+	$pattern="%pixmicat.php\?res=([0-9]+)%";
+	preg_match($pattern, $url, $matches_url);//抓首串編號
+	//print_r($matches_url);//
+	$no=$matches_url[1];//首篇編號
+	$logfile=$dir_mth."myk".$no.".htm";//接頭(prefix)接尾(suffix)
+	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
+	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
+	ftruncate($cp, 0); //砍資料至0
+	fputs($cp, $output);
+	fclose($cp);
+	////////
+	$save_where="存檔=<a href='$logfile'>$logfile</a>\n";
+	////////
+}//寫入到檔案/
 
 //一般頁面
 echo htmlhead();
@@ -58,10 +170,10 @@ echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
+if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
-echo $htmlbody;//
-
+echo $htmlbody2;//
 echo htmlend();
 
 ////
@@ -96,34 +208,6 @@ $x=<<<EOT
 body2 { font-family:"細明體",'MingLiU'; }
 img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
 --></STYLE>
-<script>
-$(document).ready(function() {
-	if(0){//註解??
-		var state={
-			note:"note",
-			aaa:"刷新網址",
-			title:"標題",
-			url:"$phpself?$url"
-		}
-		//alert(state.url);
-		window.history.replaceState(state,state.title,state.url);//无刷新改变URL//pushState
-		//改變網址但不重整網頁
-		window.onpopstate = function(e){
-			//alert("popstate="+e.state.aaa);
-		}
-	}
-	if(1){
-		//$(document).on("keydown",function( event ) { //keyup keypress
-		$(document).keydown(function(event){
-			if(event.which == 17) {
-				window.scroll(0, 0);//
-			}
-		});
-	}
-});
-
-//window.onload = function () { }
-</script>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE" onkeypress="check(event)">
 EOT;
@@ -145,8 +229,9 @@ $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
 $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
-綜合網址<input type="text" name="input_a" id="input_a" size="20" value="">
-<input type="submit" value=" send ">
+myk網址<input type="text" name="input_a" size="20" value="">
+<input type="submit" value=" send "><br/>
+<label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label>
 </form>
 EOT;
 $x="\n".$x."\n";

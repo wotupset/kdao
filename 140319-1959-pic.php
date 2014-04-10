@@ -57,8 +57,8 @@ if(is_file($src)){//圖檔存在
 		//沒抓到圖 便將timeout延長
 		$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
 		$context = stream_context_create($opts);
-		$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
-		//2*1024*1024=2MB
+		$content = file_get_contents($url,NULL,$context,0,5*1024*1024) or die("[error]file_get_contents");//取得來源內容
+		//5*1024*1024=5MB
 		$chk=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
 		//if($chk>0){$chk=1;}
 		$chk="2b";//重新下載

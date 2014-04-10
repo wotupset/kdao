@@ -88,16 +88,18 @@ if(!$kdao_only){//只使用於綜合網址
 		//$htmlbody.=$v."<hr/>\n";
 		//過濾
 		//$pattern="%<a href=\"(http://www.komicdn.com/my/.*/src/[0-9]{13}\.[a-z]{3})\" rel=\"_blank\">%U";
-		$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">.*<div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		//$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">.*<div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">%U";//非貪婪
 		$chk_1=preg_match($pattern, $v, $matches_t1);//圖片
 		//print_r($matches_t1);//
 		//
-		$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		//$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		$pattern="%<div class=\"quote\">(.*)<\/div>%U";//非貪婪
 		$chk_2=preg_match($pattern, $v, $matches_t2);//內文
 		//print_r($matches_t2);//
 		//
 		$pattern="%<span class=\"title\">(.*)</span>[ ]{0,2}<span class=\"name\">(.*)</span>.*<time datetime=.*>(.*)</time><span class=\"trip_id\">(.*)</span>%U";//非貪婪
-		$chk_3=preg_match($pattern, $v, $matches_t3);//名稱 ID 時間
+		$chk_3=preg_match($pattern, $v, $matches_t3);//標題 名稱 ID 時間
 		//print_r($matches_t3);// 1=標題 2=名稱 3=時間 4=ID
 		//標題 名稱 ID 時間
 		if($chk_3){

@@ -70,7 +70,7 @@ if(!$kdao_only){//只使用於綜合網址
 	//過濾
 	//<div class=\"rating_reply\" data-no=\"(.*)\">
 	//$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
-	$pattern="%(<div class=\"threadpost\" id=\"r[0-9]+\">.*\);</script></div>)%U";//非貪婪
+	$pattern="%(<div class=\"threadpost\" id=\"r[0-9]+\">.*\)\;</script></div>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a[1]);//$matches_c[1][$k][0]
 	if(count($matches_a[1])==0){die("[x]沒找到內文格式");}//沒找到
@@ -134,12 +134,13 @@ if(!$kdao_only){//只使用於綜合網址
 		//$htmlbody.=$matches_a[2][$k]."<hr/>";//編號
 		$cc=$cc+1;
 	}//迴圈
+	$w_chk=1;
 }//有輸入url/
 //修飾
 
 //////
 $htmlbody=$url."<br/>\n".$htmlbody."<br>\n<br>\n";
-if(1){//寫入到檔案
+if($w_chk){//寫入到檔案
 	$output='';
 	$output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
 	$output.=htmlhead();

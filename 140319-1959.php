@@ -60,7 +60,9 @@ if(!$kdao_only){//只使用於綜合網址
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
 	//
-	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
+	$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
+	$context = stream_context_create($opts);
+	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\t/","",$content);
 	//過濾
@@ -78,7 +80,7 @@ if(!$kdao_only){//只使用於綜合網址
 	
 	//$pattern='%--><form action="index.php" method=POST>檔名：<a href="(.*)" target=_blank>%U';//非貪婪匹配
 	//$pattern='%<!--ad--><form action="index.php" method=POST>檔名：<a href="(http.*)" target=_blank>.*</a>.*<br><small>.*</small><br><a href=.*target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*</a><input type=checkbox%U';//非貪婪匹配
-	$pattern='%</small><br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
+	$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
 	preg_match($pattern, $content, $matches_db);//首篇的圖 只找第一個
 	//print_r($matches_db);//$matches_db[1]
 	
@@ -99,7 +101,7 @@ if(!$kdao_only){//只使用於綜合網址
 		//strip_tags($matches_a[0][$k],"<br>")
 		$htmlbody.= "<blockquote>".strip_tags($matches_a[0][$k],"<br>")."</blockquote>\n";//內文
 		//分析內文中的圖a
-		$pattern='%</small><br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配
+		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
 		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
 		preg_match($pattern, $matches_da[0][$k][0], $matches_dc);//從內文中找圖

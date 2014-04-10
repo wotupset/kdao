@@ -83,7 +83,7 @@ if(!$kdao_only){//只使用於綜合網址
 	//
 	//用迴圈叫出資料
 
-	$cc=0;
+	$cc=0;$cc2=0;
 	foreach($matches_ab as $k => $v){//迴圈
 		//$htmlbody.=$v."<hr/>\n";
 		//過濾
@@ -124,6 +124,7 @@ if(!$kdao_only){//只使用於綜合網址
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
+			$cc2=$cc2+1;
 		}
 		//
 		//$img_fn=img_filename($v);
@@ -134,7 +135,8 @@ if(!$kdao_only){//只使用於綜合網址
 		//$htmlbody.=$matches_a[2][$k]."<hr/>";//編號
 		$cc=$cc+1;
 	}//迴圈
-	$w_chk=1;
+	$w_chk=1;//寫入到檔案
+	$htmlbody2.= "[$cc][$cc2]";//
 }//有輸入url/
 //修飾
 

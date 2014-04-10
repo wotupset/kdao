@@ -53,13 +53,20 @@ $src=$dir_mth_src.$url3;
 if(is_file($src)){//圖檔存在
 	if($re_get){//重新下載
 		//unlink($src);
-		$chk=copy($url,$src);// or die("[error]copy")
+		//$chk=copy($url,$src);// or die("[error]copy")
+		//沒抓到圖 便將timeout延長
+		$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
+		$context = stream_context_create($opts);
+		$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
+		//2*1024*1024=2MB
+		$chk=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
+		//if($chk>0){$chk=1;}
 		$chk="2b";//重新下載
 	}else{//跳過
 		$chk="2a";//圖檔存在//跳過
 	}
 }else{//圖檔不存在
-	$chk=copy($url,$src);// or die("[error]copy")
+	$chk=copy($url,$src) or die("[error]copy 0");// 
 	//成功=1 失敗=0
 }
 

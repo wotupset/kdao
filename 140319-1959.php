@@ -2,6 +2,8 @@
 //header('Content-Type: application/javascript; charset=utf-8');
 //Header("Content-type: image/jpg");//指定文件類型
 header('Content-type: text/html; charset=utf-8');
+//echo set_time_limit();
+ini_set('max_execution_time',0);
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 $query_string=$_SERVER['QUERY_STRING'];
@@ -66,77 +68,55 @@ if(!$kdao_only){//只使用於綜合網址
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\t/","",$content);
 	//過濾
-	$pattern="%<blockquote>.+</blockquote>%U";
-	preg_match_all($pattern, $content, $matches_a);//PREG_OFFSET_CAPTURE
+	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
+	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a);//
-	if(count($matches_a[0])==0){die("x");}//沒找到
-	$pattern="%<font color=#117743><b>(.+)</b></font>(.+)<a class=del%U";
-	preg_match_all($pattern, $content, $matches_b,PREG_OFFSET_CAPTURE);
-	//print_r($matches_b);//
-
-	$pattern='%<font color=#cc1105 size.*</blockquote>%U';//非貪婪匹配
-	preg_match_all($pattern, $content, $matches_da,PREG_OFFSET_CAPTURE);
-	//print_r($matches_da);//$matches_da[0][$k][0]
-	
-	//$pattern='%--><form action="index.php" method=POST>檔名：<a href="(.*)" target=_blank>%U';//非貪婪匹配
-	//$pattern='%<!--ad--><form action="index.php" method=POST>檔名：<a href="(http.*)" target=_blank>.*</a>.*<br><small>.*</small><br><a href=.*target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*</a><input type=checkbox%U';//非貪婪匹配
-	$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
-	preg_match($pattern, $content, $matches_db);//首篇的圖 只找第一個
-	//print_r($matches_db);//$matches_db[1]
+	if(count($matches_a)==0){die("[x]沒找到首篇內文");}//沒找到
+	//過濾
+	$pattern="%(<table border=0><tr>.*</blockquote></td></tr></table>)%U";//非貪婪
+	preg_match_all($pattern, $content, $matches_b);//內文
+	//print_r($matches_b[1]);//
+	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//整理出的所有留言
+	//print_r($matches_ab);//合併 
+	/*
+	$matches_ab[0]=第一篇
+	$matches_ab[1]=第二篇
+	*/
 	
 	//用迴圈叫出資料
 	$htmlbody="";
 	$htmlbody2="";
 	$imgurl_arr=array();//存圖片網址
 	$cc=0;$cc2=0;
-	foreach($matches_b[1] as $k => $v){//迴圈
-		$htmlbody.= "<b>".$matches_b[1][$k][0]."</b>\n";//名稱
-		//分析ID與編號
-		//$pattern="/ID:(.*) No\.([0-9]*)/";
-		//preg_match_all($pattern, $matches_b[2][$k][0], $matches_bb,PREG_OFFSET_CAPTURE);
-		//print_r($matches_bb);//$matches_c[1][$k][0]
-		//$htmlbody.= "ID:".$matches_bb[1][0][0]."\n";//ID
-		//$htmlbody.= "No.".$matches_bb[2][0][0]."\n";//文章編號
-		$htmlbody.= $matches_b[2][$k][0];
-		//strip_tags($matches_a[0][$k],"<br>")
-		$htmlbody.= "<blockquote>".strip_tags($matches_a[0][$k],"<br>")."</blockquote>\n";//內文
-		//分析內文中的圖a
+	foreach($matches_ab as $k => $v){//迴圈
 		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
-		//$pattern='%<br><a href="(.*)" target=_blank><img src=(.*) border=0 align=left .*></a>%U';//非貪婪匹配
-		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
-		preg_match($pattern, $matches_da[0][$k][0], $matches_dc);//從內文中找圖
-		//print_r($matches_db);
+		preg_match($pattern, $matches_ab[$k], $matches_img);//從留言中找圖
+		//print_r($matches_img);
 		/*
-		//分析內文中的圖b
-		$pattern='%<br><a href="(.*)" target=_blank><img src=(.*)nothumbs.png border=1 align=left .*></a>%U';//非貪婪匹配
-		//$pattern='%<br><a href="(.*)" target=_blank><img src=.*border=0 align=left width=([0-9]*) height=([0-9]*) hspace=20.*></a><blockquote>%U';//非貪婪匹配
-		preg_match($pattern, $matches_da[0][$k][0], $matches_dd);//從內文中找圖//無縮圖
-		//print_r($matches_db);
+		$matches_img[1]=圖片網址
 		*/
+		$pattern='%(<blockquote>.*</blockquote>)%U';//非貪婪匹配//</small>
+		preg_match($pattern, $matches_ab[$k], $matches_msg);//從留言中找內文
+		//print_r($matches_msg);
+		/*
+		$matches_msg[1]=內文
+		*/
+		$pattern="%<font color=#117743><b>(.+)</b></font>(.+)<a class=del%U";//名稱 ID時間
+		preg_match($pattern, $matches_ab[$k], $matches_title);
+		//print_r($matches_title);
+		/*
+		$matches_title[1]=名稱
+		$matches_title[2]=ID時間
+		*/
+		$htmlbody.= "<b>".$matches_title[1]."</b>\n";//名稱
+		$htmlbody.= $matches_title[2];//名稱 ID時間
+		$htmlbody.= "<blockquote>".strip_tags($matches_msg[1],"<br>")."</blockquote>\n";//內文
+			
 		$have_img=0;
-		if($k==0 && $matches_db[1]){//首篇的圖
-			//$tmp_str="http://web.archive.org/web/2014/".$matches_db[1];
-			$pic_url=$matches_db[1];
-			$tmp_str_w=$matches_db[2];
-			$tmp_str_h=$matches_db[3];
+		if($matches_img[1]){//回應的圖
+			$pic_url=$matches_img[1];
 			$have_img=1;
 		}
-		if($matches_dc[1]){//回應的圖
-			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
-			$pic_url=$matches_dc[1];
-			$tmp_str_w=$matches_dc[2];
-			$tmp_str_h=$matches_dc[3];
-			$have_img=1;
-		}
-		/*
-		if(count($matches_dd)>0){//回應的圖//無縮圖
-			//$tmp_str="http://web.archive.org/web/2014/".$matches_dc[1];
-			$pic_url="http://k0.dreamhosters.com/pix/nothumbs.png";
-			$tmp_str_w="125";
-			$tmp_str_h="94";
-			$have_img=1;
-		}
-		*/
 		if($have_img){//有偵測到圖
 			//$pic_url
 			if($input_b){
@@ -145,35 +125,11 @@ if(!$kdao_only){//只使用於綜合網址
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
 			
-			$pic_url_2=substr($pic_url,0,strrpos($pic_url,"/")+1); //根目錄
-			$pic_url_3_a=strlen($pic_url_2)-strlen($pic_url);
-			$pic_filename=substr($pic_url,$pic_url_3_a);//圖檔檔名
-			//$imgurl_arr[]=$tmp_str;
-			//$tmp_str=$matches_dc[1];
-			//$tmp_str=trim($tmp_str);
-			//$htmlbody.='<img src="'.$tmp_str.'">';
-			//$htmlbody.='<span style="display:block; width:2px; height:2px; BORDER:#000 1px solid; background:#FFFFFF url('.$tmp_str.') no-repeat left top; background-size:2px 2px;"/>送出</span>';
-			//$htmlbody.='<script>document.write("[<a href=\''.$tmp_str.'\'><img src=\''.$tmp_str.'\' border=\'1\'></a>]");</script>';
-			/*
-			$tmp_str_ratio=($tmp_str_w/$tmp_str_h);
-			if($tmp_str_ratio>1){
-				$tmp_str_w=250;
-				$tmp_str_h=floor(250/$tmp_str_ratio);
-			}else{
-				$tmp_str_w=floor(250*$tmp_str_ratio);
-				$tmp_str_h=250;
-			}
-			*/
-			//$htmlbody.= '[<a href="'.$tmp_str.'" target="_blank"><img class="zoom" src="'.$tmp_str.'" width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" border="1"/></a>]';// 
-			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
+			$img_filename=img_filename($pic_url);
+
+			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
 			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
-			$htmlbody.= '[<a href="./src/'.$pic_filename.'" target="_blank"><img class="zoom" src="./src/'.$pic_filename.'" border="1"/></a>]';// 
-			//$htmlbody.=$tmp_str;
-			//$htmlbody.="\n";
-			//$htmlbody.=$tmp_str_w."x".$tmp_str_h;
-			//$htmlbody.="\n";
-			//$htmlbody.=$tmp_str_ratio;
-			//$htmlbody.="\n";
+			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
 			$htmlbody.="<br>\n";
 			$cc2=$cc2+1;
 		}
@@ -220,6 +176,14 @@ echo $htmlbody2;
 
 echo htmlend();
 
+////
+function img_filename($x){
+	$url=$x;
+	$url2=substr($url,0,strrpos($url,"/")+1); //根目錄
+	$tmp_str=strlen($url2)-strlen($url);
+	$url3=substr($url,$tmp_str);//圖檔檔名
+	return $url3;
+}
 ////
 function rdm_str($x=''){
 	for($i=0;$i<3;$i++){

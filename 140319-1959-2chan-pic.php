@@ -35,11 +35,13 @@ $url3=substr($url,$tmp_str);//圖檔檔名
 //echo $url3;
 //exit;
 //$content = file_get_contents($url,null,null,0,2*1024*1000) or die("[error]file_get_contents");//取得來源內容
+/*
 $dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 if(!is_dir($dir_mth)){
 	mkdir($dir_mth, 0777); //建立資料夾 權限0777
 }
-$dir_mth_src=$dir_mth."src/";//存放圖檔位置
+*/
+$dir_mth_src="./_2chan/";//存放圖檔位置
 if(!is_dir($dir_mth_src)){
 	mkdir($dir_mth_src, 0777); //建立資料夾 權限0777
 }

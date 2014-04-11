@@ -37,23 +37,29 @@ if(!$kdao_only){//只使用於綜合網址
 	//</small><br><a href="http://svc.2chan.net/dec/18/src/1396892486423.jpg" target="_blank"><img src
 	//$pattern="%<a href=\"(http://www.komicdn.com/my/.*/src/[0-9]{13}\.[a-z]{3})\" rel=\"_blank\">%U";
 	$pattern="%</small><br><a href=\"(http://[a-z]{3}\.2chan\.net/dec/18/src/[0-9]{13}\.[a-z]{3})%U";
-	preg_match_all($pattern, $content, $matches_a);//PREG_OFFSET_CAPTURE
+	preg_match_all($pattern, $content, $matches_img);//圖片網址
 	//print_r($matches_a);//$matches_c[1][$k][0]
-	if(count($matches_a[1])==0){die("x");}//沒找到
+	if(count($matches_img[1])==0){die("x");}//沒找到
 
 	//用迴圈叫出資料
 	$cc=0;
-	$dir_path="./myk/";
+	$dir_path="./_2chan/";
 	if(!is_dir($dir_path)){
 		mkdir($dir_path, 0777); //建立資料夾 權限0777
 	}
-	$htmlbody.=count($matches_a[1]);
+	$htmlbody.=count($matches_img[1]);
 	$htmlbody.="<br/>\n";
-	foreach($matches_a[1] as $k => $v){//迴圈
-		$img_fn=img_filename($v);
-		$src=$dir_path.$img_fn;
-		$htmlbody.="<a href='".$v."'>".$img_fn."</a>";
+	foreach($matches_img[1] as $k => $v){//迴圈
+		$pic_url=$v;//圖片網址
+		$img_fn=img_filename($v);//圖檔檔名
+		$src=$dir_path.$img_fn;//存圖檔的位置
+		//$htmlbody.="<a href='".$v."'>".$img_fn."</a>";//連結
+		//$htmlbody.="<a href='".$v."'>".$img_fn."</a>";//連結
+		$pic_url_php="./140319-1959-2chan-pic.php?".$pic_url;//叫php存下檔案
+		$htmlbody.="<span style='background-image: url(\"".$pic_url_php."\"); '><a href='".$src."'>".$img_fn."</a><a href='".$pic_url_php."'>*php</a></span>";
+		$htmlbody.="<br/>\n";
 		/*
+		////跳頁迴圈型
 		$multi=10;
 		if($cc>=$input_b*$multi && $cc<$input_b*$multi+10){//一次抓10張
 			//if(!is_file($src)){$chk=copy($v,$src) or die("[error]copy");}
@@ -62,7 +68,7 @@ if(!$kdao_only){//只使用於綜合網址
 		}
 		*/
 		//$chk=copy($v,$src) or die("[error]copy");//
-		$htmlbody.="<br/>\n";
+
 		$cc=$cc+1;
 
 	}//迴圈
@@ -72,11 +78,14 @@ if(!$kdao_only){//只使用於綜合網址
 //////
 
 //一般頁面
+/*
+////跳頁迴圈型
 if($loop){
 	$input_b=$input_b+1;
 	$t_url=$phpself."?input_a=".$input_a."&input_b=".$input_b;
 	header("refresh:10; url=$t_url");
 }
+*/
 echo htmlhead();
 echo form();
 $output='';

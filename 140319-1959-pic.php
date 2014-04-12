@@ -62,14 +62,14 @@ if(is_file($src)){//圖檔存在
 }else{//圖檔不存在
 	//$chk=copy($url,$src) or die("[error]copy 0");// 
 	//成功=1 失敗=0
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>2));
+	$opts = array('http'=>array('method'=>"GET",'timeout'=>5));
 	$context = stream_context_create($opts);
 	$max_size=5*1024*1024;//抓取上限
 	$cc=0;
 	while(1){//重次三次
 		$content = @file_get_contents($url,NULL,$context,0,$max_size);
 		if($content === TRUE){break;}
-		if($cc>=3){break;}
+		if($cc>2){break;}
 		$cc=$cc+1;
 	}
 	if($content === FALSE){//

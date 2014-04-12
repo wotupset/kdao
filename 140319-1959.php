@@ -3,7 +3,7 @@
 //Header("Content-type: image/jpg");//指定文件類型
 header('Content-type: text/html; charset=utf-8');
 //echo set_time_limit();
-ini_set('max_execution_time',0);
+//ini_set('max_execution_time',0);
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 $query_string=$_SERVER['QUERY_STRING'];

@@ -6,10 +6,11 @@ $phphost=$_SERVER["SERVER_NAME"];
 date_default_timezone_set("Asia/Taipei");//時區設定 Etc/GMT+8
 $time = time();
 //$tim = $time.substr(microtime(),2,3);
-$tim = microtime(true);
+//$tim = microtime(true);
 $ver="v140412.1516";
 $ver_md5=md5(sha1($ver));//依版本號加密成MD5
 $ver_color="#".substr($ver_md5,-6);//版本號的顏色
+$md5_file=md5_file("./".$phpself."") or die("[x]md5_file");
 //**********
 $url="./";
 $handle=opendir($url); 
@@ -49,15 +50,15 @@ $httphead = <<<EOT
 <META http-equiv="Content-Style-Type" content="text/css">
 <META NAME='ROBOTS' CONTENT='noINDEX, FOLLOW'>
 <STYLE TYPE="text/css"><!--
-
-body table {font-family:"細明體",'MingLiU';font-size:16px;border-collapse:collapse;border-spacing:0;}
+body {}
+table {font-family:"細明體",'MingLiU';font-size:16px;border-collapse:collapse;border-spacing:0;}
 a {text-decoration:none;}
 a:hover {text-decoration:underline;}
 .td_left {color:#eeaa88;}
 tr:hover{background-color:#F0E0D6;
 }
 tr:hover td.td_right {
-position:relative;left:5px;top:0px;z-index:2;
+position:relative;left:1px;top:0px;z-index:2;
 border-width:0px 0px 0px 10px;
 border-color:pink;
 border-style:solid;
@@ -80,7 +81,7 @@ $httpbody="";//echo
 $date_now=date("y/m/d H:i:s", $time);
 $ver_info= <<<EOT
 <blockquote><pre>
-<span style='color:$ver_color;'>$ver</span> $date_now $tim
+<span style='color:$ver_color;'>$ver</span> $date_now $md5_file
 </pre></blockquote>
 EOT;
 $httpbody.="\n";

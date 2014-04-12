@@ -45,6 +45,11 @@ switch($mode){
 	default:
 	break;
 }
+$output='';
+$output.="<a href='./'>根</a>\n";
+$output.="<a href='./$phpself'>返</a>\n";
+$output.="<br/>\n";
+$htmlbody=$output.$htmlbody;
 echo htmlhead();
 echo form();
 echo $htmlbody;

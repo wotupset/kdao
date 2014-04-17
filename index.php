@@ -7,7 +7,7 @@ date_default_timezone_set("Asia/Taipei");//時區設定 Etc/GMT+8
 $time = time();
 //$tim = $time.substr(microtime(),2,3);
 //$tim = microtime(true);
-$ver="v140412.1516";
+$ver="v140417.1646";
 $ver_md5=md5(sha1($ver));//依版本號加密成MD5
 $ver_color="#".substr($ver_md5,-6);//版本號的顏色
 $md5_file=md5_file("./".$phpself."") or die("[x]md5_file");
@@ -50,22 +50,52 @@ $httphead = <<<EOT
 <META http-equiv="Content-Style-Type" content="text/css">
 <META NAME='ROBOTS' CONTENT='noINDEX, FOLLOW'>
 <STYLE TYPE="text/css"><!--
+/*
+border-width:0px 0px 0px 10px;
+border-color:pink;
+border-style:solid;
+border-left:12px solid green;
+position:relative;left:-12px;top:0px;z-index:2;
+td {white-space: nowrap; overflow: hidden; }
+position:relative;right:0px;top:0px;z-index:2;
+border-width:0px 20px 0px 0px;
+border-color:pink;
+border-style:solid;
+*/
 body {}
-table {font-family:"細明體",'MingLiU';font-size:16px;border-collapse:collapse;border-spacing:0;}
+table {
+font-family:"細明體",'MingLiU';
+font-size:16px;
+border-collapse:collapse;
+border-spacing:0;
+table-layout: fixed;
+}
 a {text-decoration:none;}
 a:hover {text-decoration:underline;}
 .td_left {color:#eeaa88;}
 tr:hover{background-color:#F0E0D6;
 }
-tr:hover td.td_right {
-position:relative;left:1px;top:0px;z-index:2;
-border-width:0px 0px 0px 10px;
+tr:hover .span_left {
+color:#000000;
+border-width:0px 20px 0px 0px;
 border-color:pink;
 border-style:solid;
 }
-tr:hover td.td_left {
-color:#000000;
+tr:hover .span2_left {
+position:relative;right:-20px;top:0px;z-index:2;
 }
+tr:hover .span_right {
+visibility:visible;
+}
+.td_left {
+overflow: hidden; 
+width: 80px;
+}
+.td_right{
+overflow: hidden; 
+width: 420px;
+}
+
 --></STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#003333">
@@ -80,9 +110,7 @@ EOT;
 $httpbody="";//echo
 $date_now=date("y/m/d H:i:s", $time);
 $ver_info= <<<EOT
-<blockquote><pre>
-<span style='color:$ver_color;'>$ver</span> $date_now $md5_file
-</pre></blockquote>
+<blockquote><pre><span style='color:$ver_color;'>$ver</span> $md5_file</pre></blockquote>
 EOT;
 $httpbody.="\n";
 $line = count($tmp[0]);
@@ -93,8 +121,8 @@ $ver_info
 <table style="width: 500px">
 <thead>
 <tr>
-<th style='text-align: right;width: 80px'>size</th>
-<th style='text-align: left;'>name</th>
+<th style='text-align: right;width: 80px;'>size</th>
+<th style='text-align: left;width: 420px;'>name</th>
 </tr>
 </thead>
 EOT;
@@ -106,19 +134,20 @@ for($i = 0; $i < $line; $i++){//從頭
 	$tmp_2_i=$tmp[2][$i];
 	
 	if($tmp[2][$i]=="y"){//是資料夾
-		$tmp_0_i_mark="◆";
+		$tmp_0_i_dirmark="◆";
 	}else{//不是資料夾
-		$tmp_0_i_mark="";
+		$tmp_0_i_dirmark="";
 	}
 $httpbody.=<<<EOT
 <tr>
-<td class="td_left" style='text-align: right;'>$tmp_1_i</td>
-<td class="td_right" style='text-align: left;' ><a href='./$tmp_0_i'>$tmp_0_i</a>$tmp_0_i_mark</td>
+<td class="td_left" style='text-align: right;'><span class="span_left"><span class="span2_left">$tmp_1_i</span></span></td>
+<td class="td_right" style='text-align: left;' ><span class="span_right"><a href='./$tmp_0_i'>$tmp_0_i</a>$tmp_0_i_dirmark</span></td>
 </tr>
 
 EOT;
 }//
 $httpbody.="</tbody>\n</table>\n";
+$httpbody.="\n<blockquote><pre>$date_now</pre></blockquote>\n";
 
 $httpbody= "\n".$httpbody."\n";
 echo $httphead."\n" ;

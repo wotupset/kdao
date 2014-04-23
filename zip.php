@@ -8,8 +8,6 @@ $dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 $date_ymd=date("ymd",$time); //存放該月檔案
 //$query_string=$_SERVER['QUERY_STRING'];
 //整理輸入的資料
-$FFF_arr=explode(",",$input_a2);
-$no=$input_a1;
 //exit;
 if(!class_exists("ZipArchive")){die("[x]ZipArchive");}//若不支援ZipArchive 就停止
 if(!is_writeable(realpath("./"))){die("根目錄無法寫入");}//沒權限 就停止
@@ -29,6 +27,9 @@ if($input_a1=="zip"){
 	exit;
 }
 ///////////////////
+$FFF_arr=explode(",",$input_a2);
+if(!$input_a1 || !$input_a2){die("[x]input");}//若沒輸入input 就停止
+$no=$input_a1;
 ob_start();
 //**********
 $zip = new ZipArchive; //首先实例化这个类
@@ -38,14 +39,19 @@ if($res === FALSE){die("res錯誤");}//res若錯誤 就停止
 foreach($FFF_arr as $k => $v){
 	$s_file=$dir_mth.'src/'.$v;
 	$t_file=$date_ymd.'/'.$v;
+	$s_file2=get_filename($s_file);
+	echo "加入檔案".$s_file2." ";
 	if(is_file($s_file)){//來源檔案
 		$zip->addFile($s_file,$t_file);// or die('[x]z'.$k)
+		echo "<small style='color:#0000ff;'>";
 		echo $zip->getStatusString();
-		echo "<br/>\n";
+		echo "</small>";
 	}else{
-		echo $s_file."來源檔案不存在 略過";
-		echo "<br/>\n";
+		echo "<small style='color:#ff0000;'>";
+		echo "不存在 略過";
+		echo "</small>";
 	}
+	echo "<br/>\n";
 }
 $zip->close(); //关闭
 $zip_fn_enc=base64_encode($zip_fn);
@@ -71,17 +77,16 @@ while(($file = readdir($handle))!==false) {
 	$fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
 	$fn_b=strrpos($fn,".")+1-strlen($fn);
 	$fn_b=substr($fn,$fn_b); //副檔名
-	if($fn_b=="zip"){
-		if(preg_match("/[0-9]{10}$/u",$fn_a,$match)){
-			//echo "<pre>".$match[0]."</pre>";
-			//echo $file;
-			echo "<br/>\n";
-			if($time - $match[0] > 3600){//刪除過期的檔案//3600=1hr
-				$FFF=unlink($file);
-				if($FFF){echo $file."刪除";}else{echo $file."刪除失敗";}
-			}
+	if($fn_b=="zip"){}
+	if(preg_match("/_([0-9]{10}).zip/u",$fn_a,$match)){
+		//echo "<pre>".$match[1]."</pre>";
+		//echo $file;
+		echo "<br/>\n";
+		if($time - $match[1] > 3600){//刪除過期的檔案//3600=1hr
+			$FFF=unlink($file);
+			if($FFF){echo $file."刪除";}else{echo $file."刪除失敗";}
 		}
-	}//忽略上傳的php檔案(安全考量)
+	}
 	$cc = $cc + 1;
 } 
 closedir($handle); 
@@ -94,6 +99,13 @@ echo htmlhead();
 echo $htmlbody;
 echo htmlend();
 
+function get_filename($x){
+	$url=$x;
+	$url2=substr($url,0,strrpos($url,"/")+1); //根目錄
+	$tmp_str=strlen($url2)-strlen($url);
+	$url3=substr($url,$tmp_str);//圖檔檔名
+	return $url3;
+}
 function htmlhead(){
 $x=<<<EOT
 <html><head>

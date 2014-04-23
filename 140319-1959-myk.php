@@ -16,7 +16,7 @@ $url=trim($url);
 ///////////
 
 ///////////$dir_mth
-if(1){
+if(0){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 	if(!is_writeable(realpath("./"))){ die("根目錄沒有寫入權限，請修改權限"); }
 	@mkdir($dir_mth, 0777); //建立資料夾 權限0777
@@ -42,6 +42,11 @@ if(1){
 			}
 		}
 	}
+}
+///////////$dir_mth
+$dir_mth="./_myk/"; //存放該月檔案
+if(!is_dir($dir_mth)){
+	mkdir($dir_mth, 0777); //建立資料夾 權限0777
 }
 ///////////$dir_mth/
 	/*
@@ -121,9 +126,9 @@ if(!$kdao_only){//只使用於綜合網址
 			//$htmlbody2.="".$matches_t1[1]."";//
 			$pic_url=$matches_t1[1];
 			if($input_b){
-				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
+				$pic_url_php="./140319-1959-myk-pic.php?url=".$pic_url;
 			}else{
-				$pic_url_php="./140319-1959-pic.php?".$pic_url;
+				$pic_url_php="./140319-1959-myk-pic.php?".$pic_url;
 			}
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
 			$cc2=$cc2+1;

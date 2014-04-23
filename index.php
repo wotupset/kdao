@@ -146,8 +146,9 @@ $httpbody.=<<<EOT
 
 EOT;
 }//
+$cc2=$cc-2;
 $httpbody.="</tbody>\n</table>\n";
-$httpbody.="\n<blockquote><pre>$date_now</pre></blockquote>\n";
+$httpbody.="\n<blockquote><pre>$date_now $cc2</pre></blockquote>\n";
 
 $httpbody= "\n".$httpbody."\n";
 echo $httphead."\n" ;

@@ -43,10 +43,10 @@ if(!$kdao_only){//只使用於綜合網址
 
 	//用迴圈叫出資料
 	$cc=0;
+	//$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
+	//if(!is_dir($dir_mth)){mkdir($dir_mth, 0777);}
 	$dir_path="./_2chan/";
-	if(!is_dir($dir_path)){
-		mkdir($dir_path, 0777); //建立資料夾 權限0777
-	}
+	if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
 	$htmlbody.=count($matches_img[1]);
 	$htmlbody.="<br/>\n";
 	foreach($matches_img[1] as $k => $v){//迴圈

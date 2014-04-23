@@ -35,7 +35,8 @@ $url3=substr($url,$tmp_str);//圖檔檔名
 //echo $url3;
 //exit;
 //$content = file_get_contents($url,null,null,0,2*1024*1000) or die("[error]file_get_contents");//取得來源內容
-$dir_path="./_".date("ym",$time)."/"; //存放該月檔案
+//$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
+$dir_path="./_myk/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
 $dir_path_src=$dir_path."src/";//存放圖檔位置
 if(!is_dir($dir_path_src)){mkdir($dir_path_src, 0777);}

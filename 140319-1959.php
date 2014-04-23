@@ -1,4 +1,11 @@
 <?php 
+$query_string=$_SERVER['QUERY_STRING'];
+if($query_string=="png"){
+header('Content-Type: image/gif');
+$b64="R0lGODdhAQABAIAAMQAAAP///ywAAAAAAQABAAACAkQBADs=";
+echo base64_decode($b64);
+exit;
+}
 //header('Content-Type: application/javascript; charset=utf-8');
 //Header("Content-type: image/jpg");//指定文件類型
 header('Content-type: text/html; charset=utf-8');
@@ -6,7 +13,7 @@ header('Content-type: text/html; charset=utf-8');
 //ini_set('max_execution_time',0);
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
-$query_string=$_SERVER['QUERY_STRING'];
+
 extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 //$input_a=$_POST['input_a'];
@@ -86,8 +93,10 @@ if(!$kdao_only){//只使用於綜合網址
 	//用迴圈叫出資料
 	$htmlbody="";
 	$htmlbody2="";
-	$imgurl_arr=array();//存圖片網址
-	$cc=0;$cc2=0;
+	$img_all='';
+	//$imgurl_arr=array();//存圖片網址
+	$cc=0;//回文數
+	$cc2=0;//貼圖數
 	foreach($matches_ab as $k => $v){//迴圈
 		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
 		preg_match($pattern, $matches_ab[$k], $matches_img);//從留言中找圖
@@ -125,13 +134,14 @@ if(!$kdao_only){//只使用於綜合網址
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
 			
-			$img_filename=img_filename($pic_url);
-
+			$img_filename=img_filename($pic_url);//圖檔檔名
+			if($cc2>0){$img_all_cm=",";}
+			$img_all.=$img_all_cm.$img_filename;
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
 			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
 			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
 			$htmlbody.="<br>\n";
-			$cc2=$cc2+1;
+			$cc2=$cc2+1;//計算圖片數量
 		}
 		$cc=$cc+1;
 	}//迴圈
@@ -172,7 +182,10 @@ if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;
-//echo $htmlbody;//
+if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
+echo "<br/>\n";
+echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
+}
 
 echo htmlend();
 

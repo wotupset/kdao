@@ -41,16 +41,16 @@ if(!is_dir($dir_mth)){
 	mkdir($dir_mth, 0777); //建立資料夾 權限0777
 }
 */
-$dir_mth_src="./_2chan/";//存放圖檔位置
-if(!is_dir($dir_mth_src)){
-	mkdir($dir_mth_src, 0777); //建立資料夾 權限0777
-}
-$img_count=$dir_mth_src."index.php";
+$dir_path="./_2chan/";
+if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
+$dir_path_src="./_2chan/src/";//存放圖檔位置
+if(!is_dir($dir_path_src)){mkdir($dir_path_src, 0777);}
+$img_count=$dir_path_src."index.php";
 if(!is_file($img_count)){
 	$chk=@copy("img_count.php", $img_count) or die('[x]img_count.php');
 }
 
-$src=$dir_mth_src.$url3;
+$src=$dir_path_src.$url3;
 //echo $re_get;
 
 if(is_file($src)){//圖檔存在

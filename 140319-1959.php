@@ -68,7 +68,7 @@ if(!$kdao_only){//只使用於綜合網址
 	preg_match($pattern, $url, $matches_url);//抓首串編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
-	//
+	//取得來源內容
 	$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
 	$context = stream_context_create($opts);
 	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
@@ -83,8 +83,8 @@ if(!$kdao_only){//只使用於綜合網址
 	$pattern="%(<table border=0><tr>.*</blockquote></td></tr></table>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_b);//內文
 	//print_r($matches_b[1]);//
-	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//整理出的所有留言
-	//print_r($matches_ab);//合併 
+	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//合併 //整理出的所有留言
+	//print_r($matches_ab);
 	/*
 	$matches_ab[0]=第一篇
 	$matches_ab[1]=第二篇
@@ -94,7 +94,6 @@ if(!$kdao_only){//只使用於綜合網址
 	$htmlbody="";
 	$htmlbody2="";
 	$img_all='';
-	//$imgurl_arr=array();//存圖片網址
 	$cc=0;//回文數
 	$cc2=0;//貼圖數
 	foreach($matches_ab as $k => $v){//迴圈
@@ -117,15 +116,16 @@ if(!$kdao_only){//只使用於綜合網址
 		$matches_title[1]=名稱
 		$matches_title[2]=ID時間
 		*/
-		$htmlbody.= "<b>".$matches_title[1]."</b>\n";//名稱
-		$htmlbody.= $matches_title[2];//名稱 ID時間
+		$htmlbody.= "<b>".strip_tags($matches_title[1])."</b>\n";//名稱
+		$htmlbody.= strip_tags($matches_title[2]);//名稱 ID時間
 		$htmlbody.= "<blockquote>".strip_tags($matches_msg[1],"<br>")."</blockquote>\n";//內文
 			
 		$have_img=0;
-		if($matches_img[1]){//回應的圖
+		if( $matches_img[1] ){//回應中有圖 //$matches_img[1] = 網址字串
 			$pic_url=$matches_img[1];
 			$have_img=1;
 		}
+		
 		if($have_img){//有偵測到圖
 			//$pic_url
 			if($input_b){
@@ -133,12 +133,10 @@ if(!$kdao_only){//只使用於綜合網址
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			
 			$img_filename=img_filename($pic_url);//圖檔檔名
 			if($cc2>0){$img_all_cm=",";}
 			$img_all.=$img_all_cm.$img_filename;
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
-			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
 			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
 			$htmlbody.="<br>\n";
 			$cc2=$cc2+1;//計算圖片數量
@@ -173,7 +171,7 @@ if($w_chk){//寫入到檔案
 }//寫入到檔案/
 
 //一般頁面
-echo htmlhead();
+echo htmlhead2();
 echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
@@ -186,7 +184,6 @@ if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
 }
-
 echo htmlend();
 
 ////
@@ -215,7 +212,7 @@ $x=<<<EOT
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
 body2 { font-family:"細明體",'MingLiU'; }
@@ -237,15 +234,37 @@ $(document).ready(function() {
 			//alert("popstate="+e.state.aaa);
 		}
 	}
+
 	if(1){
 		//$(document).on("keydown",function( event ) { //keyup keypress
-		$(document).keydown(function(event){
-			if(event.which == 17) {
-				window.scroll(0, 0);//
-			}
-		});
+//
+			var FFF=0;
+			$(document).keydown(function(event){
+				if(event.which == 17) {//按下ctrl
+					FFF=FFF+1;
+					if(FFF >2){
+						window.scroll(0, 0);//移動到網頁頂端
+					}
+				}
+			});
+//
+
 	}
+	//
+	/*
+	function countdown(count) {      // declare the countdown function.
+		(function step(){
+			count=count+1;
+			alert(count);
+			setTimeout(step, 2000); 
+		})();
+	}
+	var FFF=0;
+	countdown(FFF);
+	*/
 });
+
+
 
 //window.onload = function () { }
 </script>
@@ -256,6 +275,25 @@ $x="\n".$x."\n";
 return $x;
 }
 //echo htmlhead();
+function htmlhead2(){
+$x=<<<EOT
+<html><head>
+<title>$ymdhis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META http-equiv="Content-Script-Type" content="text/javascript">
+<META http-equiv="Content-Style-Type" content="text/css">
+<meta name="Robots" content="index,follow">
+<STYLE TYPE="text/css">
+body2 { font-family:"細明體",'MingLiU'; }
+img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
+</STYLE>
+</head>
+<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE" onkeypress="check(event)">
+
+EOT;
+$x="\n".$x."\n";
+return $x;
+}
 
 function htmlend(){
 $x=<<<EOT

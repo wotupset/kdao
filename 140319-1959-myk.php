@@ -16,7 +16,7 @@ $url=trim($url);
 ///////////
 
 ///////////$dir_mth
-if(0){
+if(1){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 	if(!is_writeable(realpath("./"))){ die("根目錄沒有寫入權限，請修改權限"); }
 	@mkdir($dir_mth, 0777); //建立資料夾 權限0777
@@ -44,9 +44,11 @@ if(0){
 	}
 }
 ///////////$dir_mth
-$dir_mth="./_myk/"; //存放該月檔案
-if(!is_dir($dir_mth)){
-	mkdir($dir_mth, 0777); //建立資料夾 權限0777
+if(0){
+	$dir_mth="./_myk/"; //存放該月檔案
+	if(!is_dir($dir_mth)){
+		mkdir($dir_mth, 0777); //建立資料夾 權限0777
+	}
 }
 ///////////$dir_mth/
 	/*
@@ -72,9 +74,7 @@ if(!$kdao_only){//只使用於綜合網址
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);
-	//過濾
-	//<div class=\"rating_reply\" data-no=\"(.*)\">
-	//$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+	//
 	$pattern="%(<div class=\"threadpost\" id=\"r[0-9]+\">.*\)\;</script></div>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a[1]);//$matches_c[1][$k][0]
@@ -110,36 +110,35 @@ if(!$kdao_only){//只使用於綜合網址
 		if($chk_3){
 			$matches_t3[2]=strip_tags($matches_t3[2],"<br>");//去掉名稱的email
 			$htmlbody.="<b>".$matches_t3[1]." ".$matches_t3[2]."</b> ".$matches_t3[3]." ".$matches_t3[4]."<br/>\n";//去掉html標籤
+			$htmlbody.= strip_tags($matches_t3[1])."\n";//標題
+			$htmlbody.= strip_tags($matches_t3[2])."\n";//名稱
+			$htmlbody.= strip_tags($matches_t3[3])."\n";//時間
+			$htmlbody.= strip_tags($matches_t3[4])."\n";//ID
 		}
 		//內文
 		if($chk_2){
 			$htmlbody.="<blockquote>".strip_tags($matches_t2[1],"<br>")."</blockquote>\n";//去掉html標籤
 		}
-		//圖片
-		if($chk_1){
-			$img_fn=img_filename($matches_t1[1]);
-			//$src=$dir_mth."src/".$img_fn;
-			//width="'.$tmp_str_w.'" height="'.$tmp_str_h.'" 
-			$htmlbody.= '[<a href="./src/'.$img_fn.'" target="_blank"><img class="zoom" src="./src/'.$img_fn.'" border="1"/></a>]';// 
-			$htmlbody.="<br>\n";
-			//$htmlbody.="".$src."<hr/>\n";//貼圖
-			//$htmlbody2.="".$matches_t1[1]."";//
+		$have_img=0;
+		if(count($matches_t1[1])){//回應中有圖
 			$pic_url=$matches_t1[1];
+			$have_img=1;
+		}
+		//圖片
+		if($have_img){
 			if($input_b){
-				$pic_url_php="./140319-1959-myk-pic.php?url=".$pic_url;
+				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{
-				$pic_url_php="./140319-1959-myk-pic.php?".$pic_url;
+				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
+			$img_filename=img_filename($matches_t1[1]);//圖檔檔名
+			if($cc2>0){$img_all_cm=",";}
+			$img_all.=$img_all_cm.$img_filename;
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
+			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
+			$htmlbody.="<br>\n";
 			$cc2=$cc2+1;
 		}
-		//
-		//$img_fn=img_filename($v);
-		//$htmlbody.=$img_fn."<br/>\n";
-		//$src=$dir_path.$img_fn;
-		//$chk=copy($v,$src);// or die("[error]copy")
-		//$htmlbody.=strip_tags($v,"<br>")."<hr/>";//內文
-		//$htmlbody.=$matches_a[2][$k]."<hr/>";//編號
 		$cc=$cc+1;
 	}//迴圈
 	$w_chk=1;//寫入到檔案
@@ -161,9 +160,16 @@ if($w_chk){//寫入到檔案
 	//
 	$pattern="%pixmicat.php\?res=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
+	$pattern="%page_num=([0-9]+)%";
+	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
+	$no_pg=$matches_url2[1];//首篇編號
+	if($no_pg){
+	$logfile=$dir_mth."myk".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
+	}else{
 	$logfile=$dir_mth."myk".$no.".htm";//接頭(prefix)接尾(suffix)
+	}
 	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0
@@ -184,6 +190,10 @@ if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;//
+if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
+echo "<br/>\n";
+echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
+}
 echo htmlend();
 
 ////

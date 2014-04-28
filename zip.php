@@ -2,6 +2,7 @@
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 $input_a1=$_GET['a1'];
 $input_a2=$_GET['a2'];
+$input_a3=$_GET['a3'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
@@ -11,6 +12,8 @@ $date_ymd=date("ymd",$time); //存放該月檔案
 //exit;
 if(!class_exists("ZipArchive")){die("[x]ZipArchive");}//若不支援ZipArchive 就停止
 if(!is_writeable(realpath("./"))){die("根目錄無法寫入");}//沒權限 就停止
+
+
 ////刪除舊的zip
 //**********遍歷資料夾
 ob_start();
@@ -66,6 +69,13 @@ if($input_a1=="zip"){
 	readfile($file_name);
 	exit;
 }
+//**********密碼
+if($input_a3!="qqq"){
+	echo htmlhead();
+	echo form();
+	echo htmlend();
+	exit;
+}//沒權限 就停止
 ///////////////////
 $FFF_arr=explode(",",$input_a2);
 if(!$input_a1 || !$input_a2){die("[x]input");}//若沒輸入input 就停止
@@ -125,7 +135,23 @@ echo htmlhead();
 echo $htmlbody;
 echo $htmlbody_del;
 echo htmlend();
-
+////
+function form(){
+$phpself=$GLOBALS['phpself'];
+$input_a1=$GLOBALS['input_a1'];
+$input_a2=$GLOBALS['input_a2'];
+$x=<<<EOT
+<form enctype="multipart/form-data" action='$phpself' method="get">
+<input type="hidden" name="a1" value="$input_a1">
+<input type="hidden" name="a2" value="$input_a2">
+pass<input type="text" name="a3" size="20" value="">
+<input type="submit" value=" send ">
+</form>
+EOT;
+$x="\n".$x."\n";
+return $x;
+}
+//echo form();
 function get_filename($x){
 	$url=$x;
 	$url2=substr($url,0,strrpos($url,"/")+1); //根目錄

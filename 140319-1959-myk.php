@@ -109,7 +109,7 @@ if(!$kdao_only){//只使用於綜合網址
 		//標題 名稱 ID 時間
 		if($chk_3){
 			$matches_t3[2]=strip_tags($matches_t3[2],"<br>");//去掉名稱的email
-			$htmlbody.="<b>".$matches_t3[1]." ".$matches_t3[2]."</b> ".$matches_t3[3]." ".$matches_t3[4]."<br/>\n";//去掉html標籤
+			//$htmlbody.="<b>".$matches_t3[1]." ".$matches_t3[2]."</b> ".$matches_t3[3]." ".$matches_t3[4]."<br/>\n";//去掉html標籤
 			$htmlbody.= strip_tags($matches_t3[1])."\n";//標題
 			$htmlbody.= strip_tags($matches_t3[2])."\n";//名稱
 			$htmlbody.= strip_tags($matches_t3[3])."\n";//時間
@@ -164,7 +164,7 @@ if($w_chk){//寫入到檔案
 	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
-	$no_pg=$matches_url2[1];//首篇編號
+	$no_pg=$matches_url2[1];//頁數
 	if($no_pg){
 	$logfile=$dir_mth."myk".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
 	}else{

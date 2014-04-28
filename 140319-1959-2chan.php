@@ -62,8 +62,8 @@ if(!$kdao_only){//只使用於綜合網址
 	$no=$matches_url[1];//首篇編號
 	//取得來源內容
 	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
-	$content=iconv( "Shift_JIS" , "UTF-8", $content);//轉成UTF8
-	//$content = mb_convert_encoding($content,"SJIS-win","UTF-8");
+	//$content=iconv( "SJIS" , "UTF-8", $content);//轉成UTF8
+	$content = mb_convert_encoding($content,"SJIS","UTF-8");
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);

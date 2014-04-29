@@ -133,7 +133,7 @@ ob_end_clean();
 header('Content-type: text/html; charset=utf-8');
 echo htmlhead();
 echo $htmlbody;
-echo $htmlbody_del;
+//echo $htmlbody_del;
 echo htmlend();
 ////
 function form(){

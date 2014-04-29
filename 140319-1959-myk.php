@@ -74,7 +74,7 @@ if(!$kdao_only){//只使用於綜合網址
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);
-	//
+	//過濾
 	$pattern="%(<div class=\"threadpost\" id=\"r[0-9]+\">.*\)\;</script></div>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a[1]);//$matches_c[1][$k][0]
@@ -90,15 +90,11 @@ if(!$kdao_only){//只使用於綜合網址
 
 	$cc=0;$cc2=0;
 	foreach($matches_ab as $k => $v){//迴圈
-		//$htmlbody.=$v."<hr/>\n";
-		//過濾
-		//$pattern="%<a href=\"(http://www.komicdn.com/my/.*/src/[0-9]{13}\.[a-z]{3})\" rel=\"_blank\">%U";
-		//$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">.*<div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
+		//
 		$pattern="%<div class=\"img_src\"><a href=\"(.*)\" rel=\"_blank\">%U";//非貪婪
 		$chk_1=preg_match($pattern, $v, $matches_t1);//圖片
 		//print_r($matches_t1);//
 		//
-		//$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating[\w]{0,10}\"[ ]{1,2}data-no=\"([0-9]*)\">%U";//非貪婪
 		$pattern="%<div class=\"quote\">(.*)<\/div>%U";//非貪婪
 		$chk_2=preg_match($pattern, $v, $matches_t2);//內文
 		//print_r($matches_t2);//
@@ -162,15 +158,14 @@ if($w_chk){//寫入到檔案
 	preg_match($pattern, $url, $matches_url);//抓首串編號
 	$pattern="%page_num=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
-	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
 	$no_pg=$matches_url2[1];//頁數
+	//
 	if($no_pg){
 	$logfile=$dir_mth."myk".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
 	}else{
 	$logfile=$dir_mth."myk".$no.".htm";//接頭(prefix)接尾(suffix)
 	}
-	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0
 	fputs($cp, $output);
@@ -190,7 +185,7 @@ if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;//
-if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
+if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
 }

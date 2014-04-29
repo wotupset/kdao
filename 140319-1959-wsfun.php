@@ -1,4 +1,5 @@
 <?php 
+error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 $query_string=$_SERVER['QUERY_STRING'];
 if($query_string=="png"){
 header('Content-Type: image/gif');
@@ -52,9 +53,7 @@ if(1){
 }
 //允許的網址格式
 $kdao_only=0;
-if(preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url))
-{$kdao_only=1;}
-if(preg_match("%komica\.org/[0-9]{2}/%U",$url))
+if(preg_match("%wsfun\.com%U",$url))
 {$kdao_only=1;}
 
 ///////////
@@ -63,28 +62,26 @@ if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
 }else{
-	////////////
-	$pattern="%index.php\?res=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url);//抓首串編號
-	//print_r($matches_url);//
-	$no=$matches_url[1];//首篇編號
 	//取得來源內容
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
-	$context = stream_context_create($opts);
-	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
+	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
+	$content = preg_replace("/\n\n<\/div>\n\n/","qfo2Tv77RXt8To65",$content);
+	$content = preg_replace("/\n\n<\/div><\/div>\n\n/","VDZtI5qmc0h755B4",$content);
 	$content = preg_replace("/\n/","",$content);
+	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);
 	//過濾
-	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
+	$pattern="%<div class=\"threadpost\" id=\"r[0-9]+\">.*</div>qfo2Tv77RXt8To65%u";//非貪婪
 	preg_match_all($pattern, $content, $matches_a);//內文-首篇
-	//print_r($matches_a);//
-	if(count($matches_a)==0){die("[x]沒找到首篇內文");}//沒找到
+	//print_r($matches_a);exit;
+	if(count($matches_a[0])==0){die("[x]沒找到內文格式");}//沒找到
 	//過濾
-	$pattern="%(<table border=0><tr>.*</blockquote></td></tr></table>)%U";//非貪婪
+	$pattern="%<div class=\"reply\" id=\"r[0-9]+\">.*VDZtI5qmc0h755B4%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_b);//內文
-	//print_r($matches_b[1]);//
-	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//合併 //整理出的所有留言
-	//print_r($matches_ab);
+	//print_r($matches_b[0]);exit;
+	if(count($matches_b)==0){die("[x]沒找到內文格式");}//沒找到
+	$matches_ab=array_merge($matches_a[0],$matches_b[0]);//合併 //整理出的所有留言
+	//print_r($matches_ab);exit;
+	//
 	/*
 	$matches_ab[0]=第一篇
 	$matches_ab[1]=第二篇
@@ -97,49 +94,52 @@ if(!$kdao_only){//只使用於綜合網址
 	$cc=0;//回文數
 	$cc2=0;//貼圖數
 	foreach($matches_ab as $k => $v){//迴圈
-		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
-		preg_match($pattern, $matches_ab[$k], $matches_img);//從留言中找圖
-		//print_r($matches_img);
-		/*
-		$matches_img[1]=圖片網址
-		*/
-		$pattern='%(<blockquote>.*</blockquote>)%U';//非貪婪匹配//</small>
-		preg_match($pattern, $matches_ab[$k], $matches_msg);//從留言中找內文
-		//print_r($matches_msg);
-		/*
-		$matches_msg[1]=內文
-		*/
-		$pattern="%<font color=#117743><b>(.+)</b></font>(.+)<a class=del%U";//名稱 ID時間
-		preg_match($pattern, $matches_ab[$k], $matches_title);
-		//print_r($matches_title);
-		/*
-		$matches_title[1]=名稱
-		$matches_title[2]=ID時間
-		*/
-		$htmlbody.= "<b>".strip_tags($matches_title[1])."</b>\n";//名稱
-		$htmlbody.= strip_tags($matches_title[2]);//名稱 ID時間
-		$htmlbody.= "<blockquote>".strip_tags($matches_msg[1],"<br>")."</blockquote>\n";//內文
-			
+		//<a href="http://acgspace.wsfun.com/kancolle/src/1398711077205.jpg" rel="_blank">
+		$pattern="%檔名：<a href=\"(.*)\" rel=\"_blank\">[0-9]{10}%U";//非貪婪
+		$chk_1=preg_match($pattern, $v, $matches_t1);//圖片
+		//print_r($matches_t1);//
+		//
+		$pattern="%<div class=\"quote\">(.*)<\/div>%U";//非貪婪
+		$chk_2=preg_match($pattern, $v, $matches_t2);//內文
+		//print_r($matches_t2);//
+		//
+		$pattern="%<span class=\"title\">(.*)</span>.+<span class=\"name\">(.*)</span>(.*)<a href%U";//非貪婪
+		$chk_3=preg_match($pattern, $v, $matches_t3);//標題 名稱 ID 時間
+		//print_r($matches_t3);// 1=標題 2=名稱 3=時間 4=ID
+		//
+		//標題 名稱 ID 時間
+		if($chk_3){
+			$matches_t3[2]=strip_tags($matches_t3[2],"<br>");//去掉名稱的email
+			//$htmlbody.="<b>".$matches_t3[1]." ".$matches_t3[2]."</b> ".$matches_t3[3]." ".$matches_t3[4]."<br/>\n";//去掉html標籤
+			$htmlbody.= strip_tags($matches_t3[1])."\n";//標題
+			$htmlbody.= strip_tags($matches_t3[2])."\n";//名稱
+			$htmlbody.= strip_tags($matches_t3[3])."\n";//時間
+			$htmlbody.= strip_tags($matches_t3[4])."\n";//ID
+		}
+		//內文
+		if($chk_2){
+			$htmlbody.="<blockquote>".strip_tags($matches_t2[1],"<br>")."</blockquote>\n";//去掉html標籤
+		}
+		
 		$have_img=0;
-		if( $matches_img[1] ){//回應中有圖 //$matches_img[1] = 網址字串
-			$pic_url=$matches_img[1];
+		if(count($matches_t1[1])){//回應中有圖
+			$pic_url=$matches_t1[1];
 			$have_img=1;
 		}
 		
-		if($have_img){//有偵測到圖
-			//$pic_url
+		if($have_img){
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			$img_filename=img_filename($pic_url);//圖檔檔名
+			$img_filename=img_filename($matches_t1[1]);//圖檔檔名
 			if($cc2>0){$img_all_cm=",";}
 			$img_all.=$img_all_cm.$img_filename;
-			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
+			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); ">^</span>';
 			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
 			$htmlbody.="<br>\n";
-			$cc2=$cc2+1;//計算圖片數量
+			$cc2=$cc2+1;
 		}
 		$cc=$cc+1;
 	}//迴圈
@@ -159,12 +159,26 @@ if($w_chk){//寫入到檔案
     $output.=$htmlbody;
     $output.=htmlend();
     //
-    $logfile=$dir_mth."z".$no.".htm";//接頭(prefix)接尾(suffix)
-    //$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
+	$pattern="%res=([0-9]+)%";
+	preg_match($pattern, $url, $matches_url);//抓首串編號
+	$pattern="%page_num=([0-9]+)%";
+	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
+	$no=$matches_url[1];//首篇編號
+	$no_pg=$matches_url2[1];//頁數
+	//
+	if($no_pg){
+	$logfile=$dir_mth."wsf".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
+	}else{
+	$logfile=$dir_mth."wsf".$no.".htm";//接頭(prefix)接尾(suffix)
+	}
+	//
+	$list=file_put_contents($logfile,$output);
+	/*
     $cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
     ftruncate($cp, 0); //砍資料至0
     fputs($cp, $output);
     fclose($cp);
+    */
     ////////
     $save_where="存檔=<a href='$logfile'>$logfile</a>\n";
     ////////

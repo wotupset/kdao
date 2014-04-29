@@ -44,20 +44,20 @@ if(!$kdao_only){//只使用於綜合網址
 
 	//用迴圈叫出資料
 	$cc=0;
-	$dir_path="./myk/";
+	$dir_path="./2cat/";
 	if(!is_dir($dir_path)){
 		mkdir($dir_path, 0777); //建立資料夾 權限0777
 	}
 	$htmlbody.=count($matches_a[1]);
 	$htmlbody.="<br/>\n";
-	foreach($matches_a[1] as $k => $v){//迴圈
+	foreach($matches_a[1] as $k => $v){//自動型轉向迴圈式
 		$img_fn=img_filename($v);
 		$htmlbody.=$img_fn;
 		$src=$dir_path.$img_fn;
 		$multi=10;
 		if($cc>=$input_b*$multi && $cc<$input_b*$multi+10){//一次抓10張
 			if(!is_file($src)){
-				//$chk=copy($v,$src) or die("[error]copy");//
+				$chk=copy($v,$src) or die("[error]copy");//
 			}
 			$htmlbody.="*".$cc;
 			if($cc >= count($matches_a[1])){$loop=0;}else{$loop=1;}
@@ -76,7 +76,7 @@ if(!$kdao_only){//只使用於綜合網址
 if($loop){
 	$input_b=$input_b+1;
 	$t_url=$phpself."?input_a=".$input_a."&input_b=".$input_b;
-	//header("refresh:10; url=$t_url");
+	header("refresh:10; url=$t_url");
 }
 echo htmlhead();
 echo form();

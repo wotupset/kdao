@@ -76,13 +76,18 @@ if(!$kdao_only){//只使用於綜合網址
 	$content = preg_replace("/\t/","",$content);
 	//過濾
 	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
+	preg_match_all($pattern, $content, $matches_chk);//內文-首篇
+	//print_r($matches_chk);//
+	if(count($matches_chk[0])==0){die("[x]沒找到");}//沒找到
+	//過濾
+	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_a);//內文-首篇
 	//print_r($matches_a);//
-	if(count($matches_a)==0){die("[x]沒找到首篇內文");}//沒找到
+	if(count($matches_a[0])==0){die("[x]沒找到首篇內文");}//沒找到
 	//過濾
 	$pattern="%(<table border=0><tr>.*</blockquote></td></tr></table>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_b);//內文
-	//print_r($matches_b[1]);//
+	//print_r($matches_b[0]);//
 	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//合併 //整理出的所有留言
 	//print_r($matches_ab);
 	/*
@@ -180,7 +185,7 @@ if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;
-if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
+if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
 }

@@ -64,8 +64,8 @@ if(!$kdao_only){//只使用於綜合網址
 }else{
 	//取得來源內容
 	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
-	$content = preg_replace("/\n\n<\/div>\n\n/","qfo2Tv77RXt8To65",$content);
-	$content = preg_replace("/\n\n<\/div><\/div>\n\n/","VDZtI5qmc0h755B4",$content);
+	$content = preg_replace("/\n<\/div>\n/","qfo2Tv77RXt8To65",$content);
+	$content = preg_replace("/\n<\/div><\/div>\n/","VDZtI5qmc0h755B4",$content);
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\r/","",$content);
 	$content = preg_replace("/\t/","",$content);
@@ -78,7 +78,7 @@ if(!$kdao_only){//只使用於綜合網址
 	$pattern="%<div class=\"reply\" id=\"r[0-9]+\">.*VDZtI5qmc0h755B4%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_b);//內文
 	//print_r($matches_b[0]);exit;
-	if(count($matches_b)==0){die("[x]沒找到內文格式");}//沒找到
+	if(count($matches_b[0])==0){die("[x]沒找到內文格式");}//沒找到
 	$matches_ab=array_merge($matches_a[0],$matches_b[0]);//合併 //整理出的所有留言
 	//print_r($matches_ab);exit;
 	//

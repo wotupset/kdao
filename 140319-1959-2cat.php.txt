@@ -1,4 +1,5 @@
 <?php 
+//自動型轉向迴圈式//初期測試
 //header('Content-Type: application/javascript; charset=utf-8');
 //Header("Content-type: image/jpg");//指定文件類型
 header('Content-type: text/html; charset=utf-8');

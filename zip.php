@@ -7,6 +7,7 @@ date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
 $date_ymd=date("ymd",$time); //存放該月檔案
+$pass="komica";
 //$query_string=$_SERVER['QUERY_STRING'];
 //整理輸入的資料
 //exit;
@@ -70,7 +71,7 @@ if($input_a1=="zip"){
 	exit;
 }
 //**********密碼
-if($input_a3!="qqq"){
+if($input_a3!=$pass){
 	echo htmlhead();
 	echo form();
 	echo htmlend();

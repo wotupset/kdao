@@ -56,7 +56,7 @@ if(!$kdao_only){//只使用於綜合網址
     //沒事
 }else{
 	////////////
-	$pattern="%18/res/([0-9]+)\.htm%";
+	$pattern="%res/([0-9]+)\.htm%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號

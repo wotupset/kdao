@@ -84,7 +84,7 @@ if(!$kdao_only){//只使用於綜合網址
 	preg_match_all($pattern, $content, $matches_b);//內文
 	//print_r($matches_b[1]);//
 	$matches_ab=array_merge($matches_a[1],$matches_b[1]);
-	//print_r($matches_ab);//合併
+	//print_r($matches_ab);exit;//合併
 	//
 	//用迴圈叫出資料
 
@@ -95,7 +95,7 @@ if(!$kdao_only){//只使用於綜合網址
 		$chk_1=preg_match($pattern, $v, $matches_t1);//圖片
 		//print_r($matches_t1);//
 		//
-		$pattern="%<div class=\"quote\">(.*)<\/div>%U";//非貪婪
+		$pattern="%<div class=\"quote\">(.*)<\/div><div class=\"rating%U";//非貪婪
 		$chk_2=preg_match($pattern, $v, $matches_t2);//內文
 		//print_r($matches_t2);//
 		//

@@ -1,12 +1,13 @@
 <?php
 //echo set_time_limit();
+error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 $query_string=$_SERVER['QUERY_STRING'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 //$tmp_arr=explode("!",$query_string);
 $url = $_GET["url"];
-
+$sss = $_GET["sss"];
 //
 if(!ignore_user_abort()){ignore_user_abort(true);}
 //
@@ -15,12 +16,15 @@ $form=<<<EOT
 <head></heaad>
 <body>
 <form id='form140406' action='$phpself' method="get" autocomplete="off">
-<input type="text" name="url" size="20" placeholder="url" value="">
+<input type="text" name="url" size="20" placeholder="url" value=""><br/>
+<label>重新讀圖<input type="checkbox" name="sss" value="1" />(破圖時使用)</label>
 <input type="submit" value="送出"/>
 </form>
 </body>
 </html>
 EOT;
+
+////
 if(!$query_string){die($form);}
 $re_get=0;
 if(strlen($url)){//使用get取得網址
@@ -28,13 +32,11 @@ if(strlen($url)){//使用get取得網址
 }else{//不是使用get取得網址
 	$url=$query_string;
 }
-
+////
 $url2=substr($url,0,strrpos($url,"/")+1); //根目錄
 $tmp_str=strlen($url2)-strlen($url);
 $url3=substr($url,$tmp_str);//圖檔檔名
-//echo $url3;
-//exit;
-//$content = file_get_contents($url,null,null,0,2*1024*1000) or die("[error]file_get_contents");//取得來源內容
+////
 $dir_path="./_".date("ym",$time)."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
 $dir_path_src=$dir_path."src/";//存放圖檔位置
@@ -43,10 +45,17 @@ $img_count=$dir_path_src."index.php";
 if(!is_file($img_count)){
 	$chk=@copy("img_count.php", $img_count) or die('[x]img_count.php');
 }
-
-$src=$dir_path_src.$url3;
-//echo $re_get;
-
+$src=$dir_path_src.$url3;//存放檔案的位置
+////
+if($sss){
+$content = @file_get_contents($url);
+$content = @file_put_contents($src,$content);
+echo "<a href='".$phpself."'>".$phpself."</a>";
+echo "<br/>\n";
+echo "<a href='".$src."'>".$src."</a>";
+exit;
+}
+////
 if(is_file($src)){//圖檔存在
 	if($re_get){//重新下載
 		//unlink($src);

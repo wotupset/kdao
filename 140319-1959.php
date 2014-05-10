@@ -240,7 +240,7 @@ $(document).ready(function() {
 		}
 	}
 
-	if(1){
+	if(0){
 		//$(document).on("keydown",function( event ) { //keyup keypress
 //
 			var FFF=0;
@@ -256,26 +256,31 @@ $(document).ready(function() {
 
 	}
 	//
-	/*
-	function countdown(count) {      // declare the countdown function.
-		(function step(){
-			count=count+1;
-			alert(count);
-			setTimeout(step, 2000); 
-		})();
+	if(0){//???
+		function countdown(count) {      // declare the countdown function.
+			(function step(){
+				count=count+1;
+				alert(count);
+				setTimeout(step, 2000); 
+			})();
+		}
+		var FFF=0;
+		countdown(FFF);
 	}
-	var FFF=0;
-	countdown(FFF);
-	*/
 });
 
 
 
 //window.onload = function () { }
 </script>
+
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE" onkeypress="check(event)">
 EOT;
+/*
+
+
+*/
 $x="\n".$x."\n";
 return $x;
 }

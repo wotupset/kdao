@@ -185,7 +185,7 @@ if(isset($save_where)){$output.=$save_where;}
 $output.="<br/>\n";
 echo $output;
 echo $htmlbody2;
-if($cc2 && 1){//打包功能 很吃流量 慎用//0=停用
+if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
 }

@@ -5,6 +5,7 @@ $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 $query_string=$_SERVER['QUERY_STRING'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
+$ymd=date("ymd",$time);
 //$tmp_arr=explode("!",$query_string);
 $url = $_GET["url"];
 $sss = $_GET["sss"];
@@ -17,7 +18,7 @@ $form=<<<EOT
 <body>
 <form id='form140406' action='$phpself' method="get" autocomplete="off">
 <input type="text" name="url" size="20" placeholder="url" value=""><br/>
-<label>重新讀圖<input type="checkbox" name="sss" value="1" />(破圖時使用)</label>
+<label>單張讀圖<input type="checkbox" name="sss" value="1" />(測試時使用)</label>
 <input type="submit" value="送出"/>
 </form>
 </body>
@@ -36,6 +37,10 @@ if(strlen($url)){//使用get取得網址
 $url2=substr($url,0,strrpos($url,"/")+1); //根目錄
 $tmp_str=strlen($url2)-strlen($url);
 $url3=substr($url,$tmp_str);//圖檔檔名
+$fn=$url3;
+$fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
+$fn_b=strrpos($fn,".")+1-strlen($fn);
+$fn_b=strtolower(substr($fn,$fn_b)); //副檔名
 ////
 $dir_path="./_".date("ym",$time)."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
@@ -43,16 +48,17 @@ $dir_path_src=$dir_path."src/";//存放圖檔位置
 if(!is_dir($dir_path_src)){mkdir($dir_path_src, 0777);}
 $img_count=$dir_path_src."index.php";
 if(!is_file($img_count)){
-	$chk=@copy("img_count.php", $img_count) or die('[x]img_count.php');
+	$chk=copy("img_count.php", $img_count) or die('[x]img_count.php');
 }
 $src=$dir_path_src.$url3;//存放檔案的位置
+$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
 if($sss){
-$content = @file_get_contents($url);
-$content = @file_put_contents($src,$content);
+$content = file_get_contents($url);
+$content = file_put_contents($src2,$content);
 echo "<a href='".$phpself."'>".$phpself."</a>";
 echo "<br/>\n";
-echo "<a href='".$src."'>".$src."</a>";
+echo "<a href='".$src2."'>".$src2."</a>";
 exit;
 }
 ////
@@ -72,7 +78,7 @@ if(is_file($src)){//圖檔存在
 	$max_size=5*1024*1024;//抓取上限
 	$cc=0;
 	while(1){//重次三次
-		$content = @file_get_contents($url,NULL,$context,0,$max_size);
+		$content = file_get_contents($url,NULL,$context,0,$max_size);
 		if($content === TRUE){break;}
 		if($cc>2){break;}
 		$cc=$cc+1;

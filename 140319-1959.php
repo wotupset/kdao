@@ -74,6 +74,8 @@ if(!$kdao_only){//只使用於綜合網址
 	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
 	$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\t/","",$content);
+	$content=preg_replace("/[\x1-\x1F]/", "", $content);
+	$content=preg_replace("/[\x7F]/", "", $content);
 	//過濾
 	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_chk);//內文-首篇

@@ -104,8 +104,10 @@ foreach($FFF_arr as $k => $v ){
 }
 
 $htmlbody=<<<EOT
-<div id="menu2" style="z-index:9;position: fixed; margin: 0px; padding: 0px 10px 10px; left: 0px; top: 0px; color: #cc0000; background-color: #ffffff; border-right: 1px black solid; overflow: auto; width: 125px;height:90%;">
-	$pg_html
+<div id="menu2" style="z-index:9;position: fixed; margin: 0px; padding: 0px; left: 0px; top: 0px; color: #cc0000; background-color: #ffffff; border-right: 1px black solid; overflow: auto; width: 125px;height:90%;">
+	<div style="padding: 10px;">
+		$pg_html
+	</div>
 </div>
 <div id="menu3" style="z-index:8;position: fixed; margin-bottom: 0px; padding: 5px; width: 100%; left: 0px; bottom: 0px; color: #cc0000; background-color: #ffffee; border-top: 1px black solid; ">
 	<div style="font-size: 12px;margin-bottom:5px;">
@@ -156,7 +158,7 @@ function reset() {
 	//document.getElementById("menu2").style.height = "200px";
 	var tmp4 = $("#menu3").outerHeight(true);//下方選單高度// set to true, the margin (top and bottom) is also included.
 	//alert(tmp4);
-	var tmp3 = $(document.body)[0].clientHeight -tmp4 -12;//計算右側選單要縮多少高度
+	var tmp3 = $(document.body)[0].clientHeight -tmp4;//計算右側選單要縮多少高度
 	$("#menu2").height(tmp3);
 	var tmp5 = tmp4 +20;//計算右側內容底部要墊多少高度
 	$("#right_content").css("margin-bottom",tmp5+"px");
@@ -172,7 +174,7 @@ $(document).ready(function(){
 	//$("#menu2").scrollTop(tmp);
 	//$("#menu2").height()
 ////
-	var tmp1 = $("#menu2").height();//左側選單高度
+	var tmp1 = $("#menu2").outerHeight(true);//左側選單高度 //height()
 	var tmp2 = $("#menu2_pi").position().top - (tmp1/2); //計算左側選單捲軸要停留的位置
 	//$("#menu2").animate({scrollTop: tmp2 },1000,"swing");//jq動畫方式移動捲軸
 	$("#menu2").scrollTop(tmp2);

@@ -69,7 +69,7 @@ if(!$kdao_only){//只使用於綜合網址
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
 	//取得來源內容
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>60));
+	$opts = array('http'=>array('method'=>"GET",'timeout'=>10));
 	$context = stream_context_create($opts);
 	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
 	$content = preg_replace("/\n/","",$content);

@@ -51,14 +51,14 @@ if(!is_file($img_count)){
 	$chk=copy("img_count.php", $img_count) or die('[x]img_count.php');
 }
 $src=$dir_path_src.$url3;//存放檔案的位置
-$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
+//$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
 if($sss){
 $content = file_get_contents($url);
-$content = file_put_contents($src2,$content);
+$content = file_put_contents($src,$content);
 echo "<a href='".$phpself."'>".$phpself."</a>";
 echo "<br/>\n";
-echo "<a href='".$src2."'>".$src2."</a>";
+echo "<a href='".$src."'>".$src."</a>";
 exit;
 }
 ////

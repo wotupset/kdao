@@ -76,8 +76,8 @@ if($arr_ct%10 != 0){$pg_max=$pg_max+1;}
 $cc=1;$pg_html='';$FFF='';
 for($i=0;$i<$pg_max;$i++){
 	if($i == $qs2){$FFF="&nbsp;<span id='menu2_pi'>&#9619;&#9618;&#9617;</span>";}else{$FFF='';}
-	$pg_html.="<a href='".$phpself."?".$ym."!".$i."'>".$i."</a>".$FFF;
-	$pg_html.="<br/>\n";
+	$pg_html.="<a class='link' href='".$phpself."?".$ym."!".$i."'>".$i.$FFF."</a>";
+	//$pg_html.="<br/>\n";
 	$cc=$cc+1;
 
 }
@@ -111,8 +111,8 @@ $htmlbody=<<<EOT
 </div>
 <div id="menu3" style="z-index:8;position: fixed; margin-bottom: 0px; padding: 5px; width: 100%; left: 0px; bottom: 0px; color: #cc0000; background-color: #ffffee; border-top: 1px black solid; ">
 	<div style="font-size: 12px;margin-bottom:5px;">
-		年月 $ym 分頁 $qs2 <br/>
-		$list_dir_html<br/>
+		<a href='./'>返回</a> $ym/$qs2 <br/>
+		$list_dir_html
 	</div>
 </div>
 <div id="right_content" style="margin: auto auto 50px 160px;">
@@ -135,13 +135,15 @@ $x=<<<EOT
 <META HTTP-EQUIV="EXPIRES" CONTENT="Thu, 15 Jan 2009 05:12:01 GMT">
 <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
 <STYLE TYPE="text/css">
-body2 { font-family:"細明體",'MingLiU'; }
+body { font-family:'Courier New',"細明體",'MingLiU'; }
 img {
 height:auto; width:auto; 
 min-width:20px; min-height:20px;
 max-width:250px; max-height:250px;
 border:1px solid blue;
 }
+.link {display:block;}
+.link:hover {background-color:#F0E0D6;}
 </STYLE>
 <script src="http://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script language="Javascript">

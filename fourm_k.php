@@ -22,7 +22,7 @@ if(preg_match("/^([0-9]{4})!([0-9]+)$/",$query_string,$match)){
 }
 unset($match);
 if(!$qs1){$qs1=$ym;}
-if(!$qs2){$qs2=0;}
+if(!$qs2){$qs2=1;}
 
 //**********
 $dir_mth="./_".$ym."/src/"; //存放該月檔案
@@ -59,24 +59,31 @@ sort($FFF_arr);//排序 舊的在前
 sort($FFF_arr2);//排序 舊的在前
 //print_r($FFF_arr2);
 //**********
+//列出底部關聯資料夾
 $list_dir_html='';
 foreach($FFF_arr2 as $k => $v ){
-	$list_dir_html.="<a href='".$phpself."?".$v."!0'>".$v."</a>";
+	$list_dir_html.="<a href='".$phpself."?".$v."'>".$v."</a>";
 	$list_dir_html.="\n";
 }
 
 //**********
-
+//列出左側分頁
 $arr_ct=count($FFF_arr);
-$pg_max=floor($arr_ct/10);
+$pg_max=ceil($arr_ct/10);
+//27/10=2.7 -> 取3頁
+//ceil 函数向上舍入为最接近的整数
+//floor 函数向下舍入为最接近的整数
+//if($arr_ct%10 == 0){$pg_max=$pg_max-1;}//剛好除盡 就減去一個分頁
 if($qs2>$pg_max){
 	$qs2=$pg_max;
 }
-if($arr_ct%10 != 0){$pg_max=$pg_max+1;}
+if(preg_match("/^new$/",$query_string,$match)){$qs2=$pg_max;}
+if($query_string==''){$qs2=$pg_max;}
+
 $cc=1;$pg_html='';$FFF='';
 for($i=0;$i<$pg_max;$i++){
-	if($i == $qs2){$FFF="&nbsp;<span id='menu2_pi'>&#9619;&#9618;&#9617;</span>";}else{$FFF='';}
-	$pg_html.="<a class='link' href='".$phpself."?".$ym."!".$i."'>".$i.$FFF."</a>";
+	if($cc == $qs2){$FFF="&nbsp;<span id='menu2_pi'>&#9619;&#9618;&#9617;</span>";}else{$FFF='';}
+	$pg_html.="<a class='link' href='".$phpself."?".$ym."!".$cc."'>".$cc.$FFF."</a>";
 	//$pg_html.="<br/>\n";
 	$cc=$cc+1;
 
@@ -86,7 +93,7 @@ for($i=0;$i<$pg_max;$i++){
 $cc=1;$pic='';
 foreach($FFF_arr as $k => $v ){
 	//if(){continue;}
-	if( ($k>= ($qs2)*10 ) && ($k< ($qs2+1)*10 ) ){
+	if( ($k>= ($qs2-1)*10 ) && ($k< ($qs2)*10 ) ){
 		//$pic_src=$phpdir.$dir_mth.$v;
 		$pic_src=$dir_mth.$v;
 		//$pic_size=filesize($pic_src);
@@ -94,7 +101,7 @@ foreach($FFF_arr as $k => $v ){
 		$fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
 		$fn_b=strrpos($fn,".")+1-strlen($fn);
 		$fn_b=substr($fn,$fn_b); //副檔名
-		$pic.= $k;
+		$pic.= $cc;
 		if(strtolower($fn_b) == "gif"){$pic.="GIF";}
 		$pic.= "<br/>\n";
 		$pic.= "<a href='".$pic_src."' target='_blank'><img src='".$pic_src."'/></a>";

@@ -73,7 +73,7 @@ if(is_file($src)){//圖檔存在
 }else{//圖檔不存在
 	//$chk=copy($url,$src) or die("[error]copy 0");// 
 	//成功=1 失敗=0
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>2));
+	$opts = array('http'=>array('method'=>"GET",'timeout'=>10));
 	$context = stream_context_create($opts);
 	$max_size=5*1024*1024;//抓取上限
 	$cc=0;

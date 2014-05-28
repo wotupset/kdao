@@ -173,7 +173,9 @@ if($w_chk){//寫入到檔案
     fputs($cp, $output);
     fclose($cp);
     ////////
-    $save_where="存檔=<a href='$logfile'>$logfile</a>\n";
+    $logfile_size=filesize($logfile);
+    if($logfile_size==0){die("[x]".$logfile."=0");}
+    $save_where="存檔=<a href='$logfile'>$logfile</a>".$logfile_size."\n";
     ////////
 }//寫入到檔案/
 

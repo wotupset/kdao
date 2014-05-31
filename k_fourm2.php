@@ -8,7 +8,7 @@ $phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
 $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //**********
-$ver = "150530";
+$ver = "150601.0350";
 $ver_md5=md5($ver);
 $ver_color=substr($ver_md5,0,6);
 $ver_span="<span style='color:#".$ver_color.";'>".$ver_color."</span>";
@@ -29,27 +29,6 @@ if(preg_match("/^([0-9]{4})!([0-9]+)$/",$query_string,$match)){
 }
 $ym=$qs1;//有指定的話 更換資料夾
 unset($match);
-
-//**********
-$dir_mth="./_".$ym."/src/"; //存放該月檔案
-if(!is_dir($dir_mth)){die('[x]dir');}
-$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
-if(!is_file($dir_mth_index)){die('[x]index');}
-$url=$dir_mth;
-$handle=opendir($url); 
-$cc = 0;
-$FFF_arr=array();$FFF_arr2=array();
-while(($file = readdir($handle))!==false) { 
-	$chk=0;
-	$ext = pathinfo($file,PATHINFO_EXTENSION);//副檔名
-	if($ext == "jpg"){$chk=1;}//只要圖
-	if($ext == "png"){$chk=1;}//只要圖
-	if($ext == "gif"){$chk=1;}//只要圖
-	//if(preg_match("/\.gif$/i",$file)){$chk=1;}//只要圖
-	if($chk==1){$FFF_arr[]=$file;}
-	$cc = $cc + 1;
-} 
-closedir($handle); 
 //**********
 //遍歷資料夾
 $url="./";
@@ -63,10 +42,40 @@ while(($file = readdir($handle))!==false) {
 	$cc = $cc + 1;
 } 
 closedir($handle); 
-
-//**********
-sort($FFF_arr);//排序 舊的在前
 sort($FFF_arr2);//排序 舊的在前
+//**********
+$dir_mth="./_".$ym."/src/"; //存放該月檔案
+if(!is_dir($dir_mth)){//當月資料夾不存在
+	if($FFF_arr2[0]){//若有其他資料夾
+		$ym=$FFF_arr2[0];
+		$dir_mth="./_".$ym."/src/"; //存放該月檔案
+		//echo $dir_mth;
+	}else{
+		die('[x]尚未建立任何資料夾');
+	}
+}
+$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
+if(!is_file($dir_mth_index)){die('[x]index');}
+$url=$dir_mth;
+$handle=opendir($url); 
+$cc = 0;
+$FFF_arr=array();
+while(($file = readdir($handle))!==false) { 
+	$chk=0;
+	$ext = pathinfo($file,PATHINFO_EXTENSION);//副檔名
+	if($ext == "jpg"){$chk=1;}//只要圖
+	if($ext == "png"){$chk=1;}//只要圖
+	if($ext == "gif"){$chk=1;}//只要圖
+	//if(preg_match("/\.gif$/i",$file)){$chk=1;}//只要圖
+	if($chk==1){$FFF_arr[]=$file;}
+	$cc = $cc + 1;
+} 
+closedir($handle); 
+sort($FFF_arr);//排序 舊的在前
+//**********
+
+
+
 //print_r($FFF_arr2);
 
 //**********

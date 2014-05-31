@@ -11,6 +11,7 @@ exit;
 header('Content-type: text/html; charset=utf-8');
 //echo set_time_limit();
 //ini_set('max_execution_time',0);
+$phphost=$_SERVER["SERVER_NAME"];
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 
@@ -290,9 +291,10 @@ return $x;
 }
 //echo htmlhead();
 function htmlhead2(){
+$phphost=$GLOBALS['phphost'];
 $x=<<<EOT
 <html><head>
-<title>$ymdhis</title>
+<title>$phphost</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">

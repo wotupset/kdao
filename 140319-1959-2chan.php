@@ -77,7 +77,7 @@ if(!$kdao_only){//只使用於綜合網址
 	preg_match_all($pattern, $content, $matches_b);//內文
 	//print_r($matches_b[1]);//
 	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//合併 //整理出的所有留言
-	//print_r($matches_ab);
+	//print_r($matches_ab);exit;
 	/*
 	$matches_ab[0]=第一篇
 	$matches_ab[1]=第二篇
@@ -90,9 +90,9 @@ if(!$kdao_only){//只使用於綜合網址
 	$cc=0;//回文數
 	$cc2=0;//貼圖數
 	foreach($matches_ab as $k => $v){//迴圈
-		$pattern='%<br><a href="(.*)" target="_blank"><img src%U';//非貪婪匹配//</small>
+		$pattern='%<br><a href="(.*)" target=[\'\"]_blank[\'\"]><img src%U';//非貪婪匹配//</small>
 		preg_match($pattern, $matches_ab[$k], $matches_img);//從留言中找圖
-		//print_r($matches_img);
+		//print_r($matches_img);exit;
 		/*
 		$matches_img[1]=圖片網址
 		*/

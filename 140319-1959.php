@@ -225,7 +225,7 @@ $x=<<<EOT
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
-body2 { font-family:"細明體",'MingLiU'; }
+body2 { font-family:'Courier New',"細明體",'MingLiU'; }
 img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
 --></STYLE>
 <script>
@@ -277,10 +277,11 @@ $(document).ready(function() {
 
 
 //window.onload = function () { }
+// onkeypress="check(event)"
 </script>
 
 </head>
-<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE" onkeypress="check(event)">
+<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
 EOT;
 /*
 
@@ -300,11 +301,11 @@ $x=<<<EOT
 <META http-equiv="Content-Style-Type" content="text/css">
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css">
-body2 { font-family:"細明體",'MingLiU'; }
+body2 { font-family:'Courier New',"細明體",'MingLiU'; }
 img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
 </STYLE>
 </head>
-<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE" onkeypress="check(event)">
+<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
 
 EOT;
 $x="\n".$x."\n";

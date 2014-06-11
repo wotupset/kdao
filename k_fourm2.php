@@ -54,8 +54,8 @@ if(!is_dir($dir_mth)){//當月資料夾不存在
 		die('[x]尚未建立任何資料夾');
 	}
 }
-$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
-if(!is_file($dir_mth_index)){die('[x]index');}
+//$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
+//if(!is_file($dir_mth_index)){die('[x]index');}
 $url=$dir_mth;
 $handle=opendir($url); 
 $cc = 0;
@@ -193,6 +193,8 @@ $(document).ready(function(){
 	$("#menu2").scrollTop(tmp2);
 });
 </script>
+
+
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000ee">
 
@@ -203,7 +205,16 @@ return $x;
 
 function htmlend(){
 $x=<<<EOT
-
+<!--BAIDU_YUNTU_START-->
+<script>
+(function(d, t) {
+    var r = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    r.async = 1;
+    r.src = '//rp.baidu.com/rp3w/3w.js?sid=8603574381540631365&t=' + Math.ceil(new Date/3600000);
+    s.parentNode.insertBefore(r, s);
+})(document, 'script');
+</script>
+<!--BAIDU_YUNTU_END-->
 </body></html>
 EOT;
 $x="\n".$x."\n";

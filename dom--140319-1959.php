@@ -1,4 +1,5 @@
 <?php 
+//dom ver
 $query_string=$_SERVER['QUERY_STRING'];
 //header('Content-Type: application/javascript; charset=utf-8');
 //Header("Content-type: image/jpg");//指定文件類型
@@ -65,89 +66,112 @@ if(!$kdao_only){//只使用於綜合網址
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
 	//取得來源內容
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>10));
-	$context = stream_context_create($opts);
-	$content = file_get_contents($url,NULL,$context,0,2*1024*1024) or die("[error]file_get_contents");//取得來源內容
-	$content = preg_replace("/\n/","",$content);
-	$content = preg_replace("/\t/","",$content);
-	$content=preg_replace("/[\x1-\x1F]/", "", $content);
-	$content=preg_replace("/[\x7F]/", "", $content);
-	//過濾
-	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
-	preg_match_all($pattern, $content, $matches_chk);//內文-首篇
-	//print_r($matches_chk);//
-	if(count($matches_chk[0])==0){die("[x]沒找到");}//沒找到
-	//過濾
-	$pattern="%(<form action=\"index.php\" method=POST>.*</blockquote>)%U";//非貪婪
-	preg_match_all($pattern, $content, $matches_a);//內文-首篇
-	//print_r($matches_a);//
-	if(count($matches_a[0])==0){die("[x]沒找到首篇內文");}//沒找到
-	//過濾
-	$pattern="%(<table border=0><tr>.*</blockquote></td></tr></table>)%U";//非貪婪
-	preg_match_all($pattern, $content, $matches_b);//內文
-	//print_r($matches_b[0]);//
-	$matches_ab=array_merge($matches_a[1],$matches_b[1]);//合併 //整理出的所有留言
-	//print_r($matches_ab);
-	/*
-	$matches_ab[0]=第一篇
-	$matches_ab[1]=第二篇
-	*/
-	
-	//用迴圈叫出資料
-	$htmlbody="";
-	$htmlbody2="";
-	$img_all='';
-	$cc=0;//回文數
-	$cc2=0;//貼圖數
-	foreach($matches_ab as $k => $v){//迴圈
-		$pattern='%<br><a href="(.*)" target=_blank><img src%U';//非貪婪匹配//</small>
-		preg_match($pattern, $matches_ab[$k], $matches_img);//從留言中找圖
-		//print_r($matches_img);
-		/*
-		$matches_img[1]=圖片網址
-		*/
-		$pattern='%(<blockquote>.*</blockquote>)%U';//非貪婪匹配//</small>
-		preg_match($pattern, $matches_ab[$k], $matches_msg);//從留言中找內文
-		//print_r($matches_msg);
-		/*
-		$matches_msg[1]=內文
-		*/
-		$pattern="%<font color=#117743><b>(.+)</b></font>(.+)<a class=del%U";//名稱 ID時間
-		preg_match($pattern, $matches_ab[$k], $matches_title);
-		//print_r($matches_title);
-		/*
-		$matches_title[1]=名稱
-		$matches_title[2]=ID時間
-		*/
-		$htmlbody.= "<b>".strip_tags($matches_title[1])."</b>\n";//名稱
-		$htmlbody.= strip_tags($matches_title[2]);//名稱 ID時間
-		$htmlbody.= "<blockquote>".strip_tags($matches_msg[1],"<br>")."</blockquote>\n";//內文
-			
-		$have_img=0;
-		if( $matches_img[1] ){//回應中有圖 //$matches_img[1] = 網址字串
-			$pic_url=$matches_img[1];
-			$have_img=1;
-		}
-		
-		if($have_img){//有偵測到圖
-			//$pic_url
+	//$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
+	$html = file_get_html($url);//simple_html_dom
+	//echo $html->plaintext;exit;
+	$FFF= $html->find('form',1)->outertext;//留言區
+	//$html2 = $FFF;//simple_html_dom
+	$html2 = str_get_html($FFF);//simple_html_dom
+	//批次找留言
+	$chat_array=array();
+	$FFF=$html2->find('table');
+	$FFF_ct=count($FFF);
+	//echo $html2->find('table',0)->outertext;//第一個table的內容
+	$cc=0;$have_img=0;
+	foreach($FFF as $k => $v){
+		$cc++;
+		if($cc < $FFF_ct){
+			$chat_array[$cc]['org_text']= $v->outertext;//存到陣列中//->outertext
+			$chat_array[$cc]['title']   = $html2->find('table',$k)->find('font b',0)->innertext;
+			$html2->find('table',$k)->find('font',0)->outertext="";
+			$chat_array[$cc]['name']    = $html2->find('table',$k)->find('font b',1)->innertext;
+			$html2->find('table',$k)->find('font',1)->outertext="";
+			$chat_array[$cc]['text']    = $html2->find('table',$k)->find('blockquote',0)->innertext;
+			$html2->find('table',$k)->find('blockquote',0)->outertext="";
+			$chat_array[$cc]['image']   = $html2->find('table',$k)->find('a',1)->href;
+			$html2->find('table',$k)->find('a',1)->outertext="";
+			if($chat_array[$cc]['image']){$have_img++;}
+			//
+			$html2->find('table',$k)->find('td a',0)->outertext="";
+			$html2->find('table',$k)->find('td a',0)->outertext="";
+			$html2->find('table',$k)->find('input',0)->outertext="";
+			//
+			$chat_array[$cc]['time']    = $html2->find('table',$k)->find('td',1)->innertext;
+			$FFF=$chat_array[$cc]['time'];
+			$FFF=substr($FFF,0,strrpos($FFF,"&nbsp;")); //
+			$FFF = trim( strip_tags( $FFF ) );//修飾
+			$chat_array[$cc]['time']=$FFF;
+			//echo $k;//陣列項目的key
+			//echo $chat_array[$cc];//內容
+			//
+			$html2->find('table',$k)->outertext=$k;//清空
+			//echo $html2->find('table',$k)->outertext;
+		}else{
+			$html2->find('table',$k)->outertext="x";//清空
+			//break;
+		}//continue;
+		//echo "<hr/>";
+		//echo "\n\n";
+	}
+	//首篇另外處理
+	$FFF ='';
+	$FFF = $html2->outertext;//剩餘的資料
+	$html3 = str_get_html($FFF);//simple_html_dom
+	//
+	$chat_array[0]['org_text'] = $html3->outertext;//原始內容
+	$chat_array[0]['title']  = $html3->find('font b',0)->innertext;
+	$html3->find('font',0)->outertext='';
+	$chat_array[0]['name']   = $html3->find('font b',1)->innertext;
+	$html3->find('font',1)->outertext='';
+	$chat_array[0]['text']   = $html3->find('blockquote',0)->innertext;
+	$html3->find('blockquote',0)->outertext="";
+	//
+	//$chat_array[0]['image']   = $html2->find('a')->href;
+	//$chat_array[0]['image'] = print_r($chat_array[0]['image'],true);
+	//
+	$chat_array[0]['image'] = $html3->find('a img',0);
+	if($chat_array[0]['image']){
+		$chat_array[0]['image'] = $html3->find('a img',0)->parent()->href;
+		$have_img++;
+	}
+	//清理
+	foreach($html3->find('a') as $k => $v){
+		$v->outertext='p'.$k;
+	}
+	$html3->find('input',0)->outertext="";
+	$html3->find('small',0)->outertext="";
+	//
+	$chat_array[0]['time']    = $html3->find('form',0)->outertext;
+	//修飾
+	$FFF=$chat_array[0]['time'];
+	$FFF=substr($FFF,0,strrpos($FFF,"p0 &nbsp;")); //
+	$FFF=substr($FFF,strrpos($FFF,"=POST>")+6); //
+	$FFF = trim( strip_tags( $FFF ) );//修飾
+	$chat_array[0]['time']=$FFF;
+	//$chat_array[0]['time']    = $html2->outertext;
+	//
+	sort($chat_array);//排序
+	//echo print_r($chat_array,true);exit;//檢查點
+	//批次輸出html資料
+	foreach($chat_array as $k => $v){
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//內文
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//內文
+		$htmlbody.=$chat_array[$k]['time'];
+		$htmlbody.= "<blockquote>".$chat_array[$k]['text']."</blockquote>\n";//內文
+		if($chat_array[$k]['image']){
+			$pic_url=$chat_array[$k]['image'];
+			$htmlbody.="[<img class='zoom' src='".$pic_url."'>]";
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			$img_filename=img_filename($pic_url);//圖檔檔名
-			if($cc2>0){$img_all_cm=",";}
-			$img_all.=$img_all_cm.$img_filename;
 			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
-			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'" border="1"/></a>]';// 
-			$htmlbody.="<br>\n";
-			$cc2=$cc2+1;//計算圖片數量
 		}
-		$cc=$cc+1;
-	}//迴圈
+		$htmlbody.="<br>\n";
+	}
 	$w_chk=1;
-	$htmlbody2.= "[$cc][$cc2]";
+	$htmlbody2.= "[$FFF_ct][$have_img]";
 }//有輸入url/
 //修飾
 $htmlbody=$url."\n"."<br/>\n".$htmlbody."<br>\n<br>\n";
@@ -221,7 +245,31 @@ $x=<<<EOT
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
 body2 { font-family:'Courier New',"細明體",'MingLiU'; }
-img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
+img.zoom {
+height:auto; width:auto; 
+min-width:20px; min-height:20px;
+max-width:250px; max-height:250px;
+border:1px solid blue;
+}
+span.name {
+display: inline-block;
+white-space:nowrap;
+font-weight: bold;
+color: #117743;
+min-width:10px;
+max-width:100px;
+overflow:hidden;
+}
+span.title {
+display: inline-block;
+white-space:nowrap;
+font-weight: bold;
+color: #CC1105;
+min-width:10px;
+max-width:100px;
+overflow:hidden;
+}
+
 --></STYLE>
 <script>
 $(document).ready(function() {
@@ -297,7 +345,6 @@ $x=<<<EOT
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css">
 body2 { font-family:'Courier New',"細明體",'MingLiU'; }
-img.zoom {height:auto; width:auto; max-width:250px; max-height:250px;}
 </STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">

@@ -197,16 +197,20 @@ $output.="<a href='./$phpself'>返</a>\n";
 if(isset($save_where)){
 	$output.=$save_where;
 	$output.=$url.'<br/>'."\n";
-	$output.=js_timedown();
+	if($have_pic){
+		if($input_c){
+			//快速
+		}else{
+			$output.=js_timedown();//
+			$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
+			echo $htmlbody2_js;
+		}
+	}
 }
 $output.="\n";
 echo $output;
 echo $htmlbody2;//
-if($input_c){
-}else{
-	$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
-	echo $htmlbody2_js;
-}
+
 if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";

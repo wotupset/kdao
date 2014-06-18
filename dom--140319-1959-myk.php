@@ -61,7 +61,6 @@ if(!$kdao_only){//只使用於綜合網址
 	////////////
 	$html = file_get_html($url);//simple_html_dom
 	$chat_array=array();
-	$cc=0;
 	foreach($html->find('div.quote') as $k => $v){//分析
 		$vv=$v->parent;
 		//原始內容
@@ -76,12 +75,26 @@ if(!$kdao_only){//只使用於綜合網址
 			$chat_array[$k]['name']  =$v2->plaintext;
 			$v2->outertext="";
 		}
+		//版面貼圖
+		$chat_array[$k]['image']=array();
+		foreach($vv->find('img.img') as $k2 => $v2){
+			$chat_array[$k]['image'][] = $v2->parent->href;
+			$v2->parent->outertext="";
+		}
 		//內容
 		foreach($vv->find('div.quote') as $k2 => $v2){
 			foreach($v2->find('div.pushpost') as $k3 => $v3){
 				$chat_array[$k]['push']  =$v3->innertext;//推文
 				$v3->outertext="";
 			}
+			foreach($v2->find('img') as $k3 => $v3){//內文中的附圖?
+				$FFF=$v3->src;//
+				if(in_array($FFF,$chat_array[$k]['image'])){}else{
+					$chat_array[$k]['image'][]=$FFF;
+				}
+				$v3->outertext="";
+			}
+			//array_unique($chat_array[$k]['image']);//可能有重複圖片//失敗
 			$chat_array[$k]['text']  =$v2->innertext;//內文
 			$v2->outertext="";
 		}
@@ -99,11 +112,6 @@ if(!$kdao_only){//只使用於綜合網址
 		foreach($vv->find('span.controls') as $k2 => $v2){
 			$chat_array[$k]['no']  =$v2->find('a.qlink',0)->plaintext;
 			$v2->outertext="";
-		}
-		//版面貼圖
-		foreach($vv->find('img.img') as $k2 => $v2){
-			$chat_array[$k]['image'] .= $v2->parent->href;
-			$v2->parent->outertext="";
 		}
 		//
 		$chat_array[$k]['zzz_text']  =$vv->outertext;
@@ -127,9 +135,10 @@ if(!$kdao_only){//只使用於綜合網址
 		$chat_array[$k]['push']=strip_tags($chat_array[$k]['push'],"<br>");
 		$htmlbody.= "<span class='push'><small>".$chat_array[$k]['push']."</small></span>\n";//推文
 		//有圖
-		if($chat_array[$k]['image']){
+		//if($chat_array[$k]['image']){
+		foreach($chat_array[$k]['image'] as $k => $v){//內文中有圖 
 			$have_pic++;//計算圖片數量
-			$pic_url=$chat_array[$k]['image'];
+			$pic_url=$v;
 			$img_filename=img_filename($pic_url);//圖檔檔名
 			$htmlbody.= "<br/>\n";
 			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
@@ -168,16 +177,18 @@ if($w_chk){//寫入到檔案
 	//
 	$pattern="%res=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
+	$no=$matches_url[1];//首篇編號
+	//
 	$pattern="%page_num=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
-	$no=$matches_url[1];//首篇編號
 	$no_pg=$matches_url2[1];//頁數
+	$no_pg=ceil($no_pg);
 	//
-	if($no_pg){
-	$logfile=$dir_mth."myk".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
-	}else{
-	$logfile=$dir_mth."myk".$no.".htm";//接頭(prefix)接尾(suffix)
-	}
+	$pattern="%\/([\w]+)\.mykomica.org%";
+	preg_match($pattern, $url, $matches_sub);//抓首串編號
+	$sub=$matches_sub[1];//首篇編號
+	//
+	$logfile=$dir_mth."myk_".$sub."_".$no.'_'.$no_pg.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0
 	fputs($cp, $output);
@@ -196,16 +207,20 @@ $output.="<a href='./$phpself'>返</a>\n";
 if(isset($save_where)){
 	$output.=$save_where;
 	$output.=$url.'<br/>'."\n";
-	$output.=js_timedown();
+	if($have_pic){
+		if($input_c){
+			//快速
+		}else{
+			$output.=js_timedown();//
+			$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
+			echo $htmlbody2_js;
+		}
+	}
 }
 $output.="\n";
 echo $output;
 echo $htmlbody2;//
-if($input_c){
-}else{
-	$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
-	echo $htmlbody2_js;
-}
+
 if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
 echo "<br/>\n";
 echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";

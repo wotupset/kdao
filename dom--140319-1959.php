@@ -56,100 +56,113 @@ if(preg_match("%komica\.org%U",$url))
 
 ///////////
 $w_chk=0;
+$htmlbody='';$htmlbody2='';$htmlbody2_js='';
+$have_pic=0;$have_text=0;
 if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
 }else{
-	////////////
-	//取得來源內容
-	//$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
+	//
 	$html = file_get_html($url);//simple_html_dom
-	//echo $html->plaintext;exit;
-	$FFF= $html->find('form',1)->outertext;//留言區
-	//$html2 = $FFF;//simple_html_dom
-	$html2 = str_get_html($FFF);//simple_html_dom
-	//echo $html2->outertext;exit;
 	//批次找留言
-	$chat_array=array(); $FFF='';
-	$cc=0;$have_img=0;
-	foreach($html2->find('blockquote') as $k => $v){
-		$cc++;
-		if($k == 0){continue;}//首篇另外處理
-		$FFF=$v->parent;
-		$chat_array[$cc]['org_text'] = $FFF->outertext;//存到陣列中//->outertext
-		//一般內容
-		$chat_array[$cc]['title']    = $FFF->find('font',0)->plaintext;//純文字輸出
-		$chat_array[$cc]['name']     = $FFF->find('font',1)->plaintext;//純文字輸出
-		$chat_array[$cc]['text']     = $FFF->find('blockquote',0)->innertext;
-		$FFF->find('font',0)->outertext="";
-		$FFF->find('font',1)->outertext="";
-		$FFF->find('blockquote',0)->outertext="";
-		$FFF->find('.del',0)->outertext="";
-		//有找到圖另外清
-		$chat_array[$cc]['image']='';
-		foreach($FFF->find('img') as $k => $v){
-			$chat_array[$cc]['image'] .= $v->parent->href;
+	$chat_array=array();
+	foreach($html->find('blockquote') as $k => $v){
+		//首篇另外處理
+		if($k == 0 ){
+			//XX
+		}else{
+			$vv=$v->parent;
+			//原始內容
+			$chat_array[$k]['org_text']=$vv->outertext;
+			//標題
+			foreach($vv->find('font') as $k2 => $v2){
+				if($k2==0){//標題
+					$chat_array[$k]['title'] =$v2->plaintext;
+					$v2->outertext="";
+				}
+				if($k2==1){//名稱
+					$chat_array[$k]['name'] =$v2->plaintext;
+					$v2->outertext="";
+				}
+			}
+			//內容
+			foreach($vv->find('blockquote') as $k2 => $v2){
+				$chat_array[$k]['text']  =$v2->innertext;//內文
+				$v2->outertext="";
+			}
+			//圖片
+			foreach($vv->find('a') as $k2 => $v2){
+				foreach($v2->find('img') as $k3 => $v3){
+					$chat_array[$k]['image']  =$v3->parent->href;//
+				}
+				$v2->outertext="";
+			}
+			//刪除的
+			foreach($vv->find('a.del') as $k2 => $v2){
+				$v2->outertext="";
+			}
+			//剩餘的
+			$chat_array[$k]['zzz_text']=$vv->outertext;
+			//
+			//$chat_array[$k]['time']=strip_tags($chat_array[$k]['zzz_text']);
+			preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*No\.[0-9]+ /U",$chat_array[$k]['zzz_text'],$chat_array[$k]['time']);
+			$chat_array[$k]['time'] = implode("",$chat_array[$k]['time']);
+			//整理過的清掉
+			$vv->outertext='';
 		}
-		if(preg_match("/^http/",$chat_array[$cc]['image'])){
-			$FFF->find('a img',0)->parent->outertext="";
-			$FFF->find('a[target=_blank]',0)->outertext="";
-			$have_img++;
-		}
-		//
-		$chat_array[$cc]['zzz_text'] = $FFF->outertext;//剩餘的內容//非檢查點//下方有用到
-		$chat_array[$cc]['time']     = substr(strip_tags($chat_array[$cc]['zzz_text']),0,strrpos( strip_tags($chat_array[$cc]['zzz_text']) ,"&nbsp;"));//存到陣列中
-		$FFF->parent->parent->outertext='';//檢查過的清掉
-		//echo $k;echo $FFF;echo "<hr/>";echo "\n\n";//檢查點
 	}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//首篇另外處理
-	$html3 = $html2->outertext;
-	$html3 = str_get_html($html3);//重新轉字串解析//有BUG?
-	$FFF ='';
-	$FFF = $html3;//剩餘的資料=首篇
-	//echo print_r($FFF,true);exit;//檢查點
-	//$html3 = str_get_html($FFF);//simple_html_dom
+	$first_post = $html->find('form',1)->outertext;
+	$first_post = str_get_html($first_post);//重新轉字串解析//有BUG?
 	//
-	$chat_array[0]['org_text'] = $FFF->outertext;//原始內容
+	$chat_array[0]['org_text'] = $first_post->outertext;//原始內容
 	//
-	$chat_array[0]['title']    = $FFF->find('font',0)->plaintext;//純文字輸出
-	$chat_array[0]['name']     = $FFF->find('font',1)->plaintext;//純文字輸出
-	$chat_array[0]['text']     = $FFF->find('blockquote',0)->innertext;
-	$FFF->find('font',0)->outertext='';
-	$FFF->find('font',1)->outertext='';
-	$FFF->find('blockquote',0)->outertext="";
-	$FFF->find('.del',0)->outertext="";
-	//
-	$chat_array[0]['image']='';
-	foreach($FFF->find('img') as $k => $v){
-		$chat_array[0]['image'] .= $v->parent->href;
+	foreach($first_post->find('font') as $k2 => $v2){
+		if($k2==0){//標題
+			$chat_array[0]['title'] =$v2->plaintext;
+			$v2->outertext="";
+		}
+		if($k2==1){//名稱
+			$chat_array[0]['name'] =$v2->plaintext;
+			$v2->outertext="";
+		}
 	}
-	if($chat_array[0]['image']){
-		$FFF->find('a img',0)->parent->outertext="";
-		$FFF->find('a[target=_blank]',0)->outertext="";
-		$have_img++;
+	//內容
+	foreach($first_post->find('blockquote') as $k2 => $v2){
+		$chat_array[0]['text']  =$v2->innertext;//內文
+		$v2->outertext="";
+	}
+	//圖片
+	foreach($first_post->find('a') as $k2 => $v2){
+		foreach($v2->find('img') as $k3 => $v3){
+			$chat_array[0]['image']  =$v3->parent->href;//
+		}
+		$v2->outertext="";
 	}
 	//
-	$chat_array[0]['zzz_text'] = $FFF->outertext;//剩餘的內容//非檢查點//下方有用到
-	preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*No\.[0-9]+/",$chat_array[0]['zzz_text'],$chat_array[0]['time']);
+	$chat_array[0]['zzz_text'] = $first_post->outertext;//剩餘的內容//非檢查點//下方有用到
+	//
+	preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*No\.[0-9]+ /U",$chat_array[0]['zzz_text'],$chat_array[0]['time']);
 	$chat_array[0]['time'] = implode("",$chat_array[0]['time']);
-	//echo print_r($chat_array[0],true);exit;//檢查點
-	//
 	//
 	ksort($chat_array);//排序
 	$chat_ct=count($chat_array);//計數
 	//echo print_r($chat_array,true);exit;//檢查點
+	//
 	//批次輸出html資料
 	foreach($chat_array as $k => $v){
+		$have_text++;
 		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//內文
 		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//內文
-		$htmlbody.=$chat_array[$k]['time'];
+		$htmlbody.='<span class="idno">'.$chat_array[$k]['time']."</span>"."\n";//內文
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
-		$htmlbody.= "<blockquote>".$chat_array[$k]['text']."</blockquote>\n";//內文
+		$htmlbody.= '<span class="text"><blockquote>'.$chat_array[$k]['text']."</blockquote></span>\n";//內文
 		if($chat_array[$k]['image']){
+			$have_pic++;//計算圖片數量
 			$pic_url=$chat_array[$k]['image'];
 			$img_filename=img_filename($pic_url);//圖檔檔名
-			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
+			$htmlbody.= '[<span class="image"><a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a></span>]';//  border="1"
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{
@@ -166,7 +179,7 @@ if(!$kdao_only){//只使用於綜合網址
 		$htmlbody.="<br>\n";
 	}
 	$w_chk=1;
-	$htmlbody2.= "[$chat_ct][$have_img]";
+	$htmlbody2.= "[$have_pic][$have_text]";//
 }//有輸入url/
 //修飾
 $htmlbody=$url."\n"."<br/>\n".$htmlbody."<br>\n<br>\n";
@@ -204,19 +217,22 @@ echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
-if(isset($save_where)){
+if($url){//isset($save_where)
 	$output.=$save_where;
 	$output.=$url.'<br/>'."\n";
-	$output.=js_timedown();
+	if($have_pic){
+		if($input_c){
+			//快速
+		}else{
+			$output.=js_timedown();//
+			$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
+			echo $htmlbody2_js;
+		}
+	}
 }
 $output.="\n";
 echo $output;
 echo $htmlbody2;
-if($input_c){
-}else{
-	$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
-	echo $htmlbody2_js;
-}
 if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
 	echo "<br/>\n";
 	echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";

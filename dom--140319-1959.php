@@ -49,10 +49,10 @@ if(1){
 }
 //允許的網址格式
 $kdao_only=0;
-if(preg_match("%dreamhosters\.com/[0-9]{2}/%U",$url))
-{$kdao_only=1;}
-if(preg_match("%komica\.org/[0-9]{2}/%U",$url))
-{$kdao_only=1;}
+if(preg_match("%dreamhosters\.com%U",$url))
+{$kdao_only++;}
+if(preg_match("%komica\.org%U",$url))
+{$kdao_only++;}
 
 ///////////
 $w_chk=0;
@@ -61,10 +61,6 @@ if(!$kdao_only){//只使用於綜合網址
     //沒事
 }else{
 	////////////
-	$pattern="%index.php\?res=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url);//抓首串編號
-	//print_r($matches_url);//
-	$no=$matches_url[1];//首篇編號
 	//取得來源內容
 	//$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
 	$html = file_get_html($url);//simple_html_dom
@@ -140,7 +136,7 @@ if(!$kdao_only){//只使用於綜合網址
 	//echo print_r($chat_array[0],true);exit;//檢查點
 	//
 	//
-	sort($chat_array);//排序
+	ksort($chat_array);//排序
 	$chat_ct=count($chat_array);//計數
 	//echo print_r($chat_array,true);exit;//檢查點
 	//批次輸出html資料
@@ -148,6 +144,7 @@ if(!$kdao_only){//只使用於綜合網址
 		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//內文
 		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//內文
 		$htmlbody.=$chat_array[$k]['time'];
+		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
 		$htmlbody.= "<blockquote>".$chat_array[$k]['text']."</blockquote>\n";//內文
 		if($chat_array[$k]['image']){
 			$pic_url=$chat_array[$k]['image'];
@@ -158,7 +155,13 @@ if(!$kdao_only){//只使用於綜合網址
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
+			if($input_c){
+				$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
+				//$htmlbody2.='<img id="pic'.$have_pic.'" src="'.$pic_url_php.'" style="width:5px; height:10px;border:1px solid blue;" />'.$img_filename."<br/>"."\n";
+			}else{
+				$htmlbody2.=$have_pic.'<img id="pic'.$have_pic.'" src="./index.gif" style="width:5px; height:10px;border:1px solid blue;" /><span id="pn'.$have_pic.'">'.$img_filename."</span><br/>"."\n";
+				$htmlbody2_js.="myArray[".$have_pic."]='".$pic_url_php."';\n";
+			}
 		}
 		$htmlbody.="<br>\n";
 	}
@@ -169,26 +172,30 @@ if(!$kdao_only){//只使用於綜合網址
 $htmlbody=$url."\n"."<br/>\n".$htmlbody."<br>\n<br>\n";
 //////
 if($w_chk){//寫入到檔案
-    $output='';
-    $output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
-    $output.=htmlhead();
-    $output.="<a href='./'>根</a>\n";
-    $output.="<a href='../$phpself'>返</a>\n";
-    $output.="<br/>\n";
-    $output.=$htmlbody;
-    $output.=htmlend();
-    //
-    $logfile=$dir_mth."z".$no.".htm";//接頭(prefix)接尾(suffix)
-    //$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
-    $cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
-    ftruncate($cp, 0); //砍資料至0
-    fputs($cp, $output);
-    fclose($cp);
-    ////////
-    $logfile_size=filesize($logfile);
-    if($logfile_size==0){die("[x]".$logfile."=0");}
-    $save_where="存檔=<a href='$logfile'>$logfile</a>".$logfile_size."\n";
-    ////////
+	$output='';
+	$output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
+	$output.=htmlhead();
+	$output.="<a href='./'>根</a>\n";
+	$output.="<a href='../$phpself'>返</a>\n";
+	$output.="<br/>\n";
+	$output.=$htmlbody;
+	$output.=htmlend();
+	//
+	$pattern="%res=([0-9]+)%";
+	preg_match($pattern, $url, $matches_url);//抓首串編號
+	//print_r($matches_url);//
+	$no=$matches_url[1];//首篇編號
+	$logfile=$dir_mth."z".$no.".htm";//接頭(prefix)接尾(suffix)
+	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
+	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
+	ftruncate($cp, 0); //砍資料至0
+	fputs($cp, $output);
+	fclose($cp);
+	////////
+	$logfile_size=filesize($logfile);
+	if($logfile_size==0){die("[x]".$logfile."=0");}
+	$save_where="存檔=<a href='$logfile'>$logfile</a>".$logfile_size."\n";
+	////////
 }//寫入到檔案/
 
 //一般頁面
@@ -197,13 +204,22 @@ echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
-if(isset($save_where)){$output.=$save_where;}
-$output.="<br/>\n";
+if(isset($save_where)){
+	$output.=$save_where;
+	$output.=$url.'<br/>'."\n";
+	$output.=js_timedown();
+}
+$output.="\n";
 echo $output;
 echo $htmlbody2;
+if($input_c){
+}else{
+	$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
+	echo $htmlbody2_js;
+}
 if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
-echo "<br/>\n";
-echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
+	echo "<br/>\n";
+	echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
 }
 echo htmlend();
 
@@ -261,67 +277,10 @@ min-width:10px;
 max-width:100px;
 overflow:hidden;
 }
-
 --></STYLE>
-<script>
-$(document).ready(function() {
-	if(0){//註解??
-		var state={
-			note:"note",
-			aaa:"刷新網址",
-			title:"標題",
-			url:"$phpself?$url"
-		}
-		//alert(state.url);
-		window.history.replaceState(state,state.title,state.url);//无刷新改变URL//pushState
-		//改變網址但不重整網頁
-		window.onpopstate = function(e){
-			//alert("popstate="+e.state.aaa);
-		}
-	}
-
-	if(0){
-		//$(document).on("keydown",function( event ) { //keyup keypress
-//
-			var FFF=0;
-			$(document).keydown(function(event){
-				if(event.which == 17) {//按下ctrl
-					FFF=FFF+1;
-					if(FFF >2){
-						window.scroll(0, 0);//移動到網頁頂端
-					}
-				}
-			});
-//
-
-	}
-	//
-	if(0){//???
-		function countdown(count) {      // declare the countdown function.
-			(function step(){
-				count=count+1;
-				alert(count);
-				setTimeout(step, 2000); 
-			})();
-		}
-		var FFF=0;
-		countdown(FFF);
-	}
-});
-
-
-
-//window.onload = function () { }
-// onkeypress="check(event)"
-</script>
-
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
 EOT;
-/*
-
-
-*/
 $x="\n".$x."\n";
 return $x;
 }
@@ -334,6 +293,7 @@ $x=<<<EOT
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css">
 body2 { font-family:'Courier New',"細明體",'MingLiU'; }
@@ -359,13 +319,45 @@ $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
 $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
-綜合網址<input type="text" name="input_a" size="20" value="">
-<input type="submit" value=" send "><br/>
-<label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label>
+網址<input type="text" name="input_a" size="20" value=""><input type="submit" value=" send "><br/>
+<label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
+<label>快速讀圖<input type="checkbox" name="input_c" value="1" />(圖少時使用)</label><br/>
 </form>
 EOT;
 $x="\n".$x."\n";
 return $x;
 }
 //echo form();
+function js_timedown(){
+$have_pic=$GLOBALS['have_pic'];
+$x=<<<EOT
+<script>
+$(document).ready(function() {
+	timedown();
+});
+function timedown(){
+	var t=0;
+	document.getElementById("timedown_span").innerHTML=t;
+	var timedown = setInterval(function() {
+		t=t+1;
+		document.getElementById("timedown_span").innerHTML="("+t+"/$have_pic)..."+myArray[t];
+		document.getElementById("pic"+t).src=myArray[t];
+		document.getElementById("pn"+t).style.color = "#00ff00";
+		if(t<$have_pic){
+			timedown;
+		}else{
+			document.getElementById("timedown_span").innerHTML="沒了";
+			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
+			clearInterval(timedown);
+		}
+	}, 500);
+}
+</script>
+<div id='timedown_div'><span id='timedown_span'></span></div>
+EOT;
+$x="\n".$x."\n";
+return $x;
+}
+//echo js_timedown();
+
 ?>

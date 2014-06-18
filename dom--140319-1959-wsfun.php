@@ -47,34 +47,34 @@ if(1){
 ///////////$dir_mth
 //允許的網址格式
 $kdao_only=0;
-if(preg_match("%mykomica\.org%U",$url))
+if(preg_match("%wsfun\.com%U",$url))
 {$kdao_only=1;}
 
 ///////////
 $w_chk=0;
 $htmlbody='';$htmlbody2='';$htmlbody2_js='';
-$have_pic=0;$have_text=0;
+$have_pic=0;$have_text=0;//計算圖片跟留言數量
 if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
 }else{
 	////////////
 	$html = file_get_html($url);//simple_html_dom
-	$chat_array=array();
+	$array_post=array();
 	$cc=0;
+	//echo print_r($array_post,true);exit;//檢查點
+	//迴圈批次處理
+
 	foreach($html->find('div.quote') as $k => $v){//分析
 		$vv=$v->parent;
-		//原始內容
+		//去掉不需要的資訊
+		//$v->parent->find('div.pushpost',0)->outertext="";//文章的推文
 		$chat_array[$k]['org_text']=$vv->outertext;
-		//標題
-		foreach($vv->find('span.title') as $k2 => $v2){
-			$chat_array[$k]['title'] =$v2->plaintext;
-			$v2->outertext="";
-		}
-		//名稱
-		foreach($vv->find('span.name') as $k2 => $v2){
-			$chat_array[$k]['name']  =$v2->plaintext;
-			$v2->outertext="";
+		//歸類
+		//圖
+		foreach($vv->find('.img') as $k2 => $v2){
+			$chat_array[$k]['image'] .= $v2->parent->href;
+			$v2->parent->outertext="";
 		}
 		//內容
 		foreach($vv->find('div.quote') as $k2 => $v2){
@@ -85,28 +85,28 @@ if(!$kdao_only){//只使用於綜合網址
 			$chat_array[$k]['text']  =$v2->innertext;//內文
 			$v2->outertext="";
 		}
-		//ID
-		foreach($vv->find('span.trip_id') as $k2 => $v2){
-			$chat_array[$k]['trip_id']  =$v2->plaintext;
+		//標題
+		foreach($vv->find('span.title') as $k2 => $v2){
+			$chat_array[$k]['title'] =$v2->plaintext;
 			$v2->outertext="";
 		}
-		//time
-		foreach($vv->find('span.now') as $k2 => $v2){
-			$chat_array[$k]['time']  =$v2->children(0)->plaintext;
+		//名稱
+		foreach($vv->find('span.name') as $k2 => $v2){
+			$chat_array[$k]['name']  =$v2->plaintext;
 			$v2->outertext="";
 		}
 		//no
-		foreach($vv->find('span.controls') as $k2 => $v2){
-			$chat_array[$k]['no']  =$v2->find('a.qlink',0)->plaintext;
+		foreach($vv->find('.qlink') as $k2 => $v2){
+			$chat_array[$k]['no']    =$v2->plaintext;
 			$v2->outertext="";
 		}
-		//版面貼圖
-		foreach($vv->find('img.img') as $k2 => $v2){
-			$chat_array[$k]['image'] .= $v2->parent->href;
-			$v2->parent->outertext="";
-		}
+		foreach($vv->find('a[onclick]') as $k2 => $v2){$v2->outertext="";}
+		foreach($vv->find('a[rel]') as $k2 => $v2){$v2->outertext="";}
 		//
 		$chat_array[$k]['zzz_text']  =$vv->outertext;
+		//$chat_array[$k]['time']     = substr(strip_tags($chat_array[$k]['zzz_text']),0,strrpos( strip_tags($chat_array[$k]['zzz_text']) ,"&nbsp;"));//存到陣列中
+		preg_match("/\[[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*\]/U",$chat_array[$k]['zzz_text'],$chat_array[$k]['time']);
+		$chat_array[$k]['time'] = implode("",$chat_array[$k]['time']);
 	}
 	ksort($chat_array);//排序
 	//echo print_r($chat_array,true);exit;//檢查點
@@ -114,11 +114,10 @@ if(!$kdao_only){//只使用於綜合網址
 	//生成網頁內容
 	foreach($chat_array as $k => $v){
 		$have_text++;//計算留言數量
-		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//標題
-		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//名稱
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//內文
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//內文
 		$htmlbody.= '<span class="idno">';
 		$htmlbody.=$chat_array[$k]['time'];
-		$htmlbody.=$chat_array[$k]['trip_id'];
 		$htmlbody.=$chat_array[$k]['no'];
 		$htmlbody.= '</span>';
 		//
@@ -148,7 +147,7 @@ if(!$kdao_only){//只使用於綜合網址
 		}
 		$htmlbody.="<br>\n";
 	}
-
+	////DOM/
 	$w_chk=1;//寫入到檔案
 	$htmlbody2.= "[$have_pic][$have_text]";//
 }//有輸入url/
@@ -168,6 +167,8 @@ if($w_chk){//寫入到檔案
 	//
 	$pattern="%res=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
+	//echo print_r($url,true);exit;
+	//echo print_r($matches_url,true);exit;
 	$pattern="%page_num=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
 	$no=$matches_url[1];//首篇編號
@@ -274,7 +275,6 @@ max-width:500px;
 overflow:hidden;
 }
 
-
 --></STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
@@ -329,7 +329,6 @@ $x="\n".$x."\n";
 return $x;
 }
 //echo form();
-
 function js_timedown(){
 $have_pic=$GLOBALS['have_pic'];
 $x=<<<EOT

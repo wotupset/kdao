@@ -10,7 +10,7 @@ $ymd=date("ymd",$time);
 $url = $_GET["url"];
 $sss = $_GET["sss"];
 //
-if(!ignore_user_abort()){ignore_user_abort(true);}
+if(!ignore_user_abort()){ignore_user_abort(true);}//使用者關閉也要繼續跑完
 //
 $form=<<<EOT
 <html>
@@ -73,19 +73,22 @@ if(is_file($src)){//圖檔存在
 }else{//圖檔不存在
 	//$chk=copy($url,$src) or die("[error]copy 0");// 
 	//成功=1 失敗=0
+	/*
 	$opts = array('http'=>array('method'=>"GET",'timeout'=>10));
 	$context = stream_context_create($opts);
 	$max_size=5*1024*1024;//抓取上限
 	$cc=0;
 	while(1){//重次三次
-		$content = file_get_contents($url,NULL,$context,0,$max_size);
+		$content = file_get_contents($url,NULL,$context,0,$max_size);//複雜版
 		if($content === TRUE){break;}
 		if($cc>2){break;}
 		$cc=$cc+1;
 	}
-	if($content === FALSE){//
+	*/
+	$content = file_get_contents($url);//簡單版
+	if($content === FALSE){//失敗
 		$chk=0;
-	}else{
+	}else{//成功//並存檔
 		$content=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
 		$chk=1;
 	}

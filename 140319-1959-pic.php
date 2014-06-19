@@ -5,35 +5,22 @@ $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 $query_string=$_SERVER['QUERY_STRING'];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
+$ym=date("ym",$time);
 $ymd=date("ymd",$time);
 //$tmp_arr=explode("!",$query_string);
 $url = $_GET["url"];
 $sss = $_GET["sss"];
 //
-if(!ignore_user_abort()){ignore_user_abort(true);}//使用者關閉也要繼續跑完
-//
-$form=<<<EOT
-<html>
-<head></heaad>
-<body>
-<form id='form140406' action='$phpself' method="get" autocomplete="off">
-<input type="text" name="url" size="20" placeholder="url" value=""><br/>
-<label>單張讀圖<input type="checkbox" name="sss" value="1" />(測試時使用)</label>
-<input type="submit" value="送出"/>
-</form>
-</body>
-</html>
-EOT;
-
-////
-if(!$query_string){die($form);}
+if(!$query_string){die(form());}
 $re_get=0;
 if(strlen($url)){//使用get取得網址
 	$re_get=1;
 }else{//不是使用get取得網址
 	$url=$query_string;
 }
-////
+//
+if(!ignore_user_abort()){ignore_user_abort(true);}//使用者關閉也要繼續跑完
+//處理網址
 $url2=substr($url,0,strrpos($url,"/")+1); //根目錄
 $tmp_str=strlen($url2)-strlen($url);
 $url3=substr($url,$tmp_str);//圖檔檔名
@@ -41,57 +28,55 @@ $fn=$url3;
 $fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
 $fn_b=strrpos($fn,".")+1-strlen($fn);
 $fn_b=strtolower(substr($fn,$fn_b)); //副檔名
-////
-$dir_path="./_".date("ym",$time)."/"; //存放該月檔案
+//非圖片的副檔名先排除
+$FFF=0;
+$allow_ext=array('png', 'jpg', 'gif');
+foreach($allow_ext as $k => $v){
+	if($v == $fn_b){$FFF++;}
+}
+if($FFF == 0){die(form());}
+//建立資料夾
+$dir_path="./_".$ym."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
 $dir_path_src=$dir_path."src/";//存放圖檔位置
 if(!is_dir($dir_path_src)){mkdir($dir_path_src, 0777);}
 $img_count=$dir_path_src."index.php";
 if(!is_file($img_count)){
-	$chk=copy("img_count.php", $img_count) or die('[x]img_count.php');
+	$chk=copy("img_count.php", $img_count) or die('[x]img_count.php');//圖片資料夾的統計php
 }
 $src=$dir_path_src.$url3;//存放檔案的位置
+//echo $url;echo $url3;echo $src;exit;
 //$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
-if($sss){
-$content = file_get_contents($url);
-$content = file_put_contents($src,$content);
-echo "<a href='".$phpself."'>".$phpself."</a>";
-echo "<br/>\n";
-echo "<a href='".$src."'>".$src."</a>";
-exit;
+if($sss){//單張讀圖
+	if(is_file($src)){unlink($src);}
+	if(is_file($src)){die('[x]is');}
+	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+	$content = file_get_contents($url);
+	$content = file_put_contents($src,$content);
+	echo "<a href='".$phpself."'>".$phpself."</a>";
+	echo "<br/>\n";
+	echo "<a href='".$src."'>".$src."</a>";
+	echo "<br/>\n";
+	echo "<img src='".$src."'/>";
+	exit;
 }
 ////
 if(is_file($src)){//圖檔存在
 	if($re_get){//重新下載
 		unlink($src);
-		$chk=copy($url,$src);// or die("[error]copy")
-		$chk="2b";//重新下載
+		$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+		$content = file_get_contents($url);
+		$content = file_put_contents($src,$content);
+		$chk="2b";//重新下載(紫色)
 	}else{//跳過
-		$chk="2a";//圖檔存在//跳過
+		$chk="2a";//圖檔存在(藍色)//跳過
 	}
-}else{//圖檔不存在
-	//$chk=copy($url,$src) or die("[error]copy 0");// 
-	//成功=1 失敗=0
-	/*
-	$opts = array('http'=>array('method'=>"GET",'timeout'=>10));
-	$context = stream_context_create($opts);
-	$max_size=5*1024*1024;//抓取上限
-	$cc=0;
-	while(1){//重次三次
-		$content = file_get_contents($url,NULL,$context,0,$max_size);//複雜版
-		if($content === TRUE){break;}
-		if($cc>2){break;}
-		$cc=$cc+1;
-	}
-	*/
-	$content = file_get_contents($url);//簡單版
-	if($content === FALSE){//失敗
-		$chk=0;
-	}else{//成功//並存檔
-		$content=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
-		$chk=1;
-	}
+}else{//圖檔不存在//新的檔案
+	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+	$content = file_get_contents($url);
+	$content = file_put_contents($src,$content);
+	$chk=1;//成功(綠色)
 }
 
 //$chk=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
@@ -149,7 +134,29 @@ switch($chk){
 	break;
 	default:
 		//不會執行
+		echo "default";
 	break;
 }
+
+function form(){
+$phpself=$GLOBALS['phpself'];
+$url=$GLOBALS['url'];
+$x=<<<EOT
+<html>
+<head></heaad>
+<body>
+<form id='form140406' action='$phpself' method="get" autocomplete="off">
+<input type="text" name="url" size="20" placeholder="url" value=""><br/>
+<label>單張讀圖<input type="checkbox" name="sss" value="1" />(測試時使用)</label>
+<input type="submit" value="送出"/>
+</form>
+</body>
+</html>
+EOT;
+
+$x="\n".$x."\n";
+return $x;
+}
+//echo form();
 
 ?>

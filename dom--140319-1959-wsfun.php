@@ -175,9 +175,9 @@ if($w_chk){//寫入到檔案
 	$no_pg=$matches_url2[1];//頁數
 	//
 	if($no_pg){
-	$logfile=$dir_mth."myk".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
+	$logfile=$dir_mth."wsf_".$no."_".$no_pg.".htm";//接頭(prefix)接尾(suffix)
 	}else{
-	$logfile=$dir_mth."myk".$no.".htm";//接頭(prefix)接尾(suffix)
+	$logfile=$dir_mth."wsf_".$no.".htm";//接頭(prefix)接尾(suffix)
 	}
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0

@@ -184,9 +184,9 @@ if($w_chk){//寫入到檔案
 	$no_pg=$matches_url2[1];//頁數
 	$no_pg=ceil($no_pg);
 	//
-	$pattern="%\/([\w]+)\.mykomica.org%";
+	$pattern="%\/([\w]+)\.mykomica.org\/([\w]+)\/%";
 	preg_match($pattern, $url, $matches_sub);//抓首串編號
-	$sub=$matches_sub[1];//首篇編號
+	$sub=$matches_sub[1].$matches_sub[2];//首篇編號
 	//
 	$logfile=$dir_mth."myk_".$sub."_".$no.'_'.$no_pg.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案

@@ -79,8 +79,6 @@ if(is_file($src)){//圖檔存在
 	$chk=1;//成功(綠色)
 }
 
-
-
 switch($chk){
 	case '0'://失敗=0
 		Header("Content-type: image/png");//指定文件類型為PNG

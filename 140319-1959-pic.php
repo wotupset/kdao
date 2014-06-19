@@ -79,9 +79,7 @@ if(is_file($src)){//圖檔存在
 	$chk=1;//成功(綠色)
 }
 
-//$chk=file_put_contents($src,$content) or die("[error]file_put_contents");//放置來源內容;
-//header("refresh:0; url=$src");
-//connection_aborted()
+
 
 switch($chk){
 	case '0'://失敗=0

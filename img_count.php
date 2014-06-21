@@ -1,59 +1,25 @@
 <?php
-header('Content-type: text/html; charset=utf-8');
-//**********
-$url="./";
-$handle=opendir($url); 
-$cc = 0;
-$img_count=array('jpg'=>0,'png'=>0,'gif'=>0);
-while(($file = readdir($handle))!==false) { 
-	if($file=="."||$file == ".."){
-		//沒事
-	}else{
-		if(is_dir($file)){
-			//沒事
-		}else{
-			if(preg_match('/[0-9]{13}\.jpg/',$file)){$img_count['jpg']++;}
-			if(preg_match('/[0-9]{13}\.png/',$file)){$img_count['png']++;}
-			if(preg_match('/[0-9]{13}\.gif/',$file)){$img_count['gif']++;}
-		}
-	}
-	//$tmp[$cc] = substr($file,0,strpos($file,"."));
-	$cc = $cc + 1;
-} 
-closedir($handle); 
-//**********
-echo htmlhead();
-echo "<pre>";
-echo "jpg\t".$img_count['jpg']."\n";
-echo "png\t".$img_count['png']."\n";
-echo "gif\t".$img_count['gif']."\n";
-echo "</pre>";
-echo htmlend();
+extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 
 
-function htmlhead(){
+
+function form(){
+$phpself=$GLOBALS['phpself'];
 $x=<<<EOT
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<META http-equiv="Content-Script-Type" content="text/javascript">
-<META http-equiv="Content-Style-Type" content="text/css">
-<meta name="Robots" content="index,follow">
-<STYLE TYPE="text/css"><!--
-body { font-family:"細明體",'MingLiU'; }
---></STYLE>
-</head>
-<body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
+<html>
+<head></heaad>
+<body>
+<form id='form140406' action='$phpself' method="get" autocomplete="off">
+<input type="text" name="url" size="20" placeholder="url" value=""><br/>
+<input type="submit" value="送出"/>
+</form>
+</body>
+</html>
 EOT;
+
 $x="\n".$x."\n";
 return $x;
 }
-
-function htmlend(){
-$x=<<<EOT
-</body></html>
-EOT;
-$x="\n".$x."\n";
-return $x;
-}
+//echo form();
 
 ?>

@@ -17,7 +17,7 @@ $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
-include('./simple_html_dom.php');//v1.5
+
 ///////////
 if(1){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案

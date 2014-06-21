@@ -47,7 +47,7 @@ if(1){
 ///////////$dir_mth
 //允許的網址格式
 $kdao_only=0;
-if(preg_match("%mykomica\.org%U",$url))
+if(preg_match("%\.mykomica\.org%U",$url))
 {$kdao_only=1;}
 
 ///////////

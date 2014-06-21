@@ -34,7 +34,7 @@ $allow_ext=array('png', 'jpg', 'gif');
 foreach($allow_ext as $k => $v){
 	if($v == $fn_b){$FFF++;}
 }
-if($FFF == 0){die(form());}
+if($FFF == 0){die('ban');}
 //建立資料夾
 $dir_path="./_".$ym."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
@@ -51,7 +51,7 @@ $src=$dir_path_src.$url3;//存放檔案的位置
 if($sss){//單張讀圖
 	if(is_file($src)){unlink($src);}
 	if(is_file($src)){die('[x]is');}
-	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+	//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
 	echo "<a href='".$phpself."'>".$phpself."</a>";
@@ -62,10 +62,11 @@ if($sss){//單張讀圖
 	exit;
 }
 ////
+
 if(is_file($src)){//圖檔存在
 	if($re_get){//重新下載
 		unlink($src);
-		$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+		//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
 		$content = file_get_contents($url);
 		$content = file_put_contents($src,$content);
 		$chk="2b";//重新下載(紫色)
@@ -73,10 +74,15 @@ if(is_file($src)){//圖檔存在
 		$chk="2a";//圖檔存在(藍色)//跳過
 	}
 }else{//圖檔不存在//新的檔案
-	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die(form());}//檢查檔案內容是不是圖片
+	//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
 	$chk=1;//成功(綠色)
+}
+//檢查檔案內容是不是圖片
+$info_array=getimagesize($src);
+if(floor($info_array[2]) == 0 ){
+	$chk=1;//成功(紅色)
 }
 
 switch($chk){

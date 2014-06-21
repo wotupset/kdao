@@ -49,9 +49,9 @@ if(1){
 }
 //允許的網址格式
 $kdao_only=0;
-if(preg_match("%dreamhosters\.com%U",$url))
+if(preg_match("%\.dreamhosters\.com%U",$url))
 {$kdao_only++;}
-if(preg_match("%komica\.org%U",$url))
+if(preg_match("%\.komica\.org%U",$url))
 {$kdao_only++;}
 
 ///////////
@@ -64,6 +64,10 @@ if(!$kdao_only){//只使用於綜合網址
 }else{
 	//
 	$html = file_get_html($url);//simple_html_dom
+	$chat_array='';
+	$chat_array=$html->outertext;
+	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
+	//echo print_r($chat_array,true);exit;//檢查點
 	//批次找留言
 	$chat_array=array();
 	foreach($html->find('blockquote') as $k => $v){

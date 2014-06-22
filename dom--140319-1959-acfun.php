@@ -80,7 +80,7 @@ if(!$kdao_only){//只使用於綜合網址
 	//echo print_r($next_page_link,true);exit;//檢查點
 	$cc=0;//
 	foreach($html->find('blockquote') as $k => $v){
-		if($k == 0){
+		if($k == 0 && !preg_match("/\?/",$url)){
 			//首篇
 			$chat_array[$cc]['text']=$v->outertext;
 			$chat_array[$cc]['no']=$v->prev_sibling()->prev_sibling()->plaintext;
@@ -92,9 +92,10 @@ if(!$kdao_only){//只使用於綜合網址
 			$FFF = substr($html_org,$matches[0][1][1]-500,500); //根目錄
 			preg_match("/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}.*ID.* /U",$FFF,$chat_array[$cc]['time']);
 			$chat_array[$cc]['time'] = implode("",$chat_array[$cc]['time']);
-			$chat_array[$cc]['name']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
+			$chat_array[$cc]['name'] =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
 			$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
-			$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
+			//$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
+			$chat_array[$cc]['image']    =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
 			if($chat_array[$cc]['image'] == "a"){
 				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
 			}else{
@@ -117,7 +118,7 @@ if(!$kdao_only){//只使用於綜合網址
 			$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
 			$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
 			if($chat_array[$cc]['image'] == "a"){
-				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
+				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
 			}else{
 				$chat_array[$cc]['image']='';
 			}
@@ -125,7 +126,7 @@ if(!$kdao_only){//只使用於綜合網址
 		}
 		$cc++;
 	}
-	echo print_r($chat_array,true);exit;//檢查點
+	//echo print_r($chat_array,true);exit;//檢查點
 	//
 	ksort($chat_array);//排序
 	$chat_ct=count($chat_array);//計數
@@ -137,7 +138,10 @@ if(!$kdao_only){//只使用於綜合網址
 		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//內文
 		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//內文
 		$chat_array[$k]['time']=strip_tags($chat_array[$k]['time'],"<br>");
-		$htmlbody.='<span class="idno">'.$chat_array[$k]['time']."</span>"."\n";//內文
+		$htmlbody.='<span class="idno">';
+		$htmlbody.=$chat_array[$k]['time']."\n";
+		$htmlbody.=$chat_array[$k]['no']."\n";
+		$htmlbody.="</span>"."\n";//內文
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
 		$htmlbody.= '<span class="text"><blockquote>'.$chat_array[$k]['text']."</blockquote></span>\n";//內文
 		$htmlbody.= "<span class='mail'><small>".$chat_array[$k]['mail']."</small></span>\n";//推文
@@ -179,11 +183,11 @@ if($w_chk){//寫入到檔案
 	$output.=$htmlbody;
 	$output.=htmlend();
 	//
-	$pattern="%res=([0-9]+)%";
+	$pattern="%\/([0-9]+)(?|)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
 	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
-	$logfile=$dir_mth."cat".$no.".htm";//接頭(prefix)接尾(suffix)
+	$logfile=$dir_mth."acf".$no.".htm";//接頭(prefix)接尾(suffix)
 	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0

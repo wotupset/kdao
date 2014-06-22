@@ -42,6 +42,7 @@ if(1){
 	}
 }
 //允許的網址格式
+//echo $url;
 $kdao_only=0;
 if(preg_match("%acfun\.tv%U",$url))
 {$kdao_only++;}
@@ -54,79 +55,88 @@ if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
 }else{
-	//
-	$html = file_get_html($url);//simple_html_dom
-	$html_org=$html->outertext;
-	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
-	//echo print_r($chat_array,true);exit;//檢查點
-	//批次找留言
+	$cc=0;
 	$chat_array=array();
-	$cc=0;//
-	foreach($html->find('table[align=left]') as $k => $v){
-		//$chat_array[$cc]=$v->find('td',1)->find('b',0)->next_sibling()->href;
-		foreach($v->find('td') as $k2 => $v2){
-			if($k2==1){}else{continue;}
-			//$next_page_link=$v2->outertext;
-			foreach($v2->find('b') as $k3 => $v3){
-				$next_page_link=$v3->next_sibling()->href;
-				//$next_page_link=$v3->outertext;
-				//$next_page_link=$v3->href;
+	$cc_w=0;
+	while(1){//while//
+		if($cc_w >5){break;}
+		//echo $url."++";
+		$html = file_get_html($url);//simple_html_dom
+		$html_org=$html->outertext;
+		//echo print_r($chat_array,true);exit;//檢查點
+		foreach($html->find('blockquote') as $k => $v){
+			if($k == 0 && !preg_match("/\?/",$url)){
+				//首篇
+				$chat_array[$cc]['text']=$v->outertext;
+				$chat_array[$cc]['no']=$v->prev_sibling()->prev_sibling()->plaintext;
+				$FFF = $chat_array[$cc]['no'];
+				$FFF = preg_replace("/\./", "\.", $FFF);
+				$pattern = '/'.$FFF.'/';
+				preg_match_all($pattern, $html_org, $matches, PREG_OFFSET_CAPTURE);
+				//echo print_r($matches,true);
+				$FFF = substr($html_org,$matches[0][1][1]-500,500); //根目錄
+				preg_match("/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}.*ID.* /U",$FFF,$chat_array[$cc]['time']);
+				$chat_array[$cc]['time'] = implode("",$chat_array[$cc]['time']);
+				$chat_array[$cc]['name'] =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
+				$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
+				//$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
+				$chat_array[$cc]['image']    =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
+				if($chat_array[$cc]['image'] == "a"){
+					$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
+				}else{
+					$chat_array[$cc]['image']='';
+				}
+				//$v->outertext='';
+			}else{
+				//回文
+				$chat_array[$cc]['text']=$v->outertext;
+				$chat_array[$cc]['no']=$v->prev_sibling()->plaintext;
+				$FFF = $chat_array[$cc]['no'];
+				$FFF = preg_replace("/\./", "\.", $FFF);
+				$pattern = '/'.$FFF.'/';
+				preg_match_all($pattern, $html_org, $matches, PREG_OFFSET_CAPTURE);
+				//echo print_r($matches,true);
+				$FFF = substr($html_org,$matches[0][0][1]-500,500); //根目錄
+				preg_match("/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}.*ID.* /U",$FFF,$chat_array[$cc]['time']);
+				$chat_array[$cc]['time'] = implode("",$chat_array[$cc]['time']);
+				$chat_array[$cc]['name']=$v->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
+				$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
+				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
+				if($chat_array[$cc]['image'] == "a"){
+					$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
+				}else{
+					$chat_array[$cc]['image']='';
+				}
+				//$v->outertext='';
+			}
+			$cc++;
+		}
+		//echo print_r($chat_array,true);exit;//檢查點
+
+		//批次找留言
+		$next_page_link='';
+		foreach($html->find('table[align=left]') as $k => $v){
+			foreach($v->find('td') as $k2 => $v2){
+				if($k2==1){}else{continue;}
+				//$next_page_link=$v2->outertext;
+				foreach($v2->find('b') as $k3 => $v3){
+					$next_page_link=$v3->next_sibling()->href;
+					//$next_page_link=$v3->outertext;
+					//$next_page_link=$v3->href;
+				}
 			}
 		}
-		$cc++;
-	}
-	$url2=substr($url,0,strrpos($url,"?")); //根目錄
-	$next_page=$url2.$next_page_link;
-	//echo print_r($next_page_link,true);exit;//檢查點
-	$cc=0;//
-	foreach($html->find('blockquote') as $k => $v){
-		if($k == 0 && !preg_match("/\?/",$url)){
-			//首篇
-			$chat_array[$cc]['text']=$v->outertext;
-			$chat_array[$cc]['no']=$v->prev_sibling()->prev_sibling()->plaintext;
-			$FFF = $chat_array[$cc]['no'];
-			$FFF = preg_replace("/\./", "\.", $FFF);
-			$pattern = '/'.$FFF.'/';
-			preg_match_all($pattern, $html_org, $matches, PREG_OFFSET_CAPTURE);
-			//echo print_r($matches,true);
-			$FFF = substr($html_org,$matches[0][1][1]-500,500); //根目錄
-			preg_match("/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}.*ID.* /U",$FFF,$chat_array[$cc]['time']);
-			$chat_array[$cc]['time'] = implode("",$chat_array[$cc]['time']);
-			$chat_array[$cc]['name'] =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
-			$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
-			//$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
-			$chat_array[$cc]['image']    =$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
-			if($chat_array[$cc]['image'] == "a"){
-				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
-			}else{
-				$chat_array[$cc]['image']='';
-			}
-			//$v->outertext='';
+		if($next_page_link ==''){break;}
+		if(preg_match("/\?/",$url)){
+			$FFF=strrpos($url,"?");
 		}else{
-			//回文
-			$chat_array[$cc]['text']=$v->outertext;
-			$chat_array[$cc]['no']=$v->prev_sibling()->plaintext;
-			$FFF = $chat_array[$cc]['no'];
-			$FFF = preg_replace("/\./", "\.", $FFF);
-			$pattern = '/'.$FFF.'/';
-			preg_match_all($pattern, $html_org, $matches, PREG_OFFSET_CAPTURE);
-			//echo print_r($matches,true);
-			$FFF = substr($html_org,$matches[0][0][1]-500,500); //根目錄
-			preg_match("/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}.*ID.* /U",$FFF,$chat_array[$cc]['time']);
-			$chat_array[$cc]['time'] = implode("",$chat_array[$cc]['time']);
-			$chat_array[$cc]['name']=$v->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
-			$chat_array[$cc]['title']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->outertext;
-			$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->tag;
-			if($chat_array[$cc]['image'] == "a"){
-				$chat_array[$cc]['image']=$v->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->prev_sibling()->href;
-			}else{
-				$chat_array[$cc]['image']='';
-			}
-			//$v->outertext='';
+			$FFF=strlen($url);
 		}
-		$cc++;
-	}
-	//echo print_r($chat_array,true);exit;//檢查點
+		$url2=substr($url,0,$FFF); //根目錄
+		$url=$url2.$next_page_link;
+		//echo print_r($url,true);exit;//檢查點
+		$cc_w++;
+	}//while//
 	//
 	ksort($chat_array);//排序
 	$chat_ct=count($chat_array);//計數
@@ -167,12 +177,12 @@ if(!$kdao_only){//只使用於綜合網址
 		}
 		$htmlbody.="<br>\n";
 	}
-	$w_chk=1;
 	$htmlbody2.= "[$have_pic][$have_text]";//
 }//有輸入url/
 //修飾
 $htmlbody=$url."\n"."<br/>\n".$htmlbody."<br>\n<br>\n";
 //////
+$w_chk=1;
 if($w_chk){//寫入到檔案
 	$output='';
 	$output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
@@ -185,9 +195,12 @@ if($w_chk){//寫入到檔案
 	//
 	$pattern="%\/([0-9]+)(?|)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
-	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
-	$logfile=$dir_mth."acf".$no.".htm";//接頭(prefix)接尾(suffix)
+	$pattern="%pn=([0-9]+)%";
+	preg_match($pattern, $url, $matches_pn);//抓首串編號
+	$pn=$matches_pn[1];//分頁編號
+	//
+	$logfile=$dir_mth."acf_".$no."_".$pn.".htm";//接頭(prefix)接尾(suffix)
 	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0

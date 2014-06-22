@@ -67,11 +67,19 @@ while(($file = readdir($handle))!==false) {
 	if($ext == "png"){$chk=1;}//只要圖
 	if($ext == "gif"){$chk=1;}//只要圖
 	//if(preg_match("/\.gif$/i",$file)){$chk=1;}//只要圖
-	if($chk==1){$FFF_arr[]=$file;}
+	if($chk==1){
+		$FFF_arr[0][$cc]=$file;
+		$FFF_arr[1][$cc]=filectime($url.$file);
+	}
 	$cc = $cc + 1;
 } 
 closedir($handle); 
-sort($FFF_arr);//排序 舊的在前
+//sort($FFF_arr);//排序 舊的在前
+array_multisort(
+$FFF_arr[1], SORT_ASC,SORT_NUMERIC,
+$FFF_arr[0]
+);
+//echo print_r($FFF_arr,true);exit;
 //**********
 
 
@@ -80,7 +88,7 @@ sort($FFF_arr);//排序 舊的在前
 
 //**********
 //列出左側分頁
-$arr_ct=count($FFF_arr);//計算數量
+$arr_ct=count($FFF_arr[0]);//計算數量
 $pg_max=ceil($arr_ct/10);
 //27/10=2.7 -> 取3頁
 //ceil 函数向上舍入为最接近的整数
@@ -101,7 +109,7 @@ for($i=0;$i<$pg_max;$i++){
 //**********
 //列出右側圖片
 $cc=1;$pic='';
-foreach($FFF_arr as $k => $v ){
+foreach($FFF_arr[0] as $k => $v ){
 	//if(){continue;}
 	if( ($k>= ($qs2-1)*10 ) && ($k< ($qs2)*10 ) ){//分頁輸出
 		//$pic_src=$phpdir.$dir_mth.$v;

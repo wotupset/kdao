@@ -23,14 +23,21 @@ while(($file = readdir($handle))!==false) {
 	if(preg_match("/\.jpg$/i",$file)){$chk=1;}
 	if(preg_match("/\.png$/i",$file)){$chk=1;}
 	if(preg_match("/\.gif$/i",$file)){$chk=1;}
-	if($chk==1){$FFF_arr[]=$file;}
+	if($chk==1){
+		$FFF_arr[0][$cc]=$file;
+		$FFF_arr[1][$cc]=filectime($url.$file);
+	}
 	$cc = $cc + 1;
 	//echo $file;
 } 
 closedir($handle); 
-rsort($FFF_arr);
+//rsort($FFF_arr);
+array_multisort(
+$FFF_arr[1], SORT_DESC,SORT_NUMERIC,
+$FFF_arr[0]
+);
 //print_r($FFF_arr);
-$ct=count($FFF_arr);//攔截到的項目
+$ct=count($FFF_arr[0]);//攔截到的項目
 //echo $ct;
 //**********
 //檢查是否支援 allow_url_fopen
@@ -42,12 +49,13 @@ echo "<a href='./".$phpself."'>返</a>"."\n";
 echo "<a href='./".$phpself."?a'>01</a>"."\n";
 echo "<pre>";
 $cc=0;
-foreach($FFF_arr as $k => $v ){
+foreach($FFF_arr[0] as $k => $v ){
 	if($cc>100){break;}
+	$FFF=$phpdir."k_fourm2.php?".$ym."!".$ct2;//相簿位置
 	switch($query_string){
 		case 'a': //html
 			if($cc == 0){
-				echo "&lt;a href='".$phpdir."fourm2.php?".$ym."!".$ct2."'&gt;".$phphost."&lt;/a&gt; &lt;br/&gt;";
+				echo "&lt;a href='".$FFF."'&gt;".$phphost."&lt;/a&gt; &lt;br/&gt;";
 				echo "\n";
 			}
 			echo $cc;
@@ -55,7 +63,7 @@ foreach($FFF_arr as $k => $v ){
 		break;
 		default: //預設
 			if($cc == 0){
-				echo "[url=".$phpdir."fourm2.php?".$ym."!".$ct2."]".$phphost."[/url]";
+				echo "[url=".$FFF."]".$phphost."[/url]";
 				echo "\n";
 			}
 			echo $cc;

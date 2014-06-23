@@ -63,7 +63,7 @@ if(!$kdao_only){//只使用於綜合網址
     //沒事
 }else{
 	//
-	$html = file_get_html($url);//simple_html_dom
+	$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
 	$chat_array='';
 	$chat_array=$html->outertext;
 	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
@@ -200,9 +200,12 @@ if($w_chk){//寫入到檔案
 	//
 	$pattern="%res=([0-9]+)%";
 	preg_match($pattern, $url, $matches_url);//抓首串編號
-	//print_r($matches_url);//
 	$no=$matches_url[1];//首篇編號
-	$logfile=$dir_mth."z".$no.".htm";//接頭(prefix)接尾(suffix)
+	$pattern="%\/\/([\w]+)\.[\w\.]+\/([\w]+)\/%";
+	preg_match($pattern, $url, $matches_sub);//抓首串編號
+	$dm=$matches_sub[1];//首篇編號
+	$dm2=$matches_sub[2];//首篇編號
+	$logfile=$dir_mth."k_".$dm.$dm2."_".$no.".htm";//接頭(prefix)接尾(suffix)
 	//$logfile="z".$no.".htm";//接頭(prefix)接尾(suffix)
 	$cp = fopen($logfile, "a+") or die('failed');// 讀寫模式, 指標於最後, 找不到會嘗試建立檔案
 	ftruncate($cp, 0); //砍資料至0
@@ -295,6 +298,13 @@ font-weight: bold;
 color: #CC1105;
 min-width:10px;
 max-width:100px;
+overflow:hidden;
+}
+span.idno {
+display: inline-block;
+white-space:nowrap;
+min-width:10px;
+max-width:500px;
 overflow:hidden;
 }
 --></STYLE>

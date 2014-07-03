@@ -26,8 +26,12 @@ $tmp_str=strlen($url2)-strlen($url);
 $url3=substr($url,$tmp_str);//圖檔檔名
 $fn=$url3;
 $fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
+if( preg_match("/[^\w]/",$fn_a) ){die('檔名異常');}
+//$fn_a=preg_replace("/_+/","_",$fn_a);//主檔名
+//
 $fn_b=strrpos($fn,".")+1-strlen($fn);
 $fn_b=strtolower(substr($fn,$fn_b)); //副檔名
+$url3=$fn_a.".".$fn_b;
 //非圖片的副檔名先排除
 $FFF=0;
 $allow_ext=array('png', 'jpg', 'gif');

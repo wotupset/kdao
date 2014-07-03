@@ -9,7 +9,6 @@ header('Content-type: text/html; charset=utf-8');
 $phphost=$_SERVER["SERVER_NAME"];
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
-
 extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 //$input_a=$_POST['input_a'];
@@ -19,6 +18,7 @@ $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
+$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
 ///////////
 if(1){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
@@ -57,7 +57,7 @@ if(preg_match("%\.komica\.org%U",$url))
 ///////////
 $w_chk=0;
 $htmlbody='';$htmlbody2='';$htmlbody2_js='';
-$have_pic=0;$have_text=0;
+$have_pic=0;$have_text=0;$zip_pic='';
 if(!$kdao_only){//只使用於綜合網址
     //die("x");
     //沒事
@@ -166,13 +166,16 @@ if(!$kdao_only){//只使用於綜合網址
 			$have_pic++;//計算圖片數量
 			$pic_url=$chat_array[$k]['image'];
 			$img_filename=img_filename($pic_url);//圖檔檔名
+			if($k >0){$zip_pic.=",";}
+			$zip_pic.=$img_filename;
 			$htmlbody.= '[<span class="image"><a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a></span>]';//  border="1"
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			if($input_c){
+			//是否使用漸進讀圖
+			if($input_c){//不使用(預設)
 				$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
 				//$htmlbody2.='<img id="pic'.$have_pic.'" src="'.$pic_url_php.'" style="width:5px; height:10px;border:1px solid blue;" />'.$img_filename."<br/>"."\n";
 			}else{
@@ -240,9 +243,9 @@ if($url){//isset($save_where)
 $output.="\n";
 echo $output;
 echo $htmlbody2;
-if($cc2 && 0){//打包功能 很吃流量 慎用//0=停用
+if($have_pic && 0){//打包功能 很吃流量 慎用//0=停用
 	echo "<br/>\n";
-	echo "<a href='./zip.php?a1=".$no."&a2=".$img_all."'>zip</a>";
+	echo "<a href='./zip.php?a1=".$no."&a2=".$zip_pic."'>zip</a>";
 }
 echo htmlend();
 
@@ -326,7 +329,7 @@ $x=<<<EOT
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css">
-body2 { font-family:'Courier New',"細明體",'MingLiU'; }
+body2 { font-family:"細明體",'MingLiU',"GulimChe"; }
 </STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
@@ -351,7 +354,7 @@ $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
 網址<input type="text" name="input_a" size="20" value=""><input type="submit" value=" send "><br/>
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
-<label>快速讀圖<input type="checkbox" name="input_c" value="1" />(圖少時使用)</label><br/>
+<label>漸進讀圖<input type="checkbox" name="input_c" value="1" />(主機不穩時使用)</label><br/>
 </form>
 EOT;
 $x="\n".$x."\n";

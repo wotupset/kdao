@@ -14,6 +14,7 @@ $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
+$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
 ///////////
 
 ///////////$dir_mth
@@ -60,6 +61,10 @@ if(!$kdao_only){//只使用於綜合網址
 }else{
 	////////////
 	$html = file_get_html($url);//simple_html_dom
+	$chat_array='';
+	$chat_array=$html->outertext;
+	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
+	//echo print_r($chat_array,true);exit;//檢查點
 	$chat_array=array();
 	foreach($html->find('div.quote') as $k => $v){//分析
 		$vv=$v->parent;
@@ -232,7 +237,13 @@ function img_filename($x){
 	$url=$x;
 	$url2=substr($url,0,strrpos($url,"/")+1); //根目錄
 	$tmp_str=strlen($url2)-strlen($url);
-	$url3=substr($url,$tmp_str);//圖檔檔名
+	$url3=substr($url,$tmp_str);//圖檔全部檔名
+	//$fn=$url3;
+	//$fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
+	//$fn_b=substr($fn,strrpos($fn,".")+1-strlen($fn)); //副檔名
+	//$fn_a=preg_replace("/[^\w]/","_",$fn_a);
+	//$fn_a=preg_replace("/_+/","_",$fn_a);
+	//$url3=$fn_a.".".$fn_b;
 	return $url3;
 }
 ////
@@ -337,7 +348,7 @@ $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
 網址<input type="text" name="input_a" size="20" value=""><input type="submit" value=" send "><br/>
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
-<label>快速讀圖<input type="checkbox" name="input_c" value="1" />(圖少時使用)</label><br/>
+<label>漸進讀圖<input type="checkbox" name="input_c" value="1" />(主機不穩時使用)</label><br/>
 </form>
 EOT;
 $x="\n".$x."\n";

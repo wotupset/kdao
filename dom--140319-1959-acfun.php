@@ -13,6 +13,7 @@ $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
+$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
 ///////////
 if(1){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
@@ -346,7 +347,7 @@ $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
 網址<input type="text" name="input_a" size="20" value=""><input type="submit" value=" send "><br/>
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
-<label>快速讀圖<input type="checkbox" name="input_c" value="1" />(圖少時使用)</label><br/>
+<label>漸進讀圖<input type="checkbox" name="input_c" value="1" />(主機不穩時使用)</label><br/>
 </form>
 EOT;
 $x="\n".$x."\n";

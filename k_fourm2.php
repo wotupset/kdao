@@ -74,6 +74,10 @@ while(($file = readdir($handle))!==false) {
 	$cc = $cc + 1;
 } 
 closedir($handle); 
+if(count($FFF_arr[0])==0){
+	$FFF_arr[0][0]='x';
+	$FFF_arr[1][0]='x';
+}
 //sort($FFF_arr);//排序 舊的在前
 array_multisort(
 $FFF_arr[1], SORT_ASC,SORT_NUMERIC,

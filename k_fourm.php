@@ -14,11 +14,12 @@ if(!is_dir($dir_mth)){die('[x]');}//找不到資料夾就終止
 
 if(!is_writeable(realpath($dir_mth))){die("目錄沒有寫入權限"); }
 $url=$dir_mth;
-//echo $url;
+//echo $url;exit;
 $handle=opendir($url); 
 $cc = 0;
 $FFF_arr=array();
 while(($file = readdir($handle))!==false) { 
+	//echo $file;
 	$chk=0;
 	if(preg_match("/\.jpg$/i",$file)){$chk=1;}
 	if(preg_match("/\.png$/i",$file)){$chk=1;}
@@ -28,15 +29,19 @@ while(($file = readdir($handle))!==false) {
 		$FFF_arr[1][$cc]=filectime($url.$file);
 	}
 	$cc = $cc + 1;
-	//echo $file;
 } 
 closedir($handle); 
-//rsort($FFF_arr);
+if(count($FFF_arr[0])==0){
+	$FFF_arr[0][0]='x';
+	$FFF_arr[1][0]='x';
+}
+rsort($FFF_arr);
+//print_r($FFF_arr);exit;
 array_multisort(
 $FFF_arr[1], SORT_DESC,SORT_NUMERIC,
 $FFF_arr[0]
 );
-//print_r($FFF_arr);
+
 $ct=count($FFF_arr[0]);//攔截到的項目
 //echo $ct;
 //**********

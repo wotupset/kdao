@@ -88,7 +88,10 @@ $info_array=getimagesize($src);
 if(floor($info_array[2]) == 0 ){
 	$chk=1;//成功(紅色)
 }
-
+$info_array=filesize($src);
+if(floor($info_array) == 0 ){
+	$chk=1;//成功(紅色)
+}
 switch($chk){
 	case '0'://失敗=0
 		Header("Content-type: image/png");//指定文件類型為PNG

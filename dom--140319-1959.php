@@ -28,17 +28,11 @@ if(1){
 	if(!is_dir(realpath($dir_mth))){die("月份資料夾不存在");}
 	if(!is_writeable(realpath($dir_mth))){die("月份資料夾無法寫入");}
 	if(!is_readable(realpath($dir_mth))){die("月份資料夾無法讀取");}
-	if(is_file("index.php")){//確認檔案存在
-		//有存在
-	}else{
-		//沒存在
-		die("沒存在");
-	}
 	if(!is_dir($dir_mth)){//子資料夾不存在
-		//沒事
+		die("子目錄不存在".$dir_mth);
 	}else{//子資料夾存在.
-		if(!file_exists("index.php")){//如果根目錄沒有index檔案
-			die('index檔案遺失');
+		if(!is_file("index.php")){//如果根目錄沒有index檔案
+			die("根目錄遺失index.php");
 		}else{//根目錄有index檔案
 			if(!is_file($dir_mth."index.php")){//如果該月目錄沒有index檔案
 				$chk=@copy("index.php", $dir_mth."index.php");//複製檔案到該月目錄

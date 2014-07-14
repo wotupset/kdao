@@ -5,35 +5,35 @@
 	$chat_array='';
 	$chat_array=$html->outertext;
 	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
-	//echo print_r($chat_array,true);exit;//ÀË¬dÂI
+	//echo print_r($chat_array,true);exit;//æª¢æŸ¥é»
 	$chat_array=array();
-	foreach($html->find('div.quote') as $k => $v){//¤ÀªR
+	foreach($html->find('div.quote') as $k => $v){//åˆ†æ
 		$vv=$v->parent;
-		//­ì©l¤º®e
+		//åŸå§‹å…§å®¹
 		$chat_array[$k]['org_text']=$vv->outertext;
-		//¼ĞÃD
+		//æ¨™é¡Œ
 		foreach($vv->find('span.title') as $k2 => $v2){
 			$chat_array[$k]['title'] =$v2->plaintext;
 			$v2->outertext="";
 		}
-		//¦WºÙ
+		//åç¨±
 		foreach($vv->find('span.name') as $k2 => $v2){
 			$chat_array[$k]['name']  =$v2->plaintext;
 			$v2->outertext="";
 		}
-		//ª©­±¶K¹Ï
+		//ç‰ˆé¢è²¼åœ–
 		$chat_array[$k]['image']=array();
 		foreach($vv->find('img.img') as $k2 => $v2){
 			$chat_array[$k]['image'][] = $v2->parent->href;
 			$v2->parent->outertext="";
 		}
-		//¤º®e
+		//å…§å®¹
 		foreach($vv->find('div.quote') as $k2 => $v2){
 			foreach($v2->find('div.pushpost') as $k3 => $v3){
-				$chat_array[$k]['push']  =$v3->innertext;//±À¤å
+				$chat_array[$k]['push']  =$v3->innertext;//æ¨æ–‡
 				$v3->outertext="";
 			}
-			foreach($v2->find('img') as $k3 => $v3){//¤º¤å¤¤ªºªş¹Ï?
+			foreach($v2->find('img') as $k3 => $v3){//å…§æ–‡ä¸­çš„é™„åœ–?
 				$FFF=$v3->src;//
 				if(in_array($FFF,$chat_array[$k]['image'])){}else{
 					$chat_array[$k]['image'][]=$FFF;
@@ -44,13 +44,13 @@
 			foreach($v2->find('script') as $k3 => $v3){
 				$FFF=$v3->outertext;
 				$pattern="/(\[.*\])/";
-				preg_match($pattern, $FFF, $matches);//§ì­º¦ê½s¸¹
+				preg_match($pattern, $FFF, $matches);//æŠ“é¦–ä¸²ç·¨è™Ÿ
 				$FFF = json_decode($matches[1] , true);
-				$chat_array[$k]['script'][] = $FFF[0]['title']." ".$FFF[0]['url']; //
+				$chat_array[$k]['script'][] = $FFF[0]['url']."ï¼ˆ".$FFF[0]['title']."ï¼‰"; //
 				$v3->outertext="";
 			}
-			//array_unique($chat_array[$k]['image']);//¥i¯à¦³­«½Æ¹Ï¤ù//¥¢±Ñ
-			$chat_array[$k]['text']  =$v2->innertext;//¤º¤å
+			//array_unique($chat_array[$k]['image']);//å¯èƒ½æœ‰é‡è¤‡åœ–ç‰‡//å¤±æ•—
+			$chat_array[$k]['text']  =$v2->innertext;//å…§æ–‡
 			$v2->outertext="";
 		}
 		//ID
@@ -71,14 +71,14 @@
 		//
 		$chat_array[$k]['zzz_text']  =$vv->outertext;
 	}
-	ksort($chat_array);//±Æ§Ç
-	//echo print_r($chat_array,true);exit;//ÀË¬dÂI
-	$chat_ct=count($chat_array);//­p¼Æ
-	//¥Í¦¨ºô­¶¤º®e
+	ksort($chat_array);//æ’åº
+	//echo print_r($chat_array,true);exit;//æª¢æŸ¥é»
+	$chat_ct=count($chat_array);//è¨ˆæ•¸
+	//ç”Ÿæˆç¶²é å…§å®¹
 	foreach($chat_array as $k => $v){
-		$have_text++;//­pºâ¯d¨¥¼Æ¶q
-		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//¼ĞÃD
-		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//¦WºÙ
+		$have_text++;//è¨ˆç®—ç•™è¨€æ•¸é‡
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//æ¨™é¡Œ
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//åç¨±
 		$htmlbody.= '<span class="idno">';
 		$htmlbody.=$chat_array[$k]['time'];
 		$htmlbody.=$chat_array[$k]['trip_id'];
@@ -86,19 +86,19 @@
 		$htmlbody.= '</span>';
 		//
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
-		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//¤º¤å
-		foreach($chat_array[$k]['script'] as $k2 => $v2){//¤º¤å¤¤¦³flash
+		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//å…§æ–‡
+		foreach($chat_array[$k]['script'] as $k2 => $v2){//å…§æ–‡ä¸­æœ‰flash
 			$htmlbody.=$v2;
 			$htmlbody.="<br/>\n";
 		}
 		$chat_array[$k]['push']=strip_tags($chat_array[$k]['push'],"<br>");
-		$htmlbody.= "<span class='push'><small>".$chat_array[$k]['push']."</small></span>\n";//±À¤å
-		//¦³¹Ï
+		$htmlbody.= "<span class='push'><small>".$chat_array[$k]['push']."</small></span>\n";//æ¨æ–‡
+		//æœ‰åœ–
 		//if($chat_array[$k]['image']){
-		foreach($chat_array[$k]['image'] as $k2 => $v2){//¤º¤å¤¤¦³¹Ï 
-			$have_pic++;//­pºâ¹Ï¤ù¼Æ¶q
+		foreach($chat_array[$k]['image'] as $k2 => $v2){//å…§æ–‡ä¸­æœ‰åœ– 
+			$have_pic++;//è¨ˆç®—åœ–ç‰‡æ•¸é‡
 			$pic_url=$v2;
-			$img_filename=img_filename($pic_url);//¹ÏÀÉÀÉ¦W
+			$img_filename=img_filename($pic_url);//åœ–æª”æª”å
 			if($k >0){$zip_pic.=",";}
 			$zip_pic.=$img_filename;
 			$htmlbody.= "<br/>\n";
@@ -119,20 +119,20 @@
 		$htmlbody.="<br>\n";
 	}
 	////DOM/
-	$w_chk=1;//¼g¤J¨ìÀÉ®×
+	$w_chk=1;//å¯«å…¥åˆ°æª”æ¡ˆ
 	$pre_fix="myk";
 	$htmlbody2.= "[$have_pic][$have_text]";//
 	//
 	$pattern="%res=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url);//§ì­º¦ê½s¸¹
-	$no=$matches_url[1];//­º½g½s¸¹
+	preg_match($pattern, $url, $matches_url);//æŠ“é¦–ä¸²ç·¨è™Ÿ
+	$no=$matches_url[1];//é¦–ç¯‡ç·¨è™Ÿ
 	//
 	$pattern="%page_num=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url2);//§ì­º¦ê­¶­±½s¸¹
-	$no_pg=ceil($matches_url2[1]);//­¶¼Æ
+	preg_match($pattern, $url, $matches_url2);//æŠ“é¦–ä¸²é é¢ç·¨è™Ÿ
+	$no_pg=ceil($matches_url2[1]);//é æ•¸
 	//
 	$pattern="%\/([\w]+)\.mykomica.org\/([\w]+)\/%";
-	preg_match($pattern, $url, $matches_sub);//§ì­º¦ê½s¸¹
-	$dm=$matches_sub[1].$matches_sub[2];//­º½g½s¸¹
+	preg_match($pattern, $url, $matches_sub);//æŠ“é¦–ä¸²ç·¨è™Ÿ
+	$dm=$matches_sub[1].$matches_sub[2];//é¦–ç¯‡ç·¨è™Ÿ
 	//
 ?>

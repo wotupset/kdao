@@ -4,35 +4,35 @@
 	$html = file_get_html($url);//simple_html_dom
 	$array_post=array();
 	$cc=0;
-	//echo print_r($array_post,true);exit;//ÀË¬dÂI
-	//°j°é§å¦¸³B²z
+	//echo print_r($array_post,true);exit;//æª¢æŸ¥é»
+	//è¿´åœˆæ‰¹æ¬¡è™•ç†
 
-	foreach($html->find('div.quote') as $k => $v){//¤ÀªR
+	foreach($html->find('div.quote') as $k => $v){//åˆ†æ
 		$vv=$v->parent;
-		//¥h±¼¤£»İ­nªº¸ê°T
-		//$v->parent->find('div.pushpost',0)->outertext="";//¤å³¹ªº±À¤å
+		//å»æ‰ä¸éœ€è¦çš„è³‡è¨Š
+		//$v->parent->find('div.pushpost',0)->outertext="";//æ–‡ç« çš„æ¨æ–‡
 		$chat_array[$k]['org_text']=$vv->outertext;
-		//ÂkÃş
-		//¹Ï
+		//æ­¸é¡
+		//åœ–
 		foreach($vv->find('.img') as $k2 => $v2){
 			$chat_array[$k]['image'] .= $v2->parent->href;
 			$v2->parent->outertext="";
 		}
-		//¤º®e
+		//å…§å®¹
 		foreach($vv->find('div.quote') as $k2 => $v2){
 			foreach($v2->find('div.pushpost') as $k3 => $v3){
-				$chat_array[$k]['push']  =$v3->innertext;//±À¤å
+				$chat_array[$k]['push']  =$v3->innertext;//æ¨æ–‡
 				$v3->outertext="";
 			}
-			$chat_array[$k]['text']  =$v2->innertext;//¤º¤å
+			$chat_array[$k]['text']  =$v2->innertext;//å…§æ–‡
 			$v2->outertext="";
 		}
-		//¼ĞÃD
+		//æ¨™é¡Œ
 		foreach($vv->find('span.title') as $k2 => $v2){
 			$chat_array[$k]['title'] =$v2->plaintext;
 			$v2->outertext="";
 		}
-		//¦WºÙ
+		//åç¨±
 		foreach($vv->find('span.name') as $k2 => $v2){
 			$chat_array[$k]['name']  =$v2->plaintext;
 			$v2->outertext="";
@@ -46,32 +46,32 @@
 		foreach($vv->find('a[rel]') as $k2 => $v2){$v2->outertext="";}
 		//
 		$chat_array[$k]['zzz_text']  =$vv->outertext;
-		//$chat_array[$k]['time']     = substr(strip_tags($chat_array[$k]['zzz_text']),0,strrpos( strip_tags($chat_array[$k]['zzz_text']) ,"&nbsp;"));//¦s¨ì°}¦C¤¤
+		//$chat_array[$k]['time']     = substr(strip_tags($chat_array[$k]['zzz_text']),0,strrpos( strip_tags($chat_array[$k]['zzz_text']) ,"&nbsp;"));//å­˜åˆ°é™£åˆ—ä¸­
 		preg_match("/\[[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*\]/U",$chat_array[$k]['zzz_text'],$chat_array[$k]['time']);
 		$chat_array[$k]['time'] = implode("",$chat_array[$k]['time']);
 	}
-	ksort($chat_array);//±Æ§Ç
-	//echo print_r($chat_array,true);exit;//ÀË¬dÂI
-	$chat_ct=count($chat_array);//­p¼Æ
-	//¥Í¦¨ºô­¶¤º®e
+	ksort($chat_array);//æ’åº
+	//echo print_r($chat_array,true);exit;//æª¢æŸ¥é»
+	$chat_ct=count($chat_array);//è¨ˆæ•¸
+	//ç”Ÿæˆç¶²é å…§å®¹
 	foreach($chat_array as $k => $v){
-		$have_text++;//­pºâ¯d¨¥¼Æ¶q
-		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//¤º¤å
-		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//¤º¤å
+		$have_text++;//è¨ˆç®—ç•™è¨€æ•¸é‡
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//å…§æ–‡
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//å…§æ–‡
 		$htmlbody.= '<span class="idno">';
 		$htmlbody.=$chat_array[$k]['time'];
 		$htmlbody.=$chat_array[$k]['no'];
 		$htmlbody.= '</span>';
 		//
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
-		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//¤º¤å
+		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//å…§æ–‡
 		$chat_array[$k]['push']=strip_tags($chat_array[$k]['push'],"<br>");
-		$htmlbody.= "<span class='push'><small>".$chat_array[$k]['push']."</small></span>\n";//±À¤å
-		//¦³¹Ï
+		$htmlbody.= "<span class='push'><small>".$chat_array[$k]['push']."</small></span>\n";//æ¨æ–‡
+		//æœ‰åœ–
 		if($chat_array[$k]['image']){
-			$have_pic++;//­pºâ¹Ï¤ù¼Æ¶q
+			$have_pic++;//è¨ˆç®—åœ–ç‰‡æ•¸é‡
 			$pic_url=$chat_array[$k]['image'];
-			$img_filename=img_filename($pic_url);//¹ÏÀÉÀÉ¦W
+			$img_filename=img_filename($pic_url);//åœ–æª”æª”å
 			if($k >0){$zip_pic.=",";}
 			$zip_pic.=$img_filename;
 			$htmlbody.= "<br/>\n";
@@ -92,19 +92,19 @@
 		$htmlbody.="<br>\n";
 	}
 	////DOM/
-	$w_chk=1;//¼g¤J¨ìÀÉ®×
+	$w_chk=1;//å¯«å…¥åˆ°æª”æ¡ˆ
 	$htmlbody2.= "[$have_pic][$have_text]";//
 	$pre_fix="wsf";
 	//
 	$pattern="%res=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url);//§ì­º¦ê½s¸¹
-	$no=$matches_url[1];//­º½g½s¸¹
+	preg_match($pattern, $url, $matches_url);//æŠ“é¦–ä¸²ç·¨è™Ÿ
+	$no=$matches_url[1];//é¦–ç¯‡ç·¨è™Ÿ
 	//
 	$pattern="%page_num=([\w]+)%";
-	preg_match($pattern, $url, $matches_url2);//§ì­º¦ê­¶­±½s¸¹
-	$no_pg=ceil($matches_url2[1]);//­¶¼Æ
+	preg_match($pattern, $url, $matches_url2);//æŠ“é¦–ä¸²é é¢ç·¨è™Ÿ
+	$no_pg=ceil($matches_url2[1]);//é æ•¸
 	//
 	$pattern="%\/\/([\w]+)\.[\w\.]+\/([\w]+)\/%";
-	preg_match($pattern, $url, $matches_sub);//§ìºô°ì¿ëÃÑ
-	$dm=$matches_sub[1].$matches_sub[2];//§ìºô°ì¿ëÃÑ
+	preg_match($pattern, $url, $matches_sub);//æŠ“ç¶²åŸŸè¾¨è­˜
+	$dm=$matches_sub[1].$matches_sub[2];//æŠ“ç¶²åŸŸè¾¨è­˜
 ?>

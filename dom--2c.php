@@ -1,13 +1,13 @@
 <?php
 	if(!$url){die('x');}
 	////////////
-	$content = file_get_contents($url) or die("[error]file_get_contents");//¨ú±o¨Ó·½¤º®e
-	$content = iconv( "Shift_JIS" , "UTF-8//IGNORE", $content);//Âà¦¨UTF8
+	$content = file_get_contents($url) or die("[error]file_get_contents");//å–å¾—ä¾†æºå…§å®¹
+	$content = iconv( "Shift_JIS" , "UTF-8//IGNORE", $content);//è½‰æˆUTF8
 	$html = str_get_html($content);//simple_html_dom
 	unset($content);
 	$chat_array=array();
 	foreach($html->find('blockquote') as $k => $v){
-		//­º½g¥t¥~³B²z
+		//é¦–ç¯‡å¦å¤–è™•ç†
 		if($k == 0 ){
 			//XX
 		}else{
@@ -15,18 +15,18 @@
 			$v->outertext="";
 			$vv = $v->parent;
 			//
-			//¼ĞÃD
+			//æ¨™é¡Œ
 			foreach($vv->find('font') as $k2 => $v2){
-				if($k2==0){//¼ĞÃD
+				if($k2==0){//æ¨™é¡Œ
 					$chat_array[$k]['title'] =$v2->plaintext;
 					$v2->outertext="";
 				}
-				if($k2==1){//¦WºÙ
+				if($k2==1){//åç¨±
 					$chat_array[$k]['name'] =$v2->plaintext;
 					$v2->outertext="";
 				}
 			}
-			//¹Ï¤ù
+			//åœ–ç‰‡
 			foreach($vv->find('img') as $k2 => $v2){
 				$chat_array[$k]['image']  =$v2->parent->href;//
 				$v2->parent->outertext="";
@@ -41,24 +41,24 @@
 		
 
 	}
-	//echo print_r($chat_array,true);exit;//ÀË¬dÂI
-	//§å¦¸¿é¥Xhtml¸ê®Æ
+	//echo print_r($chat_array,true);exit;//æª¢æŸ¥é»
+	//æ‰¹æ¬¡è¼¸å‡ºhtmlè³‡æ–™
 	foreach($chat_array as $k => $v){
 		$have_text++;
-		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//¤º¤å
-		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//¤º¤å
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//å…§æ–‡
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//å…§æ–‡
 		$chat_array[$k]['time']=strip_tags($chat_array[$k]['time'],"<br>");
 		$htmlbody.= '<span class="idno">';
 		$htmlbody.=$chat_array[$k]['time'];
 		$htmlbody.= '</span>';
 		
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
-		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//¤º¤å
-		//¦³¹Ï
+		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//å…§æ–‡
+		//æœ‰åœ–
 		if($chat_array[$k]['image']){
-			$have_pic++;//­pºâ¹Ï¤ù¼Æ¶q
+			$have_pic++;//è¨ˆç®—åœ–ç‰‡æ•¸é‡
 			$pic_url=$chat_array[$k]['image'];
-			$img_filename=img_filename($pic_url);//¹ÏÀÉÀÉ¦W
+			$img_filename=img_filename($pic_url);//åœ–æª”æª”å
 			$htmlbody.= "<br/>\n";
 			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
 			if($input_b){
@@ -77,15 +77,15 @@
 		$htmlbody.="<br>\n";
 	}
 	////DOM/
-	$w_chk=1;//¼g¤J¨ìÀÉ®×
+	$w_chk=1;//å¯«å…¥åˆ°æª”æ¡ˆ
 	$pre_fix="2c";
 	$htmlbody2.= "[$have_pic][$have_text]";//
 	//
 	$pattern="%\/([0-9]+)\.htm%";
-	preg_match($pattern, $url, $matches_url);//§ì­º¦ê½s¸¹
-	$no=$matches_url[1];//­º½g½s¸¹
+	preg_match($pattern, $url, $matches_url);//æŠ“é¦–ä¸²ç·¨è™Ÿ
+	$no=$matches_url[1];//é¦–ç¯‡ç·¨è™Ÿ
 	//
 	$pattern="%([\w]+)\.[\w\.]+%";
-	preg_match($pattern, $url_p['host'], $matches_sub);//§ìºô°ì¿ëÃÑ
-	$dm=$matches_sub[1].$matches_sub[2];//§ìºô°ì¿ëÃÑ
+	preg_match($pattern, $url_p['host'], $matches_sub);//æŠ“ç¶²åŸŸè¾¨è­˜
+	$dm=$matches_sub[1].$matches_sub[2];//æŠ“ç¶²åŸŸè¾¨è­˜
 ?>

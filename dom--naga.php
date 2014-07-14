@@ -2,9 +2,9 @@
 	if(!$url){die('x');}
 	////////////
 	$html = file_get_html($url);//simple_html_dom
-	//°j°é§å¦¸³B²z
+	//è¿´åœˆæ‰¹æ¬¡è™•ç†
 	$cc=0;
-	foreach($html->find('div.quote') as $k => $v){//¤ÀªR
+	foreach($html->find('div.quote') as $k => $v){//åˆ†æ
 		$chat_array[$k]['text']=$v->outertext;
 		$v->outertext="";
 		$vv = $v->parent;
@@ -39,26 +39,26 @@
 		$chat_array[$k]['time'] = implode("",$chat_array[$k]['time']);
 		//
 	}
-	ksort($chat_array);//±Æ§Ç
-	//echo print_r($chat_array,true);exit;//ÀË¬dÂI
-	$chat_ct=count($chat_array);//­p¼Æ
-	//¥Í¦¨ºô­¶¤º®e
+	ksort($chat_array);//æ’åº
+	//echo print_r($chat_array,true);exit;//æª¢æŸ¥é»
+	$chat_ct=count($chat_array);//è¨ˆæ•¸
+	//ç”Ÿæˆç¶²é å…§å®¹
 	foreach($chat_array as $k => $v){
-		$have_text++;//­pºâ¯d¨¥¼Æ¶q
-		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//¤º¤å
-		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//¤º¤å
+		$have_text++;//è¨ˆç®—ç•™è¨€æ•¸é‡
+		$htmlbody.= '<span class="title">'.$chat_array[$k]['title']."</span>"."\n";//å…§æ–‡
+		$htmlbody.= '<span class="name">'.$chat_array[$k]['name']."</span>"."\n";//å…§æ–‡
 		$htmlbody.= '<span class="idno">';
 		$htmlbody.=$chat_array[$k]['time'];
 		$htmlbody.=$chat_array[$k]['no'];
 		$htmlbody.= '</span>';
 		//
 		$chat_array[$k]['text']=strip_tags($chat_array[$k]['text'],"<br>");
-		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//¤º¤å
-		//¦³¹Ï
+		$htmlbody.= "<span class='text'><blockquote>".$chat_array[$k]['text']."</blockquote></span>\n";//å…§æ–‡
+		//æœ‰åœ–
 		if($chat_array[$k]['image']){
-			$have_pic++;//­pºâ¹Ï¤ù¼Æ¶q
+			$have_pic++;//è¨ˆç®—åœ–ç‰‡æ•¸é‡
 			$pic_url=$chat_array[$k]['image'];
-			$img_filename=img_filename($pic_url);//¹ÏÀÉÀÉ¦W
+			$img_filename=img_filename($pic_url);//åœ–æª”æª”å
 			if($k >0){$zip_pic.=",";}
 			$zip_pic.=$img_filename;
 			$htmlbody.= "<br/>\n";
@@ -79,13 +79,13 @@
 		$htmlbody.="<br>\n";
 	}
 	////DOM/
-	$w_chk=1;//¼g¤J¨ìÀÉ®×
+	$w_chk=1;//å¯«å…¥åˆ°æª”æ¡ˆ
 	$pre_fix="naga";
 	$htmlbody2.= "[$have_pic][$have_text]";//
 	//
 	$pattern="%res=([0-9]+)%";
-	preg_match($pattern, $url, $matches_url);//§ì­º¦ê½s¸¹
-	$no=$matches_url[1];//­º½g½s¸¹
+	preg_match($pattern, $url, $matches_url);//æŠ“é¦–ä¸²ç·¨è™Ÿ
+	$no=$matches_url[1];//é¦–ç¯‡ç·¨è™Ÿ
 	//echo print_r($matches_url,true);exit;
 
 ?>

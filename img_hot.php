@@ -6,11 +6,11 @@ if(preg_match("/\.jpg$/i",$query_string,$match)){$chk=1;$type='jpg';}
 if(preg_match("/\.png$/i",$query_string,$match)){$chk=1;$type='png';}
 if(preg_match("/\.gif$/i",$query_string,$match)){$chk=1;$type='gif';}
 //
-$yesno = is_file($query_string);//½T»{ÀÉ®×¦s¦b
+$yesno = is_file($query_string);//ç¢ºèªæª”æ¡ˆå­˜åœ¨
 if(!$yesno){die('x');}
-$contents = file_get_contents($query_string);//¨ú±oÀÉ®×¤º®e
+$contents = file_get_contents($query_string);//å–å¾—æª”æ¡ˆå…§å®¹
 if(!$contents){die('x');}
-$FFF = mime_content_type($query_string);//½T»{¤å¥óÃþ«¬
-Header("Content-type:".$FFF);//«ü©w¤å¥óÃþ«¬
+$FFF = mime_content_type($query_string);//ç¢ºèªæ–‡ä»¶é¡žåž‹
+Header("Content-type:".$FFF);//æŒ‡å®šæ–‡ä»¶é¡žåž‹
 echo $contents;
 ?>

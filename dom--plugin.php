@@ -8,6 +8,9 @@ $query_string=$_SERVER['QUERY_STRING'];
 extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
 error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 //$input_a=$_POST['input_a'];
+$phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
+$phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
+//
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
@@ -56,15 +59,18 @@ $htmlbody='';$htmlbody2='';$htmlbody2_js='';
 $have_pic=0;$have_text=0;//計算圖片跟留言數量
 if($url){//有輸入網址
 	$url_p=parse_url($url);
-	if(preg_match("%nagatoyuki\.org%U",$url_p['host'])){include('./dom--naga.php');}
-	if(preg_match("%\.mykomica\.org%U",$url_p['host'])){include('./dom--myk.php');}
-	if(preg_match("%futakuro\.com%U",$url_p['host'])){include('./dom--jk2.php');}
-	if(preg_match("%\.dreamhosters\.com%U",$url_p['host'])){include('./dom--k.php');}
-	if(preg_match("%\.komica\.org%U",$url_p['host'])){include('./dom--k.php');}
-	if(preg_match("%\.wsfun\.com%U",$url_p['host'])){include('./dom--wsf.php');}
-	if(preg_match("%\.2chan\.net%U",$url_p['host'])){include('./dom--2c.php');}
-	
+	$chk=0;
+	if(preg_match("%nagatoyuki\.org%U",$url_p['host'])) {$chk=1;include('./dom--naga.php');}
+	if(preg_match("%\.mykomica\.org%U",$url_p['host'])) {$chk=1;include('./dom--myk.php');}
+	if(preg_match("%futakuro\.com%U",$url_p['host'])) {$chk=1;include('./dom--jk2.php');}
+	if(preg_match("%\.dreamhosters\.com%U",$url_p['host'])) {$chk=1;include('./dom--k.php');}
+	if(preg_match("%\.komica\.org%U",$url_p['host'])) {$chk=1;include('./dom--k.php');}
+	if(preg_match("%\.wsfun\.com%U",$url_p['host'])) {$chk=1;include('./dom--wsf.php');}
+	if(preg_match("%\.2chan\.net%U",$url_p['host'])) {$chk=1;include('./dom--2c.php');}
+	if(preg_match("%fenrisulfr\.org%",$url_p['host'])) {$chk=1;include('./dom--fen.php');}
+	if(preg_match("%2cat\.or\.tl%",$url_p['host'])) {$chk=1;include('./dom--ted.php');}
 	//
+	if(!$no){die('沒有接收到no');}
 	if(!$pre_fix){die('沒有接收到pre_fix');}
 }else{
 	//沒輸入
@@ -90,7 +96,8 @@ if($w_chk){//寫入到檔案
 	fputs($cp, $output);
 	fclose($cp);
 	////////
-	$save_where="存檔=<a href='$logfile'>$logfile</a>\n";
+	$save_url=$phpdir.$logfile;
+	$save_where="<a href='https://archive.today/?run=1&url=$save_url'>↗</a>存檔=<a href='$logfile'>$logfile</a>\n";
 	////////
 }//寫入到檔案/
 
@@ -102,7 +109,6 @@ $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
 if(isset($save_where)){
 	$output.=$save_where;
-	$output.=$url.'<br/>'."\n";
 	if($have_pic){
 		if($input_c){
 			//快速
@@ -113,6 +119,8 @@ if(isset($save_where)){
 		}
 	}
 }
+$output.=$url."\n";
+$output.='<br/>';
 $output.="\n";
 echo $output;
 echo $htmlbody2;//
@@ -152,7 +160,7 @@ $x=<<<EOT
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
-body2 { font-family:'Courier New',"細明體",'MingLiU'; }
+body2 { font-family:'MingLiU'; }
 img.zoom {
 height:auto; width:auto;
 min-width:20px; min-height:20px;
@@ -206,7 +214,7 @@ $x=<<<EOT
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
-body2 { font-family:'Courier New',"細明體",'MingLiU'; }
+body2 { font-family:'MingLiU'; }
 --></STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">

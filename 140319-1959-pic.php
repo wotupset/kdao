@@ -21,12 +21,13 @@ if(strlen($url)){//使用get取得網址
 //
 if(!ignore_user_abort()){ignore_user_abort(true);}//使用者關閉也要繼續跑完
 //處理網址
+//$url=rawurlencode($url);
 $url2=substr($url,0,strrpos($url,"/")+1); //根目錄
 $tmp_str=strlen($url2)-strlen($url);
 $url3=substr($url,$tmp_str);//圖檔檔名
 $fn=$url3;
 $fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
-if( preg_match("/[^\w]/",$fn_a) ){die('檔名異常');}
+if( preg_match("/[^\w\.\-]/",$fn_a) ){die('檔名異常');}
 //$fn_a=preg_replace("/_+/","_",$fn_a);//主檔名
 //
 $fn_b=strrpos($fn,".")+1-strlen($fn);
@@ -172,5 +173,23 @@ $x="\n".$x."\n";
 return $x;
 }
 //echo form();
-
+function strZHcut($str){ //將檔名中的中文去掉
+	$len = strlen($str);
+	for($i = 0; $i < $len; $i++){
+		$char = $str{0};
+		if(ord($char) > 127){
+			$i++;
+			if($i < $len){
+				//$arr[] = substr($str, 0, 3);//取0~3字元的字串到陣列
+				$arr[] = "_";//取0~3字元的字串到陣列
+				$str = substr($str, 3); //取3字元之後的字串
+			}
+		}else{
+			$arr[] = $char;
+			$str = substr($str, 1);
+		}
+	}
+	$str=join($arr); //array_reverse?
+	return $str;
+}
 ?>

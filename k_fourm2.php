@@ -56,28 +56,29 @@ if(!is_dir($dir_mth)){//當月資料夾不存在
 }
 //$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
 //if(!is_file($dir_mth_index)){die('[x]index');}
-$url=$dir_mth;
-$handle=opendir($url); 
-$cc = 0;
 $FFF_arr=array();
-while(($file = readdir($handle))!==false) { 
-	$chk=0;
-	$ext = pathinfo($file,PATHINFO_EXTENSION);//副檔名
-	if($ext == "jpg"){$chk=1;}//只要圖
-	if($ext == "png"){$chk=1;}//只要圖
-	if($ext == "gif"){$chk=1;}//只要圖
-	//if(preg_match("/\.gif$/i",$file)){$chk=1;}//只要圖
-	if($chk==1){
-		$FFF_arr[0][$cc]=$file;
-		$FFF_arr[1][$cc]=filectime($url.$file);
-	}
-	$cc = $cc + 1;
-} 
-closedir($handle); 
-if(count($FFF_arr[0])==0){
-	$FFF_arr[0][0]='x';
-	$FFF_arr[1][0]='x';
-}
+$FFF_arr[0][0]='x';
+$FFF_arr[1][0]='x';
+if(is_dir($dir_mth)){
+	$url=$dir_mth;
+	$handle=opendir($url); 
+	$cc = 0;
+	while(($file = readdir($handle))!==false) { 
+		$chk=0;
+		$ext = pathinfo($file,PATHINFO_EXTENSION);//副檔名
+		if($ext == "jpg"){$chk=1;}//只要圖
+		if($ext == "png"){$chk=1;}//只要圖
+		if($ext == "gif"){$chk=1;}//只要圖
+		//if(preg_match("/\.gif$/i",$file)){$chk=1;}//只要圖
+		if($chk==1){
+			$FFF_arr[0][$cc]=$file;
+			$FFF_arr[1][$cc]=filectime($url.$file);
+		}
+		$cc = $cc + 1;
+	} 
+	closedir($handle); 
+}else{}
+
 //sort($FFF_arr);//排序 舊的在前
 array_multisort(
 $FFF_arr[1], SORT_ASC,SORT_NUMERIC,

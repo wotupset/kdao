@@ -47,9 +47,11 @@ if(1){
 }
 ///////////$dir_mth
 //允許的網址格式
+//print_r($url);exit;//檢查點
+
 $kdao_only=0;
 $url_p=parse_url($url);
-//print_r($url_p,true);exit;//檢查點
+//print_r($url_p);exit;//檢查點
 if(preg_match("%fenrisulfr\.org%U",$url_p['host'])){$kdao_only=1;}
 
 ///////////

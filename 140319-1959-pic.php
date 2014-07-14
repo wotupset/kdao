@@ -81,16 +81,21 @@ if(is_file($src)){//圖檔存在
 	//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
-	$chk=1;//成功(綠色)
+	if(is_file($src)){
+		$chk=1;//成功(綠色)
+	}else{
+		die("寫入失敗");
+	}
+	
 }
 //檢查檔案內容是不是圖片
 $info_array=getimagesize($src);
 if(floor($info_array[2]) == 0 ){
-	$chk=1;//成功(紅色)
+	die("不是圖片");
 }
 $info_array=filesize($src);
 if(floor($info_array) == 0 ){
-	$chk=1;//成功(紅色)
+	die("沒有內容");
 }
 switch($chk){
 	case '0'://失敗=0

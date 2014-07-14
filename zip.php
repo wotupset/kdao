@@ -168,7 +168,7 @@ $x=<<<EOT
 <META http-equiv="Content-Style-Type" content="text/css">
 <meta name="Robots" content="index,follow">
 <STYLE TYPE="text/css"><!--
-body { font-family:"細明體",'MingLiU'; }
+body { font-family:'MingLiU'; }
 --></STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
@@ -178,7 +178,11 @@ return $x;
 }
 
 function htmlend(){
+$phpself=$GLOBALS['phpself'];
 $x=<<<EOT
+<a href="./">目</a>
+<a href="./$phpself">返</a>
+<br/>
 </body></html>
 EOT;
 $x="\n".$x."\n";

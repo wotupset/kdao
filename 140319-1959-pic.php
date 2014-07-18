@@ -43,22 +43,30 @@ if($FFF == 0){die('ban');}
 //建立資料夾
 $dir_path="./_".$ym."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
-$dir_path_src=$dir_path."src/";//存放圖檔位置
-if(!is_dir($dir_path_src)){mkdir($dir_path_src, 0777);}
-$img_count=$dir_path_src."index.php";
-if(!is_file($img_count)){
-	$chk=copy("img_count.php", $img_count) or die('[x]img_count.php');//圖片資料夾的統計php
-}
-$src=$dir_path_src.$url3;//存放檔案的位置
+if(!is_dir($dir_path)){die('建立資料夾失敗');}
+$dir_path=$dir_path."src/";//存放圖檔位置
+if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
+if(!is_dir($dir_path)){die('建立資料夾失敗');}
+//
+//圖片資料夾的統計php
+$img_count=$dir_path."index.php";
+if(!is_file($img_count)){copy("img_count.php", $img_count);}
+if(!is_file($img_count)){die("複製檔案失敗");}
+//
+$src=$dir_path.$url3;//圖檔存放的位置
 //echo $url;echo $url3;echo $src;exit;
 //$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
 if($sss){//單張讀圖
+	//刪掉舊檔
 	if(is_file($src)){unlink($src);}
 	if(is_file($src)){die('[x]is');}
-	//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
+	//
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
+	$info_array=getimagesize($src);
+	if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
+	//
 	echo "<a href='".$phpself."'>".$phpself."</a>";
 	echo "<br/>\n";
 	echo "<a href='".$src."'>".$src."</a>";
@@ -69,35 +77,25 @@ if($sss){//單張讀圖
 ////
 
 if(is_file($src)){//圖檔存在
-	if($re_get){//重新下載
+	if($re_get){//是否重新下載
+		$chk="2b";//重新下載(紫色)
 		unlink($src);
-		//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
+		if(is_file($src)){die('刪除檔案失敗(權限?)');}
 		$content = file_get_contents($url);
 		$content = file_put_contents($src,$content);
-		$chk="2b";//重新下載(紫色)
+		$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
 	}else{//跳過
 		$chk="2a";//圖檔存在(藍色)//跳過
 	}
 }else{//圖檔不存在//新的檔案
-	//$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){die('xpic');}//檢查檔案內容是不是圖片
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
-	if(is_file($src)){
-		$chk=1;//成功(綠色)
-	}else{
-		die("寫入失敗");
-	}
-	
+	if(is_file($src)){$chk='1';}
+	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
 }
 //檢查檔案內容是不是圖片
-$info_array=getimagesize($src);
-if(floor($info_array[2]) == 0 ){
-	die("不是圖片");
-}
 $info_array=filesize($src);
-if(floor($info_array) == 0 ){
-	die("沒有內容");
-}
+if(floor($info_array)==0){die("沒有內容");}
 switch($chk){
 	case '0'://失敗=0
 		Header("Content-type: image/png");//指定文件類型為PNG

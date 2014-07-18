@@ -69,6 +69,8 @@ if($url){//有輸入網址
 	if(preg_match("%\.2chan\.net%U",$url_p['host'])) {$chk=1;include('./dom--2c.php');}
 	if(preg_match("%fenrisulfr\.org%",$url_p['host'])) {$chk=1;include('./dom--fen.php');}
 	if(preg_match("%2cat\.or\.tl%",$url_p['host'])) {$chk=1;include('./dom--ted.php');}
+	if(preg_match("%rthost\.ez\.lv%",$url_p['host'])) {$chk=1;include('./dom--ezlv.php');}
+	
 	//
 	if(!$no){die('沒有接收到no');}
 	if(!$pre_fix){die('沒有接收到pre_fix');}
@@ -97,7 +99,7 @@ if($w_chk){//寫入到檔案
 	fclose($cp);
 	////////
 	$save_url=$phpdir.$logfile;
-	$save_where="<a href='https://archive.today/?run=1&url=$save_url'>↗</a>存檔=<a href='$logfile'>$logfile</a>\n";
+	$save_where="<a href='https://archive.today/?run=1&url=$save_url' target='_blank'>↗</a>存檔=<a href='$logfile'>$logfile</a>\n";
 	////////
 }//寫入到檔案/
 

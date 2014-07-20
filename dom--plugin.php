@@ -1,5 +1,5 @@
 <?php 
-ini_set("memory_limit","10M");
+//ini_set("memory_limit","10M");
 header('Content-type: text/html; charset=utf-8');
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
@@ -16,7 +16,7 @@ $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
-$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
+//$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
 
 ///////////
 
@@ -59,7 +59,8 @@ $htmlbody='';$htmlbody2='';$htmlbody2_js='';
 $have_pic=0;$have_text=0;//計算圖片跟留言數量
 if($url){//有輸入網址
 	$url_p=parse_url($url);
-	$chk=0;$html='';
+	$chk=0;
+	unset($html);$html='';
 	if(preg_match("%nagatoyuki\.org%U",$url_p['host'])) {$chk=1;include('./dom--naga.php');}
 	if(preg_match("%\.mykomica\.org%U",$url_p['host'])) {$chk=1;include('./dom--myk.php');}
 	if(preg_match("%futakuro\.com%U",$url_p['host'])) {$chk=1;include('./dom--jk2.php');}
@@ -72,7 +73,7 @@ if($url){//有輸入網址
 	if(preg_match("%rthost\.ez\.lv%",$url_p['host'])) {$chk=1;include('./dom--ezlv.php');}
 	
 	//
-	$html->clear();unset($html);
+	$html->clear();unset($html);//php5物件bug 要手動釋放記憶體
 	if(!$no){die('沒有接收到no');}
 	if(!$pre_fix){die('沒有接收到pre_fix');}
 }else{
@@ -115,11 +116,11 @@ if(isset($save_where)){
 	$output.=$save_where;
 	if($have_pic){
 		if($input_c){
-			//快速
-		}else{
 			$output.=js_timedown();//
 			$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
 			echo $htmlbody2_js;
+		}else{
+			//
 		}
 	}
 }
@@ -244,7 +245,15 @@ $x=<<<EOT
 <form enctype="multipart/form-data" action='$phpself' method="post">
 網址<input type="text" name="input_a" size="20" value=""><input type="submit" value=" send "><br/>
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
-<label>漸進讀圖<input type="checkbox" name="input_c" value="1" />(主機不穩時使用)</label><br/>
+<label>漸進讀圖
+<select name="input_c">
+<option value="" selected="selected">OFF</option>
+<option value="3000">3.0</option>
+<option value="2000">2.0</option>
+<option value="1000">1.0</option>
+<option value="500">0.5</option>
+</option>
+</select>(主機不穩時使用)</label><br/>
 </form>
 EOT;
 $x="\n".$x."\n";
@@ -253,14 +262,16 @@ return $x;
 //echo form();
 function js_timedown(){
 $have_pic=$GLOBALS['have_pic'];
+$input_c = $GLOBALS['input_c'];
 $x=<<<EOT
 <script>
 $(document).ready(function() {
 	timedown();
+	//$input_c
 });
 function timedown(){
 	var t=0;
-	var sec=3000;
+	var sec=$input_c;
 	document.getElementById("timedown_span").innerHTML=t;
 	var timedown = setInterval(function() {
 		t=t+1;

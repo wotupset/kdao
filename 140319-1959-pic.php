@@ -99,49 +99,33 @@ if(floor($info_array)==0){die("沒有內容");}
 switch($chk){
 	case '0'://失敗=0
 		Header("Content-type: image/png");//指定文件類型為PNG
-		$moji=date("ymd",$time);
-		$moji=sprintf("%06d",$moji);
-		$img = imageCreate(90,15);
-		$wd_color =imageColorAllocate($img, 255, 0, 0);//紅色
+		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 255, 0, 0);
 		imageFill($img, 0, 0, $bg_color);
-		imagestring($img,5,0,0, $moji, $wd_color);
 		imagePng($img);
 		imageDestroy($img);
 	break;
 	case '1'://成功=1
 		Header("Content-type: image/png");//指定文件類型為PNG
-		$moji=date("ymd",$time);
-		$moji=sprintf("%06d",$moji);
-		$img = imageCreate(90,15);
-		$wd_color =imageColorAllocate($img, 0, 255, 0);//綠色
+		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 0, 255, 0);
 		imageFill($img, 0, 0, $bg_color);
-		imagestring($img,5,0,0, $moji, $wd_color);
 		imagePng($img);
 		imageDestroy($img);
 	break;
 	case '2a'://圖檔存在//跳過
 		Header("Content-type: image/png");//指定文件類型為PNG
-		$moji=date("ymd",$time);
-		$moji=sprintf("%06d",$moji);
-		$img = imageCreate(90,15);
-		$wd_color =imageColorAllocate($img, 0, 0, 255);//藍色
+		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 0, 0, 255);
 		imageFill($img, 0, 0, $bg_color);
-		imagestring($img,5,0,0, $moji, $wd_color);
 		imagePng($img);
 		imageDestroy($img);
 	break;
 	case '2b'://重新下載
 		Header("Content-type: image/png");//指定文件類型為PNG
-		$moji=date("ymd",$time);
-		$moji=sprintf("%06d",$moji);
-		$img = imageCreate(90,15);
-		$wd_color =imageColorAllocate($img, 255, 0, 255);//紫色
+		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 255, 0, 255);
 		imageFill($img, 0, 0, $bg_color);
-		imagestring($img,5,0,0, $moji, $wd_color);
 		imagePng($img);
 		imageDestroy($img);
 	break;

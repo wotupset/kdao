@@ -352,6 +352,7 @@ return $x;
 
 function js_timedown(){
 $have_pic=$GLOBALS['have_pic'];
+$input_c = $GLOBALS['input_c'];
 $x=<<<EOT
 <script>
 $(document).ready(function() {
@@ -359,6 +360,7 @@ $(document).ready(function() {
 });
 function timedown(){
 	var t=0;
+	var sec=$input_c;
 	document.getElementById("timedown_span").innerHTML=t;
 	var timedown = setInterval(function() {
 		t=t+1;
@@ -372,7 +374,7 @@ function timedown(){
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
 			clearInterval(timedown);
 		}
-	}, 500);
+	}, sec);
 }
 </script>
 <div id='timedown_div'><span id='timedown_span'></span></div>

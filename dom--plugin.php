@@ -247,8 +247,8 @@ $x=<<<EOT
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
 <label>漸進讀圖
 <select name="input_c">
-<option value="" selected="selected">OFF</option>
-<option value="3000">3.0</option>
+<option value="">OFF</option>
+<option value="3000" selected="selected">3.0</option>
 <option value="2000">2.0</option>
 <option value="1000">1.0</option>
 <option value="500">0.5</option>

@@ -73,7 +73,7 @@
 			if($k >0){$zip_pic.=",";}
 			$zip_pic.=$img_filename;
 			$htmlbody.= "<br/>\n";
-			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
+			$htmlbody.= '<span class="pic">[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]</span>';//  border="1"
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{

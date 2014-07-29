@@ -21,25 +21,40 @@ if(strlen($url)){//使用get取得網址
 //
 if(!ignore_user_abort()){ignore_user_abort(true);}//使用者關閉也要繼續跑完
 //處理網址
-//$url=rawurlencode($url);
-$url2=substr($url,0,strrpos($url,"/")+1); //根目錄
-$tmp_str=strlen($url2)-strlen($url);
-$url3=substr($url,$tmp_str);//圖檔檔名
-$fn=$url3;
-$fn_a=substr($fn,0,strrpos($fn,".")); //主檔名
-if( preg_match("/[^\w\.\-]/",$fn_a) ){die('檔名異常');}
-//$fn_a=preg_replace("/_+/","_",$fn_a);//主檔名
-//
-$fn_b=strrpos($fn,".")+1-strlen($fn);
-$fn_b=strtolower(substr($fn,$fn_b)); //副檔名
-$url3=$fn_a.".".$fn_b;
-//非圖片的副檔名先排除
+
+$url_p=parse_url($url);
+//print_r($url_p);
+/*
+Array
+(
+    [scheme] => http
+    [host] => sage.komica.org
+    [path] => /00/src/1406616621815.jpg
+)
+*/
+$url_i=pathinfo($url_p['path']);
+//print_r($url_i);
+/*
+Array
+(
+    [dirname] => /00/src
+    [basename] => 1406616621815.jpg
+    [extension] => jpg
+    [filename] => 1406616621815
+)
+*/
+//檢查副檔名
 $FFF=0;
-$allow_ext=array('png', 'jpg', 'gif');
+$allow_ext=array('png', 'jpg', 'gif'); //允許的副檔名
 foreach($allow_ext as $k => $v){
-	if($v == $fn_b){$FFF++;}
+	if($v == $url_i['extension']){$FFF++;}
 }
-if($FFF == 0){die('ban');}
+if($FFF == 0){die('副檔名異常?');}
+//檢查主檔名
+if( preg_match("/[^\w\.\-]/",$url_i['filename']) ){ //只接受英數底線負號句號
+	die('主檔名異常?');
+}
+
 //建立資料夾
 $dir_path="./_".$ym."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
@@ -53,7 +68,7 @@ $img_count=$dir_path."index.php";
 if(!is_file($img_count)){copy("img_count.php", $img_count);}
 if(!is_file($img_count)){die("複製檔案失敗");}
 //
-$src=$dir_path.$url3;//圖檔存放的位置
+$src=$dir_path.$url_i['basename'];//圖檔存放的位置
 //echo $url;echo $url3;echo $src;exit;
 //$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
@@ -64,12 +79,27 @@ if($sss){//單張讀圖
 	//
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
+	//本地檔案內容
 	$info_array=getimagesize($src);
-	if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
+	//if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
+	//本地檔案大小
+	$info_filesize=filesize($src);
+	$FFF='';
+	if($info_filesize >1024){ $info_filesize = $info_filesize/1024;$FFF='kb';} //byte -> kb
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='mb';} //byte -> kb
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='gb';} //byte -> kb
+	$info_filesize=number_format($info_filesize,2);
+	$info_filesize=$info_filesize.$FFF;
+	//本地檔案資訊
+	$info_pathinfo=pathinfo($src);
+	//
+	
 	//
 	echo "<a href='".$phpself."'>".$phpself."</a>";
 	echo "<br/>\n";
-	echo "<a href='".$src."'>".$src."</a>";
+	echo "<a href='".$src."'>".$src."</a> ";
+	echo "<div>".$info_filesize."<pre>".print_r($info_array,true)."".print_r($info_pathinfo,true)."".print_r($url_p,true)."</pre></div>";
+	echo "<a href='./'>目</a>";
 	echo "<br/>\n";
 	echo "<img src='".$src."'/>";
 	exit;
@@ -83,15 +113,23 @@ if(is_file($src)){//圖檔存在
 		if(is_file($src)){die('刪除檔案失敗(權限?)');}
 		$content = file_get_contents($url);
 		$content = file_put_contents($src,$content);
-		$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
+		$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
 	}else{//跳過
-		$chk="2a";//圖檔存在(藍色)//跳過
+		$info_array=getimagesize($src);
+		//檢查本地檔案內容是不是圖片
+		if(floor($info_array[2])==0){
+			unlink($src);
+			copy($url,$src);
+			$chk="2b";//重新下載(紫色)
+		}else{
+			$chk="2a";//圖檔存在(藍色)//跳過
+		}
 	}
 }else{//圖檔不存在//新的檔案
 	$content = file_get_contents($url);
 	$content = file_put_contents($src,$content);
 	if(is_file($src)){$chk='1';}
-	$info_array=getimagesize($url);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查檔案內容是不是圖片
+	$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
 }
 //檢查檔案內容是不是圖片
 $info_array=filesize($src);
@@ -147,6 +185,7 @@ $x=<<<EOT
 <label>單張讀圖<input type="checkbox" name="sss" value="1" />(測試時使用)</label>
 <input type="submit" value="送出"/>
 </form>
+<a href='./'>目</a>
 </body>
 </html>
 EOT;

@@ -113,7 +113,9 @@
 			$pic_url=$chat_array[$k]['image'];
 			$img_filename=img_filename($pic_url);//圖檔檔名
 			$htmlbody.= "<br/>\n";
-			$htmlbody.= '[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
+			$FFF='';
+			$FFF='[<a href="./src/'.$img_filename.'" target="_blank"><img class="zoom" src="./src/'.$img_filename.'"/></a>]';//  border="1"
+			$htmlbody.= '<span class="pic">'.$FFF.'</span>';
 			if($input_b){
 				$pic_url_php="./140319-1959-pic.php?url=".$pic_url;
 			}else{

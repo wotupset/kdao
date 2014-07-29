@@ -71,6 +71,7 @@ if($url){//有輸入網址
 	if(preg_match("%fenrisulfr\.org%",$url_p['host'])) {$chk=1;include('./dom--fen.php');}
 	if(preg_match("%2cat\.or\.tl%",$url_p['host'])) {$chk=1;include('./dom--ted.php');}
 	if(preg_match("%rthost\.ez\.lv%",$url_p['host'])) {$chk=1;include('./dom--ezlv.php');}
+	if(preg_match("%yucie\.net%",$url_p['host'])) {$chk=1;include('./dom--yuc.php');}
 	
 	//
 	$html->clear();unset($html);//php5物件bug 要手動釋放記憶體
@@ -272,7 +273,7 @@ $(document).ready(function() {
 function timedown(){
 	var t=0;
 	var sec=$input_c;
-	document.getElementById("timedown_span").innerHTML=t;
+	document.getElementById("timedown_span").innerHTML="準備"+t;
 	var timedown = setInterval(function() {
 		t=t+1;
 		document.getElementById("timedown_span").innerHTML="("+t+"/$have_pic)..."+myArray[t];
@@ -281,7 +282,7 @@ function timedown(){
 		if(t<$have_pic){
 			timedown;
 		}else{
-			document.getElementById("timedown_span").innerHTML="沒了";
+			document.getElementById("timedown_span").innerHTML="沒了"+t;
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
 			clearInterval(timedown);
 		}

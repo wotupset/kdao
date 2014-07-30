@@ -114,9 +114,8 @@ if(is_file($src)){//圖檔存在
 		$content = file_get_contents($url);
 		$content = file_put_contents($src,$content);
 		$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
-	}else{//跳過
+	}else{//檢查本地檔案內容是不是圖片
 		$info_array=getimagesize($src);
-		//檢查本地檔案內容是不是圖片
 		if(floor($info_array[2])==0){
 			unlink($src);
 			copy($url,$src);

@@ -12,17 +12,21 @@ date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 if($query_string){$url=$query_string;}else{$url=$input_a;}
+if($url){
+	if(!preg_match("%http://himado\.in/.*%U",$url)){die('reg1');}//只使用於XX網址
+	$mode='reg';
+}
+
 $url=trim($url);
+//echo $url;exit;
 ////
 $htmlbody='';
 
 function reg(){
 	//http://himado.in/206235
-	$input_a=$GLOBALS['input_a'];
+	$url=$GLOBALS['url'];
 	//<h1 id="movie_title">とある科学の超電磁砲S 映像特典 「もっとまるっと超電磁砲Ⅳ」
-
-	if(!preg_match("%http://himado\.in/.*%U",$input_a)){die('reg1');}//只使用於XX網址
-	$content = file_get_contents($input_a) or die("[error] 0 file_get_contents");
+	$content = file_get_contents($url) or die("[error] 0 file_get_contents");
 	//$content = preg_replace("/\n/","",$content);
 	$content = preg_replace("/\t/","",$content);
 	$pattern='%var movie_url = \'(.*)\';%U';//非貪婪匹配
@@ -31,7 +35,7 @@ function reg(){
 	preg_match($pattern, $content, $matches_r2);//首篇的圖
 	//$x=print_r($matches_r1,true);
 	$x='';
-	$x.=$input_a;
+	$x.=$url;
 	$x.="<br/>\n";
 	$x.=auto_link(rawurldecode($matches_r1[1]));
 	$x.="<br/>\n";

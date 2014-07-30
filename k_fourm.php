@@ -38,12 +38,12 @@ $FFF_arr[1], SORT_DESC,SORT_NUMERIC,
 $FFF_arr[0]
 );
 
+ob_start();
 $ct=count($FFF_arr[0]);//攔截到的項目
 //echo $ct;
 //**********
 //檢查是否支援 allow_url_fopen
 echo $allow_url_fopen = ini_get('allow_url_fopen');
-
 $ct2=ceil($ct/10);
 echo "<a href='./'>目</a>"."\n";
 echo "<a href='./".$phpself."'>返</a>"."\n";
@@ -77,4 +77,36 @@ foreach($FFF_arr[0] as $k => $v ){
 }
 echo "</pre>";
 echo "<br/>\n";
+$htmlbody=ob_get_flush();
+
+echo htmlhead();
+echo $htmlbody;
+echo htmlend();
+
+function htmlhead(){
+$x=<<<EOT
+<html><head>
+<title>guten morgen</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META http-equiv="Content-Script-Type" content="text/javascript">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META HTTP-EQUIV="EXPIRES" CONTENT="Thu, 15 Jan 2009 05:12:01 GMT">
+<META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+<STYLE TYPE="text/css">
+</STYLE>
+</head>
+<body>
+EOT;
+$x="\n".$x."\n";
+return $x;
+}
+
+function htmlend(){
+$x=<<<EOT
+</body></html>
+EOT;
+$x="\n".$x."\n";
+return $x;
+}
+
 ?>

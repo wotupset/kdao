@@ -9,6 +9,7 @@ error_reporting(E_ALL & ~E_NOTICE); //所有錯誤中排除NOTICE提示
 //$input_a=$_POST['input_a'];
 $phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
 $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
+$phphost=$_SERVER["SERVER_NAME"];
 //
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
@@ -209,19 +210,20 @@ return $x;
 //echo htmlhead();
 function htmlhead2(){
 $ymdhis=$GLOBALS['ymdhis'];
+$phphost=$GLOBALS['phphost'];
 $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
 $x=<<<EOT
 <html><head>
-<title>$ymdhis</title>
+<title>$phphost$ymdhis</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <meta name="Robots" content="index,follow">
-<STYLE TYPE="text/css"><!--
+<STYLE TYPE="text/css">
 body2 { font-family:'MingLiU'; }
---></STYLE>
+</STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
 
@@ -273,12 +275,15 @@ $(document).ready(function() {
 function timedown(){
 	var t=0;
 	var sec=$input_c;
+	var FFF='';
 	document.getElementById("timedown_span").innerHTML="準備"+t;
 	var timedown = setInterval(function() {
 		t=t+1;
 		document.getElementById("timedown_span").innerHTML="("+t+"/$have_pic)..."+myArray[t];
 		document.getElementById("pic"+t).src=myArray[t];
 		document.getElementById("pn"+t).style.color = "#00ff00";
+		FFF=document.getElementById("pn"+t).innerHTML;
+		document.getElementById("pn"+t).innerHTML = '<a href="'+myArray[t]+'">檢</a>'+FFF;
 		if(t<$have_pic){
 			timedown;
 		}else{

@@ -85,7 +85,7 @@ if($sss){//單張讀圖
 	//本地檔案大小
 	$info_filesize=filesize($src);
 	$FFF='';
-	if($info_filesize >1024){ $info_filesize = $info_filesize/1024;$FFF='kb';} //byte -> kb
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='kb';} //byte -> kb
 	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='mb';} //byte -> kb
 	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='gb';} //byte -> kb
 	$info_filesize=number_format($info_filesize,2);
@@ -96,11 +96,16 @@ if($sss){//單張讀圖
 	
 	//
 	echo "<a href='".$phpself."'>".$phpself."</a>";
-	echo "<br/>\n";
-	echo "<a href='".$src."'>".$src."</a> ";
-	echo "<div>".$info_filesize."<pre>".print_r($info_array,true)."".print_r($info_pathinfo,true)."".print_r($url_p,true)."</pre></div>";
 	echo "<a href='./'>目</a>";
 	echo "<br/>\n";
+	echo "<a href='".$src."'>".$src."</a> ";
+	echo "<br/>\n".$url."<br/>\n";
+	echo "<div><pre>";
+	echo print_r($url_p,true);
+	echo print_r($info_array,true);
+	echo print_r($info_pathinfo,true);
+	echo "</pre></div>";
+	echo "<br/>\n".$info_filesize."<br/>\n";
 	echo "<img src='".$src."'/>";
 	exit;
 }

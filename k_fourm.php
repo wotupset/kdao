@@ -11,8 +11,6 @@ $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //**********
 $FFF_arr=array();
-$FFF_arr[0][0]='x';
-$FFF_arr[1][0]='x';
 if(is_dir($dir_mth)){
 	$url=$dir_mth;
 	$handle=opendir($url); 
@@ -30,6 +28,9 @@ if(is_dir($dir_mth)){
 		$cc = $cc + 1;
 	} 
 	closedir($handle); 
+}else{
+	$FFF_arr[0][0]='x';
+	$FFF_arr[1][0]='x';
 }
 rsort($FFF_arr);
 //print_r($FFF_arr);exit;
@@ -60,7 +61,7 @@ foreach($FFF_arr[0] as $k => $v ){
 				echo "&lt;a href='".$album_link."'&gt;".$phphost."&lt;/a&gt; &lt;br/&gt;";
 				echo "\n";
 			}
-			echo $cc;
+			echo $k;
 			echo "&lt;img src='".$pic_src."'&gt; &lt;br/&gt;";
 		break;
 		default: //預設
@@ -77,7 +78,7 @@ foreach($FFF_arr[0] as $k => $v ){
 }
 echo "</pre>";
 echo "<br/>\n";
-$htmlbody=ob_get_flush();
+$htmlbody=ob_get_clean();
 
 echo htmlhead();
 echo $htmlbody;

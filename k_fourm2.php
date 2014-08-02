@@ -57,8 +57,6 @@ if(!is_dir($dir_mth)){//當月資料夾不存在
 //$dir_mth_index=$dir_mth."index.php"; //存放該月檔案
 //if(!is_file($dir_mth_index)){die('[x]index');}
 $FFF_arr=array();
-$FFF_arr[0][0]='x';
-$FFF_arr[1][0]='x';
 if(is_dir($dir_mth)){
 	$url=$dir_mth;
 	$handle=opendir($url); 
@@ -74,10 +72,13 @@ if(is_dir($dir_mth)){
 			$FFF_arr[0][$cc]=$file;
 			$FFF_arr[1][$cc]=filectime($url.$file);
 		}
-		$cc = $cc + 1;
+		$cc++;//$cc = $cc + 1;
 	} 
 	closedir($handle); 
-}else{}
+}else{
+	$FFF_arr[0][0]='x';
+	$FFF_arr[1][0]='x';
+}
 
 //sort($FFF_arr);//排序 舊的在前
 array_multisort(

@@ -3,36 +3,60 @@ error_reporting(E_ALL & ~E_NOTICE); //
 date_default_timezone_set("Asia/Taipei");//
 $time=time();
 $ym=date("ym",$time);
+$dir_mth="./_".$ym."/src/"; //
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//
 $phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
 $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
-////
-
-/*
-if(function_exists("mime_content_type")){
-	$FFF=mime_content_type($query_string);
-}else{
-	$chk=0;$type='';
-	if(preg_match("/\.jpg$/i",$query_string)){$chk=1;$type='image/jpeg';}
-	if(preg_match("/\.png$/i",$query_string)){$chk=1;$type='image/png';}
-	if(preg_match("/\.gif$/i",$query_string)){$chk=1;$type='image/gif';}
-	if(!$chk){die('x');}
-	//
-	$FFF=$type;
-}
-*/
 //
-if(0){//註解掉
-Header("Content-type:".$array['mime']);//輸出到瀏覽器
-echo $contents;
-exit;
-}
+$query_string=$_SERVER['QUERY_STRING'];
+$input_a=$_POST['input_a'];
+if($query_string){$url=$query_string;}else{$url=$input_a;}
 ////
 $pic_html = '';
-$pic_html = xxx();
+if($url){
+	$url_p=parse_url($url);
+	$pic_html .= '#<pre>'.print_r($url_p,true).'</pre>';
+	$url_i=pathinfo($url_p['path']);
+	$pic_html .= '#<pre>'.print_r($url_i,true).'</pre>';
+	//
+	$filesave_tmp=$dir_mth.md5($url);
+	$yn=copy($url,$filesave_tmp);
+	if($yn === false){die('[]複製來源檔案失敗');}
+	$array=getimagesize($filesave_tmp);//取得圖片資訊 //非圖片傳回空白值
+	switch($array[2]){
+		case '1':
+			$ext="gif";
+		break;
+		case '2':
+			$ext="jpg";
+		break;
+		case '3':
+			$ext="png";
+		break;
+		default:
+			unlink($filesave_tmp);
+			die('x400');
+		break;
+	}
+	$pic_html .= '#<pre>'.print_r($array,true).'</pre>';
+	//本地檔案大小
+	$info_filesize=filesize($filesave_tmp);
+	$FFF='';
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='kb';} //byte -> kb
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='mb';} //byte -> kb
+	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='gb';} //byte -> kb
+	$info_filesize=number_format($info_filesize,2);
+	$info_filesize=$info_filesize.$FFF;
+	$pic_html .= '#<pre>'.$info_filesize.'</pre>';
+
+	$filesave_new=$filesave_tmp.'.'.$ext;
+	rename($filesave_tmp,$filesave_new);
+	$pic_html .= '#'.$filesave_new.'<br/><img src="'.$filesave_new.'"/>';
+
+}
 ////
 $echo=<<<EOT
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
 <title>浮水印</title>
@@ -53,60 +77,5 @@ $pic_html
 EOT;
 echo $echo;
 exit;
-function xxx(){
-	$query_string=$_SERVER['QUERY_STRING'];
-	$input_a=$_POST['input_a'];
-	$time=$GLOBALS['time'];
-	//
-	$input=$input_a;
-	//
-	if(!$input){return "x100";}
-	$array=getimagesize($input);//取得圖片資訊 //非圖片傳回空白值
-	//print_r($array);exit;
-	/*
-	    [0] => 1440
-	    [1] => 810
-	    [2] => 2
-	    [3] => width="1440" height="810"
-	    [bits] => 8
-	    [channels] => 3
-	    [mime] => image/jpeg
-	1=gif
-	2=jpg
-	3=png
-	*/
-	if(!$array[2]){return "x200";}
-	//
-	$contents = file_get_contents($input);//取得圖片完整內容
-	if($content === FALSE){return "x300";}
-	//
-	$ym=date("ym",$time);
-	$dir_mth="./_".$ym."/"; //
-	$date_now=date("d", $time)."v".date("His", $time);
-	$ext='';
-	switch($array[2]){
-	case '1':
-		$ext="gif";
-	break;
-	case '2':
-		$ext="jpg";
-	break;
-	case '3':
-		$ext="png";
-	break;
-	default:
-		die('x400');
-	break;
 
-	}
-	$pic_src=$dir_mth."_".$date_now."_".$time.".".$ext;
-	$pic_html='';
-	$yesno = file_put_contents($pic_src , $contents );//儲存圖片內容
-	if($yesno === FALSE){return "x400";}else{
-	$pic_html="<img src='".$pic_src."'/>";
-	}
-	//
-	$x = $pic_html;
-	return $x;
-}
 ?>

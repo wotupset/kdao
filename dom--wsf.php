@@ -1,7 +1,8 @@
 <?php
 	if(!$url){die('x');}
 	////////////
-	$html = file_get_html($url);//simple_html_dom
+	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
+	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
 	$array_post=array();
 	$cc=0;
 	//echo print_r($array_post,true);exit;//檢查點

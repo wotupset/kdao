@@ -1,14 +1,17 @@
 <?php
 	if(!$url){die('x');}
 	//
-	$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
+	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
+	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
 	$chat_array='';
 	$chat_array=$html->outertext;
 	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//批次找留言
 	$chat_array=array();
+	$cc=0;
 	foreach($html->find('blockquote') as $k => $v){
+		$cc++;
 		//首篇另外處理
 		if($k == 0 ){
 			//XX
@@ -53,6 +56,7 @@
 			$vv->outertext='';
 		}
 	}
+	if(!$cc){die('沒有找到blockquote');}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//首篇另外處理
 	$first_post = $html->find('form',1)->outertext;

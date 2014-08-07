@@ -53,12 +53,27 @@ if(1){
 //允許的網址格式
 //print_r($url_p,true);exit;//檢查點
 //if(preg_match("%nagatoyuki\.org%U",$url_p['host'])){$kdao_only=1;}
-
 ///////////
 $w_chk=0;
 $htmlbody='';$htmlbody2='';$htmlbody2_js='';
 $have_pic=0;$have_text=0;//計算圖片跟留言數量
 if($url){//有輸入網址
+	///////////
+	if( function_exists('curl_version') ){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//curl_exec不直接輸出獲取內容
+		$return = array();
+		$return = curl_getinfo($ch);//文件狀態
+		if( !( $return['CURLINFO_HTTP_CODE']<400 ) ){die('CURLINFO_HTTP_CODE');}//狀態錯誤就停止
+		$html_get = curl_exec($ch);
+		curl_close($ch);
+	}else{
+		$html_get = file_get_contents($url);
+	}
+
+	
+	///////////
 	$url_p=parse_url($url);
 	$chk=0;
 	unset($html);$html='';
@@ -73,8 +88,10 @@ if($url){//有輸入網址
 	if(preg_match("%2cat\.or\.tl%",$url_p['host'])) {$chk=1;include('./dom--ted.php');}
 	if(preg_match("%rthost\.ez\.lv%",$url_p['host'])) {$chk=1;include('./dom--ezlv.php');}
 	if(preg_match("%yucie\.net%",$url_p['host'])) {$chk=1;include('./dom--yuc.php');}
+	if(preg_match("%acfun\.tv%",$url_p['host'])) {$chk=1;include('./dom--acf.php');}
 	
 	//
+	if(!$chk){die('不是符合的網域');}
 	$html->clear();unset($html);//php5物件bug 要手動釋放記憶體
 	if(!$no){die('沒有接收到no');}
 	if(!$pre_fix){die('沒有接收到pre_fix');}
@@ -104,7 +121,10 @@ if($w_chk){//寫入到檔案
 	fclose($cp);
 	////////
 	$save_url=$phpdir.$logfile;
-	$save_where="<a href='https://archive.today/?run=1&url=$save_url' target='_blank'>↗</a>存檔=<a href='$logfile'>$logfile</a>\n";
+	$save_where='';
+	$save_where.="<a href='https://archive.today/?run=1&url=$save_url' target='_blank'>↗</a>";
+	$save_where.="存檔=<a href='$logfile'>$logfile</a>\n";
+	//
 	////////
 }//寫入到檔案/
 
@@ -114,6 +134,7 @@ echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
+$output.='<img src="./index.gif?'.$time.'">';
 if(isset($save_where)){
 	$output.=$save_where;
 	if($have_pic){

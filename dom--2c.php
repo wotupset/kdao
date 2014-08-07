@@ -2,10 +2,11 @@
 	if(!$url){die('x');}
 	//2chan.net
 	////////////
-	$content = file_get_contents($url) or die("[error]file_get_contents");//取得來源內容
-	$content = iconv( "Shift_JIS" , "UTF-8//IGNORE", $content);//轉成UTF8
-	$html = str_get_html($content);//simple_html_dom
-	unset($content);
+	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
+	//die($html_get);
+	$html_get = iconv( "Shift_JIS" , "UTF-8//IGNORE", $html_get);//轉成UTF8
+	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
+	//unset($content);
 	$chat_array=array();
 	foreach($html->find('blockquote') as $k => $v){
 		//首篇另外處理

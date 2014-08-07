@@ -3,7 +3,7 @@ error_reporting(E_ALL & ~E_NOTICE); //
 date_default_timezone_set("Asia/Taipei");//
 $time=time();
 $ym=date("ym",$time);
-$dir_mth="./_".$ym."/src/"; //
+$dir_mth="./_".$ym."/"; //
 $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//
 $phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
 $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
@@ -15,13 +15,34 @@ if($query_string){$url=$query_string;}else{$url=$input_a;}
 $pic_html = '';
 if($url){
 	$url_p=parse_url($url);
-	$pic_html .= '#<pre>'.print_r($url_p,true).'</pre>';
 	$url_i=pathinfo($url_p['path']);
-	$pic_html .= '#<pre>'.print_r($url_i,true).'</pre>';
-	//
-	$filesave_tmp=$dir_mth.md5($url);
-	$yn=copy($url,$filesave_tmp);
+	///////////
+	if( function_exists('curl_version')){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//curl_exec不直接輸出獲取內容
+		$return = array();
+		$return = curl_getinfo($ch);//文件狀態
+		//print_r($return);exit;
+		//echo $return['CURLINFO_HTTP_CODE'];exit;
+		if( ! $return['CURLINFO_HTTP_CODE']  ){die('HTTP_CODE 不存在');}//狀態錯誤就停止
+		if( $return['CURLINFO_HTTP_CODE'] >= 400 ){die('HTTP_CODE 失敗');}//狀態錯誤就停止
+		$content = curl_exec($ch);
+		curl_close($ch);
+	}else{
+		$content = file_get_contents($url);
+		//echo $info_strlen=strlen($content);exit;
+	}
+	///////////
+	$info_strlen=strlen($content);
+	//echo $info_strlen;exit;
+	$filesave_tmp=$dir_mth.md5($content);
+	$yn = file_put_contents($filesave_tmp,$content);
+	//$yn=copy($url,$filesave_tmp);
 	if($yn === false){die('[]複製來源檔案失敗');}
+	//本地檔案大小
+	$info_filesize=filesize($filesave_tmp);
+	if($info_filesize == 0){die('資料=0');}
 	$array=getimagesize($filesave_tmp);//取得圖片資訊 //非圖片傳回空白值
 	switch($array[2]){
 		case '1':
@@ -35,21 +56,24 @@ if($url){
 		break;
 		default:
 			unlink($filesave_tmp);
-			die('x400');
+			die('非圖片');
 		break;
 	}
+	//輸出資訊
+	$pic_html .= '#<pre>'.print_r($url_p,true).'</pre>';
+	$pic_html .= '#<pre>'.print_r($url_i,true).'</pre>';
 	$pic_html .= '#<pre>'.print_r($array,true).'</pre>';
-	//本地檔案大小
-	$info_filesize=filesize($filesave_tmp);
-	$FFF='';
-	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='kb';} //byte -> kb
-	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='mb';} //byte -> kb
-	if($info_filesize >1024){$info_filesize=$info_filesize/1024;$FFF='gb';} //byte -> kb
-	$info_filesize=number_format($info_filesize,2);
-	$info_filesize=$info_filesize.$FFF;
-	$pic_html .= '#<pre>'.$info_filesize.'</pre>';
-
+	//計算大小
+	$FFF='';$FFF_in=$info_filesize;
+	if($FFF_in >1024){$FFF_in=$FFF_in/1024;$FFF='kb';} //byte -> kb
+	if($FFF_in >1024){$FFF_in=$FFF_in/1024;$FFF='mb';} //byte -> kb
+	if($FFF_in >1024){$FFF_in=$FFF_in/1024;$FFF='gb';} //byte -> kb
+	$FFF_in=number_format($FFF_in,2);
+	$FFF_in=$FFF_in.$FFF;
+	$pic_html .= '#<pre>'.$FFF_in.'</pre>';
+	//
 	$filesave_new=$filesave_tmp.'.'.$ext;
+	if(file_exists($filesave_new)){unlink($filesave_new);}
 	rename($filesave_tmp,$filesave_new);
 	$pic_html .= '#'.$filesave_new.'<br/><img src="'.$filesave_new.'"/>';
 

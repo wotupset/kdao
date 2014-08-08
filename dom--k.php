@@ -4,7 +4,8 @@
 	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
 	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
 	$chat_array='';
-	$chat_array=$html->outertext;
+	//$chat_array = $html->outertext;
+	$chat_array = $html->find('body',0)->outertext; //檢查是否有抓到body
 	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//批次找留言

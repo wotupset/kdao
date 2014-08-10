@@ -67,11 +67,15 @@ if($url){//有輸入網址
 		$return = curl_getinfo($ch);//文件狀態
 		if( !( $return['CURLINFO_HTTP_CODE']<400 ) ){die('CURLINFO_HTTP_CODE');}//狀態錯誤就停止
 		$html_get = curl_exec($ch);
+		//print_r($html_get);
+		$return = curl_getinfo($ch);
+		//print_r($return);
 		curl_close($ch);
+		//exit;
 	}else{
 		$html_get = file_get_contents($url);
 	}
-
+	if(!$html_get){die('沒有資料');}
 	
 	///////////
 	$url_p=parse_url($url);
@@ -89,6 +93,7 @@ if($url){//有輸入網址
 	if(preg_match("%rthost\.ez\.lv%",$url_p['host'])) {$chk=1;include('./dom--ezlv.php');}
 	if(preg_match("%yucie\.net%",$url_p['host'])) {$chk=1;include('./dom--yuc.php');}
 	if(preg_match("%acfun\.tv%",$url_p['host'])) {$chk=1;include('./dom--acf.php');}
+	if(preg_match("%4chan\.org%",$url_p['host'])) {$chk=1;include('./dom--4c.php');}
 	
 	//
 	if(!$chk){die('不是符合的網域');}

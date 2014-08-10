@@ -18,19 +18,21 @@ if($url){
 	$url_i=pathinfo($url_p['path']);
 	///////////
 	if( function_exists('curl_version')){
+		//
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//curl_exec不直接輸出獲取內容
-		$return = array();
-		$return = curl_getinfo($ch);//文件狀態
-		//print_r($return);exit;
-		//echo $return['CURLINFO_HTTP_CODE'];exit;
-		if( ! $return['CURLINFO_HTTP_CODE']  ){die('HTTP_CODE 不存在');}//狀態錯誤就停止
-		if( $return['CURLINFO_HTTP_CODE'] >= 400 ){die('HTTP_CODE 失敗');}//狀態錯誤就停止
 		$content = curl_exec($ch);
+		$getinfo = curl_getinfo($ch);//文件狀態
 		curl_close($ch);
+		//
+		//print_r($getinfo);exit;
+		//echo $getinfo['http_code'];exit;
+		if( ! $getinfo['http_code']  ){die('HTTP_CODE 不存在');}//狀態錯誤就停止
+		if( $getinfo['http_code'] >= 400 ){die('HTTP_CODE 失敗');}//狀態錯誤就停止
 	}else{
 		$content = file_get_contents($url);
+		$getinfo = '不是使用curl';
 		//echo $info_strlen=strlen($content);exit;
 	}
 	///////////
@@ -43,8 +45,8 @@ if($url){
 	//本地檔案大小
 	$info_filesize=filesize($filesave_tmp);
 	if($info_filesize == 0){die('資料=0');}
-	$array=getimagesize($filesave_tmp);//取得圖片資訊 //非圖片傳回空白值
-	switch($array[2]){
+	$imginfo=getimagesize($filesave_tmp);//取得圖片資訊 //非圖片傳回空白值
+	switch($imginfo[2]){
 		case '1':
 			$ext="gif";
 		break;
@@ -62,7 +64,8 @@ if($url){
 	//輸出資訊
 	$pic_html .= '#<pre>'.print_r($url_p,true).'</pre>';
 	$pic_html .= '#<pre>'.print_r($url_i,true).'</pre>';
-	$pic_html .= '#<pre>'.print_r($array,true).'</pre>';
+	$pic_html .= '#<pre>'.print_r($getinfo,true).'</pre>';
+	$pic_html .= '#<pre>'.print_r($imginfo,true).'</pre>';
 	//計算大小
 	$FFF='';$FFF_in=$info_filesize;
 	if($FFF_in >1024){$FFF_in=$FFF_in/1024;$FFF='kb';} //byte -> kb

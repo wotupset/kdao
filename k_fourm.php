@@ -52,7 +52,7 @@ echo "<a href='./".$phpself."?a'>01</a>"."\n";
 echo "<pre>";
 $cc=0;
 foreach($FFF_arr[0] as $k => $v ){
-	if($cc>100){break;}
+	if($cc>300){break;}
 	$album_link=$phpdir."k_fourm2.php?".$ym."!".$ct2;//相簿位置(絕對位置)
 	$pic_src=$phpdir.$dir_mth.$v;//圖片位置(絕對位置)
 	switch($query_string){

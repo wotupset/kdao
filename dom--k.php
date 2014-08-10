@@ -4,9 +4,15 @@
 	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
 	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
 	$chat_array='';
-	//$chat_array = $html->outertext;
-	$chat_array = $html->find('body',0)->outertext; //檢查是否有抓到body
-	if(preg_match("/cloudflare/i",$chat_array)){die('[x]cloudflare');}
+	$chat_array = $html->outertext;
+	$chat_array=htmlspecialchars($chat_array);//HTML特殊字元
+	if(preg_match("/[^\.]cloudflare/i",$chat_array)){print_r($chat_array);die('[x]cloudflare');}
+
+	$cc=0;
+	foreach($html->find('blockquote') as $k => $v){
+		$cc++;
+	}
+	if(!$cc){print_r($chat_array);die('[0]沒有找到blockquote');}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//批次找留言
 	$chat_array=array();
@@ -60,12 +66,13 @@
 	if(!$cc){die('沒有找到blockquote');}
 	//echo print_r($chat_array,true);exit;//檢查點
 	//首篇另外處理
-	$first_post = $html->find('form',1)->outertext;
-	$first_post = str_get_html($first_post);//重新轉字串解析//有BUG?
+	$html = $html->find('form',1)->outertext;
+	$html = str_get_html($html);//重新轉字串解析//有BUG?
+	//$first_post=$html;
 	//
-	$chat_array[0]['org_text'] = $first_post->outertext;//原始內容
+	$chat_array[0]['org_text'] = $html->outertext;//原始內容
 	//
-	foreach($first_post->find('font') as $k2 => $v2){
+	foreach($html->find('font') as $k2 => $v2){
 		if($k2==0){//標題
 			$chat_array[0]['title'] =$v2->plaintext;
 			$v2->outertext="";
@@ -76,19 +83,19 @@
 		}
 	}
 	//內容
-	foreach($first_post->find('blockquote') as $k2 => $v2){
+	foreach($html->find('blockquote') as $k2 => $v2){
 		$chat_array[0]['text']  =$v2->innertext;//內文
 		$v2->outertext="";
 	}
 	//圖片
-	foreach($first_post->find('a') as $k2 => $v2){
+	foreach($html->find('a') as $k2 => $v2){
 		foreach($v2->find('img') as $k3 => $v3){
 			$chat_array[0]['image']  =$v3->parent->href;//
 		}
 		$v2->outertext="";
 	}
 	//
-	$chat_array[0]['zzz_text'] = $first_post->outertext;//剩餘的內容//非檢查點//下方有用到
+	$chat_array[0]['zzz_text'] = $html->outertext;//剩餘的內容//非檢查點//下方有用到
 	//
 	preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*No\.[0-9]+ /U",$chat_array[0]['zzz_text'],$chat_array[0]['time']);
 	$chat_array[0]['time'] = implode("",$chat_array[0]['time']);

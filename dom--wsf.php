@@ -103,7 +103,7 @@
 	//
 	$pattern="%page_num=([\w]+)%";
 	preg_match($pattern, $url, $matches_url2);//抓首串頁面編號
-	$no_pg=ceil($matches_url2[1]);//頁數
+	$no_pg=$matches_url2[1];//頁數
 	//
 	$pattern="%\/\/([\w]+)\.[\w\.]+\/([\w]+)\/%";
 	preg_match($pattern, $url, $matches_sub);//抓網域辨識

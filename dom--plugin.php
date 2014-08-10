@@ -309,7 +309,7 @@ function timedown(){
 		document.getElementById("pic"+t).src=myArray[t];
 		document.getElementById("pn"+t).style.color = "#00ff00";
 		FFF=document.getElementById("pn"+t).innerHTML;
-		document.getElementById("pn"+t).innerHTML = '<a href="'+myArray[t]+'">檢</a>'+FFF;
+		document.getElementById("pn"+t).innerHTML = '<a href="#" onclick="re_get('+t+')">檢</a>'+FFF;
 		if(t<$have_pic){
 			timedown;
 		}else{
@@ -318,6 +318,12 @@ function timedown(){
 			clearInterval(timedown);
 		}
 	}, sec);
+}
+function re_get(x){
+	var d = new Date();
+	var n = d.getTime();
+	document.getElementById("pic"+x).src='./index.gif';
+	document.getElementById("pic"+x).src=myArray[x]+'?'+n;
 }
 </script>
 <div id='timedown_div'><span id='timedown_span'></span></div>

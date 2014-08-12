@@ -126,7 +126,7 @@
 			}
 			//是否使用漸進讀圖
 			if($input_c){//不使用(預設)
-				$htmlbody2.=$have_pic.'<img id="pic'.$have_pic.'" src="./index.gif" style="width:5px; height:10px;border:1px solid blue;" /><span id="pn'.$have_pic.'">'.$img_filename."</span><br/>"."\n";
+				$htmlbody2.=$have_pic.'<img id="pic'.$have_pic.'" src="./index.gif" style="width:5px; height:10px;border:1px solid blue;" />'.'<span id="pn'.$have_pic.'">'.$img_filename.'</span><br/>'."\n";
 				$htmlbody2_js.="myArray[".$have_pic."]='".$pic_url_php."';\n";
 			}else{
 				$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';

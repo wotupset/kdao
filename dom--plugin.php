@@ -76,7 +76,7 @@ if($url){//有輸入網址
 		$html_get = file_get_contents($url);
 	}
 	if(!$html_get){die('沒有資料');}
-	
+	if(!preg_match("/html/i",substr($html_get,0,500))){die('不是HTML檔案');}
 	///////////
 	$url_p=parse_url($url);
 	$chk=0;
@@ -309,7 +309,9 @@ function timedown(){
 		document.getElementById("pic"+t).src=myArray[t];
 		document.getElementById("pn"+t).style.color = "#00ff00";
 		FFF=document.getElementById("pn"+t).innerHTML;
-		document.getElementById("pn"+t).innerHTML = '<a href="#" onclick="re_get('+t+')">檢</a>'+FFF;
+		document.getElementById("pn"+t).innerHTML = '####'+FFF;
+		document.getElementById("pn"+t).setAttribute('onclick',"re_get("+t+")");
+		// onclick="re_get('.$have_pic.')"
 		if(t<$have_pic){
 			timedown;
 		}else{

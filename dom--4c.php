@@ -1,9 +1,15 @@
 <?php
 	if(!$url){die('x');}
-	//2chan.net
-	////////////
+
 	//$html_get = iconv( "Shift_JIS" , "UTF-8//IGNORE", $html_get);//轉成UTF8
-	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
+	$html = str_get_html($html_get) or die('simple_html_dom失敗');//simple_html_dom
+	//$html = file_get_html($url) or die('simple_html_dom失敗');//simple_html_dom
+	//
+	$cc=0;
+	foreach($html->find('blockquote') as $k => $v){
+		$cc++;
+	}
+	if(!$cc){print_r($chat_array);die('[0]沒有找到blockquote');}
 	//unset($content);
 	$chat_array=array();
 	$cc=0;
@@ -14,10 +20,14 @@
 		$vv = $v->parent;
 		//
 		foreach($vv->find('img') as $k2 => $v2){
-			$FFF=$v2->parent->href;
-			$FFF="http:".$FFF;
-			$chat_array[$k]['image']=$FFF;
-			$v2->parent->outertext="";
+			$FFF=$v2->alt;
+			//
+			if(preg_match("/^[0-9]+/U",$FFF)){
+				$FFF=$v2->parent->href;
+				$FFF="http:".$FFF;
+				$chat_array[$k]['image']=$FFF;
+				$v2->parent->outertext="";
+			}
 		}
 		foreach($vv->find('span.name') as $k2 => $v2){
 			$chat_array[$k]['name']=$v2->plaintext;
@@ -90,7 +100,7 @@
 	$pre_fix="4c";
 	$htmlbody2.= "[$have_pic][$have_text]";//
 	//
-	$pattern="%\/([\w]+)\/thread\/([0-9]+)\/%";
+	$pattern="%\/([\w]+)\/thread\/([0-9]+)%";
 	preg_match($pattern, $url_p['path'], $matches_url);//抓首串編號
 	$dm=$matches_url[1];//首篇編號
 	$no=$matches_url[2];//首篇編號

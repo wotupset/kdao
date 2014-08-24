@@ -7,7 +7,7 @@
 	$chat_array = $html->outertext;
 	$chat_array=htmlspecialchars($chat_array);//HTML特殊字元
 	if(preg_match("/[^\.]cloudflare/i",$chat_array)){print_r($chat_array);die('[x]cloudflare');}
-
+	//
 	$cc=0;
 	foreach($html->find('blockquote') as $k => $v){
 		$cc++;

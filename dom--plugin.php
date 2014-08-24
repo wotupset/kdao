@@ -14,7 +14,12 @@ $phphost=$_SERVER["SERVER_NAME"];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
-if($query_string){$url=$query_string;}else{$url=$input_a;}
+if($query_string){
+	$url=$query_string;
+	$input_c='500';
+}else{
+	$url=$input_a;
+}
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
 //$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
@@ -75,7 +80,9 @@ if($url){//有輸入網址
 	}else{
 		$html_get = file_get_contents($url);
 	}
-	if(!$html_get){die('沒有資料');}
+	$FFF=strlen($html_get);
+	if($FFF == 0){die('沒有資料');}
+	//echo $FFF;exit;
 	if(!preg_match("/html/i",substr($html_get,0,500))){die('不是HTML檔案');}
 	///////////
 	$url_p=parse_url($url);
@@ -94,7 +101,6 @@ if($url){//有輸入網址
 	if(preg_match("%yucie\.net%",$url_p['host'])) {$chk=1;include('./dom--yuc.php');}
 	if(preg_match("%acfun\.tv%",$url_p['host'])) {$chk=1;include('./dom--acf.php');}
 	if(preg_match("%4chan\.org%",$url_p['host'])) {$chk=1;include('./dom--4c.php');}
-	
 	//
 	if(!$chk){die('不是符合的網域');}
 	$html->clear();unset($html);//php5物件bug 要手動釋放記憶體
@@ -111,7 +117,7 @@ if($w_chk){//寫入到檔案
 	$output.=pack("CCC", 0xef,0xbb,0xbf);//UTF8檔頭
 	$output.=htmlhead();
 	$output.="<a href='./'>根</a>\n";
-	$output.="<a href='../$phpself'>返</a>\n";
+	//$output.="<a href='../$phpself'>返</a>\n";
 	$output.="<br/>\n";
 	$output.=$htmlbody;
 	$output.=htmlend();
@@ -277,9 +283,9 @@ $x=<<<EOT
 <label>漸進讀圖
 <select name="input_c">
 <option value="">OFF</option>
-<option value="3000" selected="selected">3.0</option>
+<option value="3000">3.0</option>
 <option value="2000">2.0</option>
-<option value="1000">1.0</option>
+<option value="1000" selected="selected">1.0</option>
 <option value="500">0.5</option>
 </option>
 </select>(主機不穩時使用)</label><br/>
@@ -295,29 +301,29 @@ $input_c = $GLOBALS['input_c'];
 $x=<<<EOT
 <script>
 $(document).ready(function() {
-	timedown();
+	timedown_y();
 	//$input_c
 });
-function timedown(){
+function timedown_y(){
 	var t=0;
 	var sec=$input_c;
 	var FFF='';
 	document.getElementById("timedown_span").innerHTML="準備"+t;
-	var timedown = setInterval(function() {
+	var timedown_x = setInterval(function() {
 		t=t+1;
 		document.getElementById("timedown_span").innerHTML="("+t+"/$have_pic)..."+myArray[t];
 		document.getElementById("pic"+t).src=myArray[t];
 		document.getElementById("pn"+t).style.color = "#00ff00";
 		FFF=document.getElementById("pn"+t).innerHTML;
-		document.getElementById("pn"+t).innerHTML = '####'+FFF;
-		document.getElementById("pn"+t).setAttribute('onclick',"re_get("+t+")");
+		document.getElementById("pn"+t).innerHTML = '<a href="'+myArray[t]+'" target="_blank">檢</a>'+FFF;
+		//document.getElementById("pn"+t).setAttribute('onclick',"re_get("+t+")");
 		// onclick="re_get('.$have_pic.')"
 		if(t<$have_pic){
-			timedown;
+			timedown_x;
 		}else{
 			document.getElementById("timedown_span").innerHTML="沒了"+t;
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
-			clearInterval(timedown);
+			clearInterval(timedown_x);
 		}
 	}, sec);
 }

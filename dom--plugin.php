@@ -145,6 +145,8 @@ echo form();
 $output='';
 $output.="<a href='./'>根</a>\n";
 $output.="<a href='./$phpself'>返</a>\n";
+$output.="<a href='./k_fourm.php'>貼</a>\n";
+$output.="<a href='./k_fourm2.php'>閱</a>\n";
 $output.='<img src="./index.gif?'.$time.'">';
 if(isset($save_where)){
 	$output.=$save_where;
@@ -247,7 +249,7 @@ $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
 $x=<<<EOT
 <html><head>
-<title>$phphost$ymdhis</title>
+<title>★$phphost$ymdhis</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">

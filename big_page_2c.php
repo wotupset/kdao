@@ -25,7 +25,7 @@ if($url){
 	//
 	$content = file_get_contents($url) or die("[x]file_get_contents");//取得來源內容
 	//echo $content;exit;
-	$pattern="%(http://[a-z]{1,3}\.2chan\.net/[a-z]{1,3}/b/src/[0-9]{13}\.[a-z]{3})\"%U";//非貪婪
+	$pattern="%(http://[a-z]{1,3}\.2chan\.net/[\w]{1,3}/[\w]{1,3}/src/[0-9]{13}\.[a-z]{3})\"%U";//非貪婪
 	preg_match_all($pattern, $content, $matches_chk);//內文-首篇
 	//print_r($matches_chk);exit;//
 	if(count($matches_chk[0])==0){die("[x]沒找到");}//沒找到
@@ -148,10 +148,19 @@ function timedown_y(){
 		document.getElementById("pic"+t).setAttribute('onclick',"reget("+t+")");
 		//
 		if(t<$have_pic){
+			if(t%2){
+			document.getElementById("timedown_div").style.backgroundColor="#00ffff";
+			FFF='／';
+			}else{
+			document.getElementById("timedown_div").style.backgroundColor="#ffffff";
+			FFF='＼';
+			}
+			document.title=FFF+"("+t+"/$have_pic)";
 			timedown_x;
 		}else{
 			document.getElementById("timedown_div").innerHTML="沒了"+t;
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
+			document.title="完成"+t+"";
 			clearInterval(timedown_x);
 		}
 	}, sec);

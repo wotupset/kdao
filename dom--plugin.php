@@ -322,10 +322,12 @@ function timedown_y(){
 		// onclick="re_get('.$have_pic.')"
 		if(t<$have_pic){
 			timedown_x;
+			document.title="("+t+"/$have_pic)";
 		}else{
 			document.getElementById("timedown_span").innerHTML="沒了"+t;
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
 			clearInterval(timedown_x);
+			document.title="完成"+t+"";
 		}
 	}, sec);
 }

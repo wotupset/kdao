@@ -14,13 +14,13 @@ $pass=$_POST['pass'];
 //if($query_string){$url=$query_string;}else{$url=$input_a;}
 ////
 $body_html='';
-echo $url;
-echo $pass;
+//echo $url;echo $pass;
 if(!is_writeable(realpath("./"))){echo "根目錄無法寫入";}
 if($pass == 'qqq'){
 	if($url){
 		$url_p=parse_url($url);
 		$url_i=pathinfo($url_p['path']);
+		//print_r($url_i);
 /*
     [dirname] => /a
     [basename] => 1409599459171.jpg
@@ -38,6 +38,11 @@ if($pass == 'qqq'){
 		}
 	}else{}
 }
+$body_html.='<br/>'."\n";
+$body_html.=$url;
+$body_html.='<br/>'."\n";
+$body_html.=$pass;
+$body_html.='<br/>'."\n";
 ////
 $echo=<<<EOT
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

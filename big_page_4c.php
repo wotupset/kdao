@@ -48,7 +48,7 @@ if($url){
 	echo form();
 	$output='';
 	$output.='<a href="./">根</a>'."\n";
-	$output.='<a href="./$phpself">返</a>'."\n";
+	$output.='<a href="./'.$phpself.'">返</a>'."\n";
 	$output.='<img src="./index.gif">'."\n";
 	$output.=$url;
 	$output.='<br/>'."\n";
@@ -65,7 +65,7 @@ if($url){
 	echo form();
 	$output='';
 	$output.='<a href="./">根</a>'."\n";
-	$output.='<a href="./$phpself">返</a>'."\n";
+	$output.='<a href="./'.$phpself.'">返</a>'."\n";
 	$output.='<img src="./index.gif">'."\n";
 	$output.='<br/>'."\n";
 	echo $output;
@@ -148,10 +148,19 @@ function timedown_y(){
 		document.getElementById("pic"+t).setAttribute('onclick',"reget("+t+")");
 		//
 		if(t<$have_pic){
+			if(t%2){
+			document.getElementById("timedown_div").style.backgroundColor="#00ffff";
+			FFF='／';
+			}else{
+			document.getElementById("timedown_div").style.backgroundColor="#ffffff";
+			FFF='＼';
+			}
+			document.title=FFF+"("+t+"/$have_pic)";
 			timedown_x;
 		}else{
 			document.getElementById("timedown_div").innerHTML="沒了"+t;
 			document.getElementById("timedown_div").style.backgroundColor="#00ff00";
+			document.title="完成"+t+"";
 			clearInterval(timedown_x);
 		}
 	}, sec);

@@ -48,7 +48,7 @@ if($url){
 	echo form();
 	$output='';
 	$output.='<a href="./">根</a>'."\n";
-	$output.='<a href="./$phpself">返</a>'."\n";
+	$output.='<a href="./'.$phpself.'">返</a>'."\n";
 	$output.='<img src="./index.gif">'."\n";
 	$output.=$url;
 	$output.='<br/>'."\n";
@@ -65,7 +65,7 @@ if($url){
 	echo form();
 	$output='';
 	$output.='<a href="./">根</a>'."\n";
-	$output.='<a href="./$phpself">返</a>'."\n";
+	$output.='<a href="./'.$phpself.'">返</a>'."\n";
 	$output.='<img src="./index.gif">'."\n";
 	$output.='<br/>'."\n";
 	echo $output;

@@ -1,14 +1,20 @@
 <?php
 	if(!$url){die('x');}
 
+	//print_r($html_get);exit;
 	//$html_get = iconv( "Shift_JIS" , "UTF-8//IGNORE", $html_get);//轉成UTF8
 	$html = str_get_html($html_get) or die('simple_html_dom失敗');//simple_html_dom
 	//$html = file_get_html($url) or die('simple_html_dom失敗');//simple_html_dom
+	//
+	$chat_array='';
+	$chat_array = $html->outertext;
+	$chat_array=htmlspecialchars($chat_array);//HTML特殊字元
 	//
 	$cc=0;
 	foreach($html->find('blockquote') as $k => $v){
 		$cc++;
 	}
+	//echo $cc;exit;
 	if(!$cc){print_r($chat_array);die('[0]沒有找到blockquote');}
 	//unset($content);
 	$chat_array=array();

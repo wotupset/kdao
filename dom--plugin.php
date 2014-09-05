@@ -29,7 +29,7 @@ include('./simple_html_dom.php');//v1.5
 ///////////$dir_mth
 if(1){
 	$dir_mth="./_".date("ym",$time)."/"; //存放該月檔案
-	//if(!is_writeable(realpath("./"))){ die("根目錄沒有寫入權限，請修改權限"); }
+	if(!is_writeable(realpath("./"))){ die("根目錄沒有寫入權限，請修改權限"); }
 	@mkdir($dir_mth, 0777); //建立資料夾 權限0777
 	@chmod($dir_mth, 0777); //權限0777
 	if(!is_dir(realpath($dir_mth))){die("月份資料夾不存在");}

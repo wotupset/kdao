@@ -4,6 +4,10 @@
 	////////////
 	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
 	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
+	$chat_array='';
+	$chat_array = $html->outertext;
+	$chat_array=htmlspecialchars($chat_array);//HTML特殊字元
+	if(preg_match("/[^\.]cloudflare/i",$chat_array)){print_r($chat_array);die('[x]cloudflare');}
 	//迴圈批次處理
 	$cc=0;
 	foreach($html->find('div.quote') as $k => $v){//分析
@@ -37,8 +41,10 @@
 		preg_match("/\[[0-9]{2}\/[0-9]{2}\/[0-9]{2}.*ID.*\]/U",$chat_array[$k]['zzz_text'],$chat_array[$k]['time']);
 		$chat_array[$k]['time'] = implode("",$chat_array[$k]['time']);
 	}
-	ksort($chat_array);//排序
 	//echo print_r($chat_array,true);exit;//檢查點
+	if(count($chat_array)==0){die('Xx');}
+	ksort($chat_array);//排序
+
 	$chat_ct=count($chat_array);//計數
 	//生成網頁內容
 	foreach($chat_array as $k => $v){

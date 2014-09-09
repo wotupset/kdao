@@ -148,6 +148,7 @@ $output.="<a href='./$phpself'>返</a>\n";
 $output.="<a href='./k_fourm.php'>貼</a>\n";
 $output.="<a href='./k_fourm2.php'>閱</a>\n";
 $output.='<img src="./index.gif?'.$time.'">';
+$output.='<img src="./png.php?'.$time.'" width="90" height="15"/>'."\n";
 if(isset($save_where)){
 	$output.=$save_where;
 	if($have_pic){

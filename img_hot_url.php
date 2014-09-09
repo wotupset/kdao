@@ -61,11 +61,18 @@ if($url){
 			die('非圖片');
 		break;
 	}
+	//
+	//$finfo = finfo_open(FILEINFO_MIME); // return mime type ala mimetype extension
+	//$finfo_e = finfo_file($finfo, $filesave_tmp) . "\n";
+	//finfo_close($finfo);
+	$finfo = new finfo();
+	$finfo_e = $finfo->file($filesave_tmp,FILEINFO_MIME);
 	//輸出資訊
 	$pic_html .= '#<pre>'.print_r($url_p,true).'</pre>';
 	$pic_html .= '#<pre>'.print_r($url_i,true).'</pre>';
 	$pic_html .= '#<pre>'.print_r($getinfo,true).'</pre>';
 	$pic_html .= '#<pre>'.print_r($imginfo,true).'</pre>';
+	$pic_html .= '#<pre>'.print_r($finfo_e,true).'</pre>';
 	//計算大小
 	$FFF='';$FFF_in=$info_filesize;
 	if($FFF_in >1024){$FFF_in=$FFF_in/1024;$FFF='kb';} //byte -> kb

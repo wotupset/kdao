@@ -1,4 +1,5 @@
 <?php
+ini_set("display_errors", "1");
 error_reporting(E_ALL & ~E_NOTICE); //
 date_default_timezone_set("Asia/Taipei");//
 $time=time();
@@ -29,20 +30,29 @@ if($pass == 'qqq'){
 */
 		//print_r($url_i);exit;
 		//
-		$FFF='./'.$time.'.'.$url_i['extension'];
-		$FFF=copy($url,$FFF);
-		if($FFF === false ){
-			$body_html='x';
+		$copy_to='./'.$time.'.'.$url_i['extension'];
+		$yn=copy($url,$copy_to);
+		if($yn === false ){
+			$body_html.='x';
 		}else{
-			$body_html='ok';
+			$body_html.='ok';
 		}
+		$FFF=filesize($copy_to);
+		$total_size=$FFF;
+		$total_size=$total_size/1024; //byte -> kb
+		$total_size=$total_size/1024; //  kb -> mb
+		$total_size=sprintf('%01.2f',$total_size); //小數後兩位補零
+		$body_html.=$total_size.'MB';
 	}else{}
 }
 $body_html.='<br/>'."\n";
-$body_html.=$url;
-$body_html.='<br/>'."\n";
 $body_html.=$pass;
 $body_html.='<br/>'."\n";
+$body_html.=$url;
+$body_html.='<br/>'."\n";
+$body_html.=$copy_to;
+$body_html.='<br/>'."\n";
+$body_html.=ini_get('upload_max_filesize');
 ////
 $echo=<<<EOT
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

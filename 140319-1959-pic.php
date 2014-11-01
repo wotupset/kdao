@@ -45,9 +45,9 @@ Array
 */
 //檢查副檔名
 $FFF=0;
-$allow_ext=array('png', 'jpg', 'gif'); //允許的副檔名
+$allow_ext=array('png', 'jpg', 'gif'); //允許的副檔名//,'jpeg'
 foreach($allow_ext as $k => $v){
-	if($v == $url_i['extension']){$FFF++;}
+	if($v == strtolower( $url_i['extension'] ) ){$FFF++;}
 }
 if($FFF == 0){die('副檔名異常?');}
 //檢查主檔名
@@ -69,7 +69,7 @@ $img_count=$dir_path."index.php";
 if(!is_file($img_count)){copy("img_count.php", $img_count);}
 if(!is_file($img_count)){die("複製檔案失敗");}
 //
-$src=$dir_path.$url_i['basename'];//圖檔存放的位置
+$src=$dir_path.$url_i['filename'].'.'.$url_i['extension'];//圖檔存放的位置
 //echo $url;echo $url3;echo $src;exit;
 //$src2=$dir_path_src.$time.'-'.$ymd.'.'.$fn_b;//存放檔案的位置
 ////
@@ -113,71 +113,60 @@ if($sss){//單張讀圖
 ////
 
 if(is_file($src)){//圖檔存在
-	if($re_get){//是否重新下載
+	if($re_get){//是=強制重新下載
+		unlink($src);if(is_file($src)){die('刪除檔案失敗(權限?)');}
+		$FFF=curl_get($url,$src);
 		$chk="2b";//重新下載(紫色)
-		unlink($src);
-		if(is_file($src)){die('刪除檔案失敗(權限?)');}
-		$content = file_get_contents($url);
-		$content = file_put_contents($src,$content);
-		$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
 	}else{//檢查本地檔案內容是不是圖片
 		$info_array=getimagesize($src);
 		if(floor($info_array[2])==0){
-			unlink($src);
-			copy($url,$src);
+			unlink($src);if(is_file($src)){die('刪除檔案失敗(權限?)');}
+			$FFF=curl_get($url,$src);
 			$chk="2b";//重新下載(紫色)
 		}else{
 			$chk="2a";//圖檔存在(藍色)//跳過
 		}
 	}
 }else{//圖檔不存在//新的檔案
-	$content = file_get_contents($url);
-	$content = file_put_contents($src,$content);
-	if(is_file($src)){$chk='1';}
-	$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
+	$FFF=curl_get($url,$src);
+	if(is_file($src)){$chk='1';}//有建立圖檔
 }
 //檢查檔案內容是不是圖片
-$info_array=filesize($src);
-if(floor($info_array)==0){die("沒有內容");}
+$info_array=getimagesize($src);if(floor($info_array[2]) == 0 ){$chk="0";}//檢查本地檔案內容是不是圖片
+//echo print($info_array,true);
+//echo $src.'<hr><img src="'.$src.'"/>';exit;
+//$info_array=filesize($src);if(floor($info_array)==0){die("沒有內容");}
+$img = imageCreate(20,20);
 switch($chk){
 	case '0'://失敗=0
-		Header("Content-type: image/png");//指定文件類型為PNG
-		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 255, 0, 0);
-		imageFill($img, 0, 0, $bg_color);
-		imagePng($img);
-		imageDestroy($img);
 	break;
 	case '1'://成功=1
-		Header("Content-type: image/png");//指定文件類型為PNG
-		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 0, 255, 0);
-		imageFill($img, 0, 0, $bg_color);
-		imagePng($img);
-		imageDestroy($img);
 	break;
 	case '2a'://圖檔存在//跳過
-		Header("Content-type: image/png");//指定文件類型為PNG
-		$img = imageCreate(20,20);
 		$bg_color = imageColorAllocate($img, 0, 0, 255);
-		imageFill($img, 0, 0, $bg_color);
-		imagePng($img);
-		imageDestroy($img);
 	break;
-	case '2b'://重新下載
-		Header("Content-type: image/png");//指定文件類型為PNG
-		$img = imageCreate(20,20);
+	case '2b'://圖檔存在//重新下載
 		$bg_color = imageColorAllocate($img, 255, 0, 255);
-		imageFill($img, 0, 0, $bg_color);
-		imagePng($img);
-		imageDestroy($img);
 	break;
 	default:
 		//不會執行
 		echo "default";
+		die('x-chk');
 	break;
 }
+/////////////////
+Header("Content-type: image/png");//指定文件類型為PNG
+//$img = imageCreate(20,20);
+//$bg_color = imageColorAllocate($img, 255, 0, 0);
+imageFill($img, 0, 0, $bg_color);
+imagePng($img);
+imageDestroy($img);
 
+/////////////////
+exit;//結束
+/////////////////
 function form(){
 $phpself=$GLOBALS['phpself'];
 $url=$GLOBALS['url'];
@@ -217,5 +206,27 @@ function strZHcut($str){ //將檔名中的中文去掉
 	}
 	$str=join($arr); //array_reverse?
 	return $str;
+}
+function curl_get($url,$src){
+	if( function_exists('curl_version') ){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//curl_exec不直接輸出獲取內容
+		$return = array();
+		$return = curl_getinfo($ch);//文件狀態
+		if( !( $return['CURLINFO_HTTP_CODE'] < 400 ) ){die('CURLINFO_HTTP_CODE');}//狀態錯誤就停止
+		$content = curl_exec($ch);
+		//print_r($html_get);
+		$return = curl_getinfo($ch);
+		//print_r($return);
+		curl_close($ch);
+		//exit;
+	}else{
+		$content = file_get_contents($url);
+	}
+	$yn = file_put_contents($src,$content);
+	//
+	$x='1';
+	return $x;
 }
 ?>

@@ -14,15 +14,14 @@ $phphost=$_SERVER["SERVER_NAME"];
 date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
-if($query_string){
-	$url=$query_string;
-	$input_c='500';
-}else{
-	$url=$input_a;
-}
+//
+if($query_string){$url=$query_string;} //網址有參數
+if($input_a){$url=$input_a;} //優先選用手動輸入的值
+$loading_sec = file_get_contents('loading_sec.txt'); //取得log內容
+if($loading_sec === false){$loading_sec='2000';} //沒有抓到資料的情況
+if($input_c){$loading_sec=$input_c;} //優先選用手動輸入的值
 $url=trim($url);
 include('./simple_html_dom.php');//v1.5
-//$input_c=!$input_c;//有勾選=1 >反轉=0 >0=漸進
 
 ///////////
 
@@ -59,6 +58,16 @@ if(1){
 //print_r($url_p,true);exit;//檢查點
 //if(preg_match("%nagatoyuki\.org%U",$url_p['host'])){$kdao_only=1;}
 ///////////
+$url_p=parse_url($url);
+//print_r($url_p);
+if(preg_match("%\.komica\.org%",$url_p['host'])){ //繞過
+	$FFF=explode(".",$url_p['host']); //以...分割
+	if(!strstr($FFF[0],"-")){$FFF[0]=$FFF[0]."-cf";}
+	$url_p['host']=implode(".",$FFF); //以...分割
+	$url=$url_p['scheme'].'://'.$url_p['host'].''.$url_p['path'].'?'.$url_p['query'];
+}
+//echo $url;
+////
 $w_chk=0;
 $htmlbody='';$htmlbody2='';$htmlbody2_js='';
 $have_pic=0;$have_text=0;//計算圖片跟留言數量
@@ -85,7 +94,6 @@ if($url){//有輸入網址
 	//echo $FFF;exit;
 	if(!preg_match("/html/i",substr($html_get,0,500))){die('不是HTML檔案');}
 	///////////
-	$url_p=parse_url($url);
 	$chk=0;
 	unset($html);$html='';
 	if(preg_match("%nagatoyuki\.org%U",$url_p['host'])) {$chk=1;include('./dom--naga.php');}
@@ -152,7 +160,7 @@ $output.='<img src="./png.php?'.$time.'" width="90" height="15"/>'."\n";
 if(isset($save_where)){
 	$output.=$save_where;
 	if($have_pic){
-		if($input_c){
+		if($loading_sec){
 			$output.=js_timedown();//
 			$htmlbody2_js="\n\n<script>var myArray=[];\n".$htmlbody2_js."</script>\n\n";
 			echo $htmlbody2_js;
@@ -285,10 +293,10 @@ $x=<<<EOT
 <label>重新讀圖<input type="checkbox" name="input_b" value="1" />(破圖時使用)</label><br/>
 <label>漸進讀圖
 <select name="input_c">
-<option value="">OFF</option>
+<option value="" selected="selected">預設</option>
 <option value="3000">3.0</option>
 <option value="2000">2.0</option>
-<option value="1000" selected="selected">1.0</option>
+<option value="1000">1.0</option>
 <option value="500">0.5</option>
 </option>
 </select>(主機不穩時使用)</label><br/>
@@ -300,23 +308,23 @@ return $x;
 //echo form();
 function js_timedown(){
 $have_pic=$GLOBALS['have_pic'];
-$input_c = $GLOBALS['input_c'];
+$loading_sec = $GLOBALS['loading_sec'];
 $x=<<<EOT
 <script>
 $(document).ready(function() {
 	timedown_y();
-	//$input_c
 });
 function timedown_y(){
 	var t=0;
-	var sec=$input_c;
+	var sec=$loading_sec;
 	var FFF='';
 	document.getElementById("timedown_span").innerHTML="準備"+t;
 	var timedown_x = setInterval(function() {
 		t=t+1;
 		document.getElementById("timedown_span").innerHTML="("+t+"/$have_pic)..."+myArray[t];
-		document.getElementById("pic"+t).src=myArray[t];
-		document.getElementById("pn"+t).style.color = "#00ff00";
+		document.getElementById("pic"+t).src=myArray[t]; //載入圖片位置
+		document.getElementById("pn"+t).style.color = "#00ff00"; //字體變色
+		document.getElementById("pn"+t).setAttribute('onclick',"reget("+t+")"); //點擊後 觸發reget
 		FFF=document.getElementById("pn"+t).innerHTML;
 		document.getElementById("pn"+t).innerHTML = '<a href="'+myArray[t]+'" target="_blank">檢</a>'+FFF;
 		//document.getElementById("pn"+t).setAttribute('onclick',"re_get("+t+")");
@@ -332,9 +340,10 @@ function timedown_y(){
 		}
 	}, sec);
 }
-function re_get(x){
+function reget(x){
 	var d = new Date();
 	var n = d.getTime();
+	document.getElementById('pn'+x).style.backgroundColor="#00ffff";
 	document.getElementById("pic"+x).src='./index.gif';
 	document.getElementById("pic"+x).src=myArray[x]+'?'+n;
 }

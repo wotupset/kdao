@@ -12,7 +12,9 @@ $phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
 $query_string=$_SERVER['QUERY_STRING'];
 $url=$_POST['url'];
 $pass=$_POST['pass'];
-//if($query_string){$url=$query_string;}else{$url=$input_a;}
+if(!$url){
+	if($query_string){$url=$query_string;}
+}
 ////
 $body_html='';
 //echo $url;echo $pass;
@@ -30,29 +32,41 @@ if($pass == 'qqq'){
 */
 		//print_r($url_i);exit;
 		//
-		$copy_to='./'.$time.'.'.$url_i['extension'];
+		$copy_to='./tmp_'.md5($url);
+		//$copy_to='./'.$url_i['basename'];
+		//$copy_to=tempnam('./','tmp_');
+		//
 		$yn=copy($url,$copy_to);
+		//
 		if($yn === false ){
 			$body_html.='x';
 		}else{
 			$body_html.='ok';
+			$copy_to2='ok_'.$time.'.'.$url_i['extension'];
+			rename($copy_to,$copy_to2);
 		}
-		$FFF=filesize($copy_to);
+		$body_html.='<br/>'."\n";
+		//
+		$FFF=filesize($copy_to2);
 		$total_size=$FFF;
 		$total_size=$total_size/1024; //byte -> kb
 		$total_size=$total_size/1024; //  kb -> mb
 		$total_size=sprintf('%01.2f',$total_size); //小數後兩位補零
 		$body_html.=$total_size.'MB';
+		$body_html.='<br/>'."\n";
+		//
+		$body_html.=$pass;
+		$body_html.='<br/>'."\n";
+		$body_html.=$url;
+		$body_html.='<br/>'."\n";
+		$body_html.=$copy_to;
+		$body_html.='<br/>'."\n";
+		$body_html.=$copy_to2;
+		$body_html.='<br/>'."\n";
 	}else{}
 }
-$body_html.='<br/>'."\n";
-$body_html.=$pass;
-$body_html.='<br/>'."\n";
-$body_html.=$url;
-$body_html.='<br/>'."\n";
-$body_html.=$copy_to;
-$body_html.='<br/>'."\n";
 $body_html.=ini_get('upload_max_filesize');
+$body_html.='<br/>'."\n";
 ////
 $echo=<<<EOT
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

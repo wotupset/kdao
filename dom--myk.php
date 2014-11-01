@@ -34,46 +34,45 @@
 			}
 			$v2->parent->outertext="";
 		}
-		//內容
-		foreach($vv->find('div.quote') as $k2 => $v2){
-			foreach($v2->find('div.pushpost') as $k3 => $v3){
-				$chat_array[$k]['push']  =$v3->innertext;//推文
-				$v3->outertext="";
-			}
-			foreach($v2->find('img') as $k3 => $v3){//內文中的附圖?
-				$FFF=$pic_url=$v3->src;//
-				$FFF=parse_url($FFF);
-				$FFF=pathinfo($FFF['path']);
-				$FFF=$FFF['basename'];
-				if(preg_match('/^[0-9]+/', $FFF)){
-					if(in_array($FFF,$chat_array[$k]['image'])){}else{
-						$chat_array[$k]['image'][]=$pic_url;
-					}
+		//推文
+		foreach($vv->find('div.pushpost') as $k2 => $v2){
+			$chat_array[$k]['push']  =$v2->innertext;//推文
+			$v2->outertext="";
+		}
+		//內文中的附圖?
+			foreach($v->find('img') as $k2 => $v2){//內文中的附圖?
+				$FFF='';//
+				if($v2->parent->href){
+					$FFF=$v2->parent->href;
+					if(!preg_match("/http/",$FFF)){continue;}else{$chat_array[$k]['image'][]=$FFF;}
+					$v2->parent->outertext="";
+				}else{
+					$FFF=$v2->src;
+					if(!preg_match("/http/",$FFF)){continue;}else{$chat_array[$k]['image'][]=$FFF;}
+					$v2->outertext="";
 				}
-				$v3->outertext="";
+
 			}
+			//崁入的影片
 			$chat_array[$k]['script']=array();
-			foreach($v2->find('span.ytplayer') as $k3 => $v3){
-				$FFF=$v3->parent->outertext;
+			foreach($vv->find('span.ytplayer') as $k2 => $v2){
+				$FFF=$v2->parent->outertext;
 				$pattern="/url\((.*)\)/";
-				preg_match($pattern, $FFF, $matches);//抓首串編號
+				preg_match($pattern, $FFF, $matches);//
 				$FFF="".$matches[1];
-				$chat_array[$k]['script'][$k3][0]=$FFF;
+				$chat_array[$k]['script'][$k2][0]=$FFF;//影片縮圖
 				//
-				$FFF=$v3->id;
+				$FFF=$v2->id;
 				$pattern="/_(.*)_/";
-				preg_match($pattern, $FFF, $matches);//抓首串編號
+				preg_match($pattern, $FFF, $matches);
 				$FFF="https://www.youtube.com/watch?v=".$matches[1];
-				$chat_array[$k]['script'][$k3][1]=$FFF;
+				$chat_array[$k]['script'][$k2][1]=$FFF;//影片網址
 				//
 				//$FFF = json_decode($matches[1] , true);
 				//$chat_array[$k]['script'][] = $FFF[0]['url']."（".$FFF[0]['title']."）"; //
-				$v3->parent->outertext="";
+				$v2->parent->outertext="";
 			}
-			//array_unique($chat_array[$k]['image']);//可能有重複圖片//失敗
-			$chat_array[$k]['text']  =$v2->innertext;//內文
-			$v2->outertext="";
-		}
+		
 		//ID
 		foreach($vv->find('span.trip_id') as $k2 => $v2){
 			$chat_array[$k]['trip_id']  =$v2->plaintext;
@@ -90,7 +89,10 @@
 			$v2->outertext="";
 		}
 		//
-		$chat_array[$k]['zzz_text']  =$vv->outertext;
+		//內文
+		$chat_array[$k]['text']  =$v->innertext;//內文
+		$v->outertext="";
+		//$chat_array[$k]['zzz_text']  =$vv->outertext;
 	}
 	ksort($chat_array);//排序
 	//echo print_r($chat_array,true);exit;//檢查點
@@ -126,17 +128,17 @@
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			if($input_c){
+			if(1){
 				$htmlbody2.=$have_pic.'<img id="pic'.$have_pic.'" src="./index.gif" style="width:5px; height:10px;border:1px solid blue;" /><span id="pn'.$have_pic.'">'.$img_filename."</span><br/>"."\n";
 				$htmlbody2_js.="myArray[".$have_pic."]='".$pic_url_php."';\n";
 			}else{
-				$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
+				//$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
 				//$htmlbody2.='<img id="pic'.$have_pic.'" src="'.$pic_url_php.'" style="width:5px; height:10px;border:1px solid blue;" />'.$img_filename."<br/>"."\n";
 			}
 		}
-		foreach($chat_array[$k]['script'] as $k2 => $v2){//內文中有圖 
+		foreach($chat_array[$k]['script'] as $k2 => $v2){//內文中有影片
 			$htmlbody.= "<br/>\n";
-			$htmlbody.= '<img src="'.$v2[0].'"/>';
+			$htmlbody.= '<img src="'.$v2[0].'" class="zoom"/>';
 			$htmlbody.= $v2[1];
 		}
 		$htmlbody.="<br>\n";

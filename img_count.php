@@ -1,11 +1,15 @@
 <?php
 header('Content-type: text/html; charset=utf-8');
+$phpdir="http://".$_SERVER["SERVER_NAME"]."".$_SERVER["PHP_SELF"]."";
+$phpdir=substr($phpdir,0,strrpos($phpdir,"/")+1); //根目錄
 //**********
 $url="./";
 $handle=opendir($url); 
 $cc = 0;
 $img_count=array('jpg'=>0,'png'=>0,'gif'=>0);
 $total_size=0;
+$FFF_c='';
+$log='filemap';
 while(($file = readdir($handle))!==false) { 
 	if($file=="."||$file == ".."){
 		//沒事
@@ -19,8 +23,8 @@ while(($file = readdir($handle))!==false) {
 			if($img==1){$total_size=$total_size+filesize($file);}//只計算圖檔大小
 		}
 	}
-	//$tmp[$cc] = substr($file,0,strpos($file,"."));
 	$cc = $cc + 1;
+	//$tmp[$cc] = substr($file,0,strpos($file,"."));
 } 
 closedir($handle); 
 $FFF='';
@@ -42,14 +46,16 @@ echo htmlend();
 
 function htmlhead(){
 $x=<<<EOT
-<html><head>
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">
 <meta name="Robots" content="index,follow">
-<STYLE TYPE="text/css"><!--
+<STYLE TYPE="text/css">
 body { font-family:'Courier New',"細明體",'MingLiU'; }
---></STYLE>
+</STYLE>
 </head>
 <body bgcolor="#FFFFEE" text="#800000" link="#0000EE" vlink="#0000EE">
 EOT;

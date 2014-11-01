@@ -7,8 +7,10 @@
 	$chat_array='';
 	$chat_array = $html->outertext;
 	$chat_array=htmlspecialchars($chat_array);//HTML特殊字元
-	if(preg_match("/[^\.]cloudflare/i",$chat_array)){print_r($chat_array);die('[x]cloudflare');}
+	//if(preg_match("/[^\.]cloudflare/i",$chat_array)){print_r($chat_array);die('[x]cloudflare');}
+	
 	//迴圈批次處理
+	$chat_array=array();
 	$cc=0;
 	foreach($html->find('div.quote') as $k => $v){//分析
 		foreach($v->find('div.pushpost') as $k2 => $v2){//分析
@@ -72,11 +74,11 @@
 			}else{
 				$pic_url_php="./140319-1959-pic.php?".$pic_url;
 			}
-			if($input_c){
+			if(1){
 				$htmlbody2.=$have_pic.'<img id="pic'.$have_pic.'" src="./index.gif" style="width:5px; height:10px;border:1px solid blue;" /><span id="pn'.$have_pic.'">'.$img_filename."</span><br/>"."\n";
 				$htmlbody2_js.="myArray[".$have_pic."]='".$pic_url_php."';\n";
 			}else{
-				$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
+				//$htmlbody2.='<span style="background-image: url(\''.$pic_url_php.'\'); "><a href="'.$pic_url_php.'">^</a></span>';
 				//$htmlbody2.='<img id="pic'.$have_pic.'" src="'.$pic_url_php.'" style="width:5px; height:10px;border:1px solid blue;" />'.$img_filename."<br/>"."\n";
 			}
 		}

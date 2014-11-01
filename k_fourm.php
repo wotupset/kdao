@@ -50,7 +50,7 @@ echo "<a href='./'>目</a>"."\n";
 echo "<a href='./".$phpself."'>返</a>"."\n";
 echo "<a href='./".$phpself."?a'>01</a>"."\n";
 echo "<pre>";
-$cc=0;
+$cc=0;$FFF='';
 foreach($FFF_arr[0] as $k => $v ){
 	if($cc>300){break;}
 	$album_link=$phpdir."k_fourm2.php?".$ym."!".$ct2;//相簿位置(絕對位置)
@@ -58,25 +58,28 @@ foreach($FFF_arr[0] as $k => $v ){
 	switch($query_string){
 		case 'a': //html
 			if($cc == 0){
-				echo "&lt;a href='".$album_link."'&gt;".$phphost."&lt;/a&gt; &lt;br/&gt;";
-				echo "\n";
+				$FFF.= "&lt;a href='".$album_link."'&gt;".$phphost."&lt;/a&gt; &lt;br/&gt;";
+				$FFF.= "\n";
 			}
-			echo $k;
-			echo "&lt;img src='".$pic_src."'&gt; &lt;br/&gt;";
+			$FFF.= $k;
+			$FFF.= "&lt;img src='".$pic_src."'&gt; &lt;br/&gt;";
 		break;
+
 		default: //預設
 			if($cc == 0){
-				echo "[url=".$album_link."]".$phphost."[/url]";
-				echo "\n";
+				$FFF.= "[url=".$album_link."]".$phphost."[/url]";
+				$FFF.= "\n";
 			}
-			echo $cc;
-			echo "[img]".$pic_src."[/img]";
+			$FFF.= $cc;
+			$FFF.= "[img]".$pic_src."[/img]";
 		break;
 	}
-	echo "\n";
+	$FFF.= "\n";
 	$cc=$cc+1;
 }
+echo $FFF;
 echo "</pre>";
+echo "<br/>\n";
 echo "<br/>\n";
 $htmlbody=ob_get_clean();
 

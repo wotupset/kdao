@@ -230,16 +230,6 @@ function htmlend(){
 $x=<<<EOT
 
 
-<!--BAIDU_YUNTU_START-->
-<script>
-(function(d, t) {
-    var r = d.createElement(t), s = d.getElementsByTagName(t)[0];
-    r.async = 1;
-    r.src = '//rp.baidu.com/rp3w/3w.js?sid=3094197145118003122&t=' + Math.ceil(new Date/3600000);
-    s.parentNode.insertBefore(r, s);
-})(document, 'script');
-</script>
-<!--BAIDU_YUNTU_END-->
 
 </body></html>
 EOT;

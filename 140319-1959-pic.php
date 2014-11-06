@@ -59,10 +59,13 @@ if( preg_match("/[^\w\.\-]/",$url_i['filename']) ){ //只接受英數底線負�
 //if(!is_writeable("./")){ die("根目錄沒有寫入權限，請修改權限"); }
 $dir_path="./_".$ym."/"; //存放該月檔案
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
-if(!is_dir($dir_path)){die('建立資料夾失敗');}
+if(!is_dir($dir_path)){die('建立資料夾失敗#1');}
 $dir_path=$dir_path."src/";//存放圖檔位置
 if(!is_dir($dir_path)){mkdir($dir_path, 0777);}
-if(!is_dir($dir_path)){die('建立資料夾失敗');}
+if(!is_dir($dir_path)){die('建立資料夾失敗#2');}
+$dir_file = $dir_path."test.txt";
+if(!is_file($dir_file)){file_put_contents($dir_file,"測試");}
+if(!is_file($dir_file)){die('建立檔案失敗#1');}else{unlink($dir_file);}
 //
 //圖片資料夾的統計php
 $img_count=$dir_path."index.php";

@@ -15,7 +15,9 @@ date_default_timezone_set("Asia/Taipei");//時區設定
 $time = (string)time();
 $ymdhis=date('_ymd_His_',$time);//輸出的檔案名稱
 //
-if($query_string){$url=$query_string;} //網址有參數
+//if($query_string){$url=$query_string;} //網址有參數
+if(preg_match("/^http/",$query_string)){$url=$query_string;} //網址有參數
+
 if($input_a){$url=$input_a;} //優先選用手動輸入的值
 $loading_sec = file_get_contents('loading_sec.txt'); //取得log內容
 if($loading_sec === false){$loading_sec='2000';} //沒有抓到資料的情況

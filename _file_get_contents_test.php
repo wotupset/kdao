@@ -9,7 +9,7 @@ $phpself=basename($_SERVER["SCRIPT_FILENAME"]);//被執行的文件檔名
 //$query_string=$_SERVER['QUERY_STRING'];
 //date_default_timezone_set("Asia/Taipei");//時區設定
 //$url="http://i.imgur.com/b04tXD6.jpg";
-$url="http://i.imgur.com/OGdc7pf.png";
+$url="http://i.imgur.com/XegMmvO.png";
 $opts = array('http'=>array('method'=>"GET",'timeout'=>10));
 $context = stream_context_create($opts);
 $max_size=5*1024*1024;//抓取上限

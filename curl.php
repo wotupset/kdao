@@ -1,7 +1,7 @@
 <?php
 // Create a curl handle
 $ch = curl_init();
-if(!$ch){die('[x]ch');}
+if(!$ch){die('[x]curl');}
 $ret = curl_setopt($ch, CURLOPT_URL,            "http://web.komica.org/");
 $ret = curl_setopt($ch, CURLOPT_HEADER,         1);//是否顯示header信息
 $ret = curl_setopt($ch, CURLOPT_NOBODY,         0);//是否隱藏body頁面內容

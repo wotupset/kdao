@@ -25,14 +25,17 @@ if($url){
 	//
 	$content = file_get_contents($url) or die("[x]file_get_contents");//取得來源內容
 	//echo $content;exit;
-	$pattern="%<span class=s10>(.*)</span>%U";//非貪婪
+	//$pattern="%<span class=s10>(.*)</span>%U";//非貪婪
+	$pattern='/src\/[0-9]{13}\.(jpg|png|gif)/U';//非貪婪
 	preg_match_all($pattern, $content, $matches_chk);//內文-首篇
 	//print_r($matches_chk);exit;//
 	if(count($matches_chk[0])==0){die("[x]沒找到");}//沒找到
+	$matches_chk[0]=array_unique($matches_chk[0]);
+	$matches_chk[1]=unll;
 	$cc=0;$js='';
-	foreach($matches_chk[1] as $k => $v){
+	foreach($matches_chk[0] as $k => $v){
 		$cc=$cc+1;
-		$pattern="%src/([0-9]{13}\.[a-z]{3}) %";//非貪婪
+		$pattern="%src/([0-9]{13}\.[a-z]{3})%";//非貪婪
 		preg_match($pattern, $v, $matches);//內文-首篇
 		$pic_url='http://board.futakuro.com/jk2/src/'.$matches[1].'';
 		$pic_url="./140319-1959-pic.php?".$pic_url;

@@ -23,7 +23,7 @@ if(!is_file($log)){die('log不存在');}
 //計算本月資料夾
 $url=$dir_mth.'src/'; //本月資料夾
 $no_mthdir=0;
-if(is_dir($url)){ //本月資料夾存在->每次都要掃描資料夾大小
+if(is_dir($url)){ //本月資料夾存在->每次都要掃描本月資料夾大小
 	$cc = 0;
 	$img_count=array('jpg'=>0,'png'=>0,'gif'=>0);
 	$total_size_mth=0;//
@@ -93,9 +93,9 @@ foreach($content_array as $k => $v){
 	//echo "\n";
 }
 //exit;
-if($chk==0){//找不到同月資料
-	if($no_mthdir==0){//有當月資料夾
-		init($log);
+if($chk==0){//找不到本月資料
+	if($no_mthdir==0){//有本月資料夾
+		init($log);//log中沒有本月 但有本月資料夾時 就初始化
 	}
 }
 //echo $chk."\n";print_r('');exit;
@@ -131,6 +131,7 @@ $ver_color_r=hexdec( substr($ver,0,2) );//版本號的顏色
 $ver_color_g=hexdec( substr($ver,2,2) );//版本號的顏色
 $ver_color_b=hexdec( substr($ver,4,2) );//版本號的顏色
 //echo $ver_color_r;echo "\n";echo $ver_color_g;echo "\n";echo $ver_color_b;echo "\n";
+if($no_mthdir==1){$ver_color_r=$ver_color_g=$ver_color_b=0;}
 //
 $all_size=sprintf('%01.2f',$all_size); //小數後兩位補零
 //

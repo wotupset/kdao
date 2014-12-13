@@ -4,8 +4,16 @@ $query_string=$_SERVER['QUERY_STRING'];
 if($query_string){
 	$url=$query_string;
 }else{
-	die('x');
+	die('url=&page=');
 }
+//
+//extract($_POST,EXTR_SKIP);extract($_GET,EXTR_SKIP);extract($_COOKIE,EXTR_SKIP);
+$url = $_GET["url"];
+if(!preg_match("/http/",$url) ){die('網址?');}
+$page = $_GET["page"];
+$page = ceil($page);
+//
+
 $url_p=parse_url($url);
 //echo print_r($url_p,true);exit;//檢查點
 /*
@@ -32,36 +40,42 @@ $FFF=curl_exec($ch);
 $return = curl_getinfo($ch);
 curl_close($ch);
 //
-include('./simple_html_dom.php');//v1.5
+//print_r($return);exit;
+if($return['http_code']>=400){die('網址內容獲取錯誤');}
+//include('./simple_html_dom.php');//v1.5
+//$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
+
 //
 $html_get=$FFF;
 //echo $html_get;exit;//檢查點
 if(!preg_match("/html/i",substr($html_get,0,500))){die('不是HTML檔案');}
-$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
-$chat_array=array();
-$cc=0;
-foreach($html->find('a') as $k => $v){
-	$FFF=$v->href;
-	if(!preg_match("/(jpg|gif|png)$/i",$FFF) ){continue;}
-	if(!in_array($FFF,$chat_array) ){
-		$cc++;
-		$chat_array[$cc]=$FFF;
-	}
+//過濾條件
+//preg_match_all('/http.{1,30}[0-9]{13}\.(jpg|png|gif)/U',$html_get,$match);
+preg_match_all('/http.{1,10}2chan.net\/[a-z]{3}\/[a-z]{1}\/src\/[0-9]{13}\.(jpg|png|gif)/U',$html_get,$match);
+//print_r($match);
+
+//
+//header('Content-type: text/plain; charset=utf-8');
+header('Content-type: text/html; charset=utf-8');
+echo $head=<<<EOT
+<html>
+<head>
+</head>
+<body>
+EOT;
+
+$FFF='';$cc=0;
+foreach($match[0] as $k => $v){
+	$cc=$cc+1;
+	if($cc %100 ==0){$FFF.="<hr/>";}
+	echo $FFF='<img src="'.$v.'">'."\n";
+	//
+	//if($cc > 10){break;}
 }
-//
-//echo "\n".'curl_getinfo'."\n";
-//print_r($return);
-//
-ksort($chat_array);//排序
-//echo print_r($chat_array,true);exit;//檢查點
-echo "<pre>";
-foreach($chat_array as $k => $v){
-	$FFF=$v;
-	if(!preg_match("/".$url_p_host."/i",$FFF) ){
-		$FFF='http://'.$url_p_host.''.$url_i_dirname.'/../'.$FFF;
-	}
-	echo $FFF."\n";
-}
-echo "</pre>";
-//
+//echo $FFF;
+echo $endd=<<<EOT
+</body>
+</html>
+EOT;
+
 ?>

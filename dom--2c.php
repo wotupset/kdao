@@ -4,8 +4,9 @@
 	////////////
 	//$html = file_get_html($url) or die('沒有收到資料');//simple_html_dom
 	//die($html_get);
+	if(!preg_match("/<\/html>/i",$html_get)){die('網頁沒有結尾');}
 	$html_get = iconv( "Shift_JIS" , "UTF-8//IGNORE", $html_get);//轉成UTF8
-	$html = str_get_html($html_get) or die('沒有收到資料');//simple_html_dom
+	$html = str_get_html($html_get) or die('str_get_html 失敗');//simple_html_dom
 	//unset($content);
 	$chat_array=array();
 	foreach($html->find('blockquote') as $k => $v){

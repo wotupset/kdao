@@ -7,21 +7,26 @@ $input_a=$_POST['input_a'];
 $mode=$_POST['mode'];
 //
 if(0){
-$url="http://p.pw/API/write/get?url=http://disp.cc/b/terievv&type=xml";
+$url="http://p.pw/API/write/get?user=179766&url=http://disp.cc/b/terievv&custom=newNAME&type=xml";
 $html = file_get_contents($url);
+echo $html;exit;
 $obj = new SimpleXMLElement($html);
 
 //echo $obj->success;
 //print_r($obj->success);
 //var_dump($obj->success);
+exit;
 }
-
 //
 $htmlbody='';$res='';
 switch($mode){
 	case 'reg':
-		$url="http://p.pw/API/write/get?user=179766&type=xml&url=".$input_a;
-		$html=file_get_contents($url);
+		$input_url=urlencode($input_a);//
+		$url="http://p.pw/API/write/get?user=179766&type=xml&url=".$input_url;
+		$htmlbody.='輸入=<br/>'.$input_a.'<br/>';
+		//$htmlbody.='索取=<br/>'.$url."<br/>";
+		$html=file_get_contents($url) or die('網址獲取失敗');
+		$htmlbody.='獲取=<pre>'.htmlspecialchars($html).'</pre>';//
 		$obj = new SimpleXMLElement($html);
 		if($obj->success == "1"){
 			$yn = '成功';
@@ -30,10 +35,8 @@ switch($mode){
 			$yn = '失敗';
 			$res = $obj->error->msg;
 		}
-		//$htmlbody.=$url."<br/>";
-		$htmlbody.=$input_a."<br/>";
-		$htmlbody.=$yn."<br/>";
-		$htmlbody.=$res;
+		$htmlbody.='反應=<br/>'.$yn."<br/>";
+		$htmlbody.='結果=<br/>'.$res."<br/>";
 	break;
 	default:
 	break;
